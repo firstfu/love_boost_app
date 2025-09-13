@@ -3,13 +3,15 @@
  * 展示助手的詳細信息、個性分析、學習狀態和互動統計
  */
 
-import React from 'react'
+import React, { useState } from 'react'
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -30,6 +32,16 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
   onStartChat,
   onAddData
 }) => {
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true)
+
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const currentScrollY = event.nativeEvent.contentOffset.y
+    const shouldShowHeader = currentScrollY < 100 // 滾動超過 100 時隱藏 header
+
+    if (shouldShowHeader !== isHeaderVisible) {
+      setIsHeaderVisible(shouldShowHeader)
+    }
+  }
   const renderPersonalityTraits = () => {
     const traitLabels: Record<string, string> = {
       gentle: '溫柔',
@@ -79,63 +91,73 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
 
   return (
     <View style={styles.container}>
-      {/* 漸層背景 Header */}
-      <LinearGradient
-        colors={['#FF6B6B', '#FF8E8E', '#FFB3B3']}
-        locations={[0, 0.5, 1]}
-        style={styles.backgroundGradient}
-      >
-        <View style={styles.header}>
-          <TouchableOpacity onPress={onBack} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="#fff" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>助手詳情</Text>
-          <View style={styles.headerRight} />
-        </View>
-
-        {/* Profile Section */}
-        <View style={styles.profileSection}>
-          <DefaultAvatar
-            gender={companion.gender}
-            size={120}
-            realAvatar={companion.realAvatar}
-          />
-          <Text style={styles.name}>{companion.name}</Text>
-          <Text style={styles.ageGender}>
-            {companion.age}歲 • {companion.gender === 'female' ? '女性' : '男性'}
-          </Text>
-          <Text style={styles.bio}>{companion.bio}</Text>
-        </View>
-      </LinearGradient>
-
-      {/* Action Buttons */}
-      <View style={styles.actionButtons}>
-        <TouchableOpacity
-          style={[styles.actionButton, styles.primaryButton]}
-          onPress={() => onStartChat(companion)}
-        >
-          <Ionicons name="chatbubble-ellipses" size={20} color="#fff" />
-          <Text style={styles.primaryButtonText}>開始對話練習</Text>
+      {/* 固定導航欄 */}
+      <View style={styles.fixedHeader}>
+        <TouchableOpacity onPress={onBack} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
-
-        {onAddData && (
-          <TouchableOpacity
-            style={[styles.actionButton, styles.secondaryButton]}
-            onPress={() => onAddData(companion)}
-          >
-            <Ionicons
-              name={companion.user_added_data ? "refresh-circle" : "add-circle"}
-              size={20}
-              color="#FF6B6B"
-            />
-            <Text style={styles.secondaryButtonText}>
-              {companion.user_added_data ? '繼續新增' : '新增資料'}
-            </Text>
-          </TouchableOpacity>
-        )}
+        <Text style={styles.headerTitle}>助手詳情</Text>
+        <View style={styles.headerRight} />
       </View>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      {/* 滾動區域 */}
+      <ScrollView
+        style={styles.scrollContainer}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* 漸層背景個人資料區 */}
+        {isHeaderVisible && (
+          <LinearGradient
+            colors={['#FF6B6B', '#FF8E8E', '#FFB3B3']}
+            locations={[0, 0.5, 1]}
+            style={styles.profileHeader}
+          >
+            <View style={styles.profileSection}>
+              <DefaultAvatar
+                gender={companion.gender}
+                size={100}
+                realAvatar={companion.realAvatar}
+              />
+              <Text style={styles.name}>{companion.name}</Text>
+              <Text style={styles.ageGender}>
+                {companion.age}歲 • {companion.gender === 'female' ? '女性' : '男性'}
+              </Text>
+              <Text style={styles.bio}>{companion.bio}</Text>
+            </View>
+          </LinearGradient>
+        )}
+
+        {/* Action Buttons */}
+        <View style={styles.actionButtons}>
+          <TouchableOpacity
+            style={[styles.actionButton, styles.primaryButton]}
+            onPress={() => onStartChat(companion)}
+          >
+            <Ionicons name="chatbubble-ellipses" size={20} color="#fff" />
+            <Text style={styles.primaryButtonText}>開始對話練習</Text>
+          </TouchableOpacity>
+
+          {onAddData && (
+            <TouchableOpacity
+              style={[styles.actionButton, styles.secondaryButton]}
+              onPress={() => onAddData(companion)}
+            >
+              <Ionicons
+                name={companion.user_added_data ? "refresh-circle" : "add-circle"}
+                size={20}
+                color="#FF6B6B"
+              />
+              <Text style={styles.secondaryButtonText}>
+                {companion.user_added_data ? '繼續新增' : '新增資料'}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* 內容區域 */}
+        <View style={styles.contentContainer}>
 
         {/* Personality Analysis */}
         <View style={styles.section}>
@@ -265,6 +287,7 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
             </View>
           </View>
         </View>
+        </View>
       </ScrollView>
     </View>
   )
@@ -275,16 +298,29 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
-  backgroundGradient: {
-    paddingBottom: 12,
-  },
-  header: {
+  fixedHeader: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingTop: 44,
+    paddingTop: 40,
     paddingBottom: 12,
+    backgroundColor: 'rgba(255, 107, 107, 0.95)',
+    zIndex: 1000,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  scrollContainer: {
+    flex: 1,
+    marginTop: 80, // 為固定 header 留空間
+  },
+  profileHeader: {
+    paddingTop: 20,
+    paddingBottom: 16,
   },
   backButton: {
     padding: 8,
@@ -300,24 +336,24 @@ const styles = StyleSheet.create({
   headerRight: {
     width: 40,
   },
-  scrollView: {
-    flex: 1,
-    marginTop: -10,
+  contentContainer: {
     backgroundColor: 'rgba(255,255,255,0.95)',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
+    marginTop: -10,
+    paddingTop: 10,
   },
   profileSection: {
     alignItems: 'center',
-    paddingTop: 20,
-    paddingBottom: 16,
+    paddingTop: 16,
+    paddingBottom: 12,
     paddingHorizontal: 24,
   },
   name: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '900',
     color: '#ffffff',
-    marginTop: 12,
+    marginTop: 8,
     marginBottom: 4,
   },
   ageGender: {
@@ -344,15 +380,7 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 20,
     gap: 12,
-    backgroundColor: 'rgba(255,255,255,0.95)',
-    marginTop: -10,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    shadowColor: '#FF6B6B',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 8,
+    backgroundColor: 'transparent',
   },
   actionButton: {
     flex: 1,
