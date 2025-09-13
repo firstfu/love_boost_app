@@ -4,7 +4,7 @@
  */
 
 import { create } from 'zustand'
-import { AICompanion, SimulationSession, PersonalityProfile } from '../types/assistant'
+import { AICompanion, ChatAssistanceSession, PersonalityProfile } from '../types/assistant'
 
 interface CompanionStore {
   // AI分身相關狀態
@@ -16,8 +16,8 @@ interface CompanionStore {
   currentProfile: PersonalityProfile | null
 
   // 對話會話
-  currentSession: SimulationSession | null
-  sessionHistory: SimulationSession[]
+  currentSession: ChatAssistanceSession | null
+  sessionHistory: ChatAssistanceSession[]
 
   // UI 狀態
   isLoading: boolean
@@ -27,8 +27,8 @@ interface CompanionStore {
   setCompanions: (companions: AICompanion[]) => void
   setSelectedCompanion: (companion: AICompanion | null) => void
   setCurrentProfile: (profile: PersonalityProfile | null) => void
-  setCurrentSession: (session: SimulationSession | null) => void
-  addSessionToHistory: (session: SimulationSession) => void
+  setCurrentSession: (session: ChatAssistanceSession | null) => void
+  addSessionToHistory: (session: ChatAssistanceSession) => void
   setLoading: (loading: boolean) => void
   setError: (error: string | null) => void
 
