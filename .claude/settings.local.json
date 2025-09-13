@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Read(//Users/firstfu/Desktop/warm_call/warm_call_app/**)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(npm install:*)",
+      "Bash(npx expo install:*)",
+      "Bash(npm run lint)",
+      "Bash(npx expo start:*)"
     ],
     "deny": [],
     "ask": []
