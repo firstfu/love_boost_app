@@ -143,7 +143,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
 
   // 獲取說話風格顏色
   const getSpeakingStyleInfo = (style: string) => {
-    const styleInfo = {
+    const styleInfo: Record<string, { label: string; color: string; bgColor: string }> = {
       'casual': { label: '💭 隨性聊天', color: '#FF6B9D', bgColor: 'rgba(255, 107, 157, 0.1)' },
       'formal': { label: '🎯 正式交流', color: '#4F46E5', bgColor: 'rgba(79, 70, 229, 0.1)' },
       'cute': { label: '🎀 可愛風格', color: '#10B981', bgColor: 'rgba(16, 185, 129, 0.1)' },

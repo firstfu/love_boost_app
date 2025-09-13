@@ -72,7 +72,7 @@ export const ChatAssistancePanel: React.FC<ChatAssistancePanelProps> = ({
   }
 
   const getToneColor = (tone: string) => {
-    const toneColors = {
+    const toneColors: Record<string, string> = {
       'casual': '#10B981',
       'romantic': '#EC4899',
       'humorous': '#F59E0B',
