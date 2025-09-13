@@ -23,22 +23,22 @@
 ### 1.2 技術棧總覽
 
 **前端：**
+
 - React Native + Expo
 - TypeScript
 - React Navigation
 - Zustand (狀態管理)
-- React Query (API 快取)
 
 **後端：**
+
 - FastAPI (Python)
-- PostgreSQL + 向量資料庫
-- Redis (快取層)
+- PostgreSQL + pgvector (內建向量功能)
 - DigitalOcean 基礎設施
 
 **AI 服務：**
-- OpenAI GPT-4o/4o-mini
-- OpenAI Whisper + TTS
-- OpenAI Vision API
+
+- OpenAI GPT-4o-mini (多模態統一模型)
+- OpenAI Whisper + TTS (語音功能)
 
 ## 2. 整體系統架構
 
@@ -64,35 +64,46 @@
 ┌─────────────────────────────────────────────────────────────┐
 │                        AI 服務層                             │
 ├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────┐   │
-│  │ GPT-4o/mini │ │   Whisper   │ │     TTS     │ │  Vision  │   │
-│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────┘   │
-└─────────────────────────────────────────────────────────────┘
+│  ┌─────────────────────┐ ┌─────────────┐ ┌─────────────┐       │
+│  │   GPT-4o-mini       │ │   Whisper   │ │     TTS     │       │
+│  │    (多模態統一)      │ │ (語音識別)   │ │ (語音合成)   │       │
+│  └─────────────────────┘ └─────────────┘ └─────────────┘       │
+└─────────────────────────────────────────────────────────────┐
                               │
 ┌─────────────────────────────────────────────────────────────┐
 │                        資料儲存層                             │
 ├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────┐   │
-│  │ PostgreSQL  │ │ 向量資料庫    │ │    Redis    │ │ 檔案儲存  │   │
-│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────┘   │
+│  ┌─────────────────────────────────┐ ┌─────────────────────┐   │
+│  │        PostgreSQL               │ │    本地檔案儲存      │   │
+│  │     (包含 pgvector)             │ │                     │   │
+│  └─────────────────────────────────┘ └─────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ### 2.2 資料流架構
 
 #### 2.2.1 助手建立流程
+
 ```
 用戶建立助手 → 上傳資料 → AI 分析處理 → 個性檔案生成 → 模擬對話啟用
 ```
 
 #### 2.2.2 對話模擬流程
+
 ```
-用戶輸入 → 意圖識別 → 個性檔案匹配 → GPT 回應生成 → 建議生成 → 回傳結果
+用戶輸入 → 個性檔案匹配 → GPT-4o-mini 回應生成 → 建議生成 → 回傳結果
 ```
 
 #### 2.2.3 語音通話流程
+
 ```
-語音輸入 → Whisper 轉文字 → 對話處理 → 回應生成 → TTS 轉語音 → 語音輸出
+語音輸入 → Whisper 轉文字 → GPT-4o-mini 處理 → TTS 轉語音 → 語音輸出
+```
+
+#### 2.2.4 圖片分析流程
+
+```
+圖片上傳 → GPT-4o-mini 多模態分析 → 個性特徵提取 → 存儲到 pgvector
 ```
 
 ## 3. 核心服務模組設計
@@ -100,12 +111,14 @@
 ### 3.1 身份認證服務 (Auth Service)
 
 #### 3.1.1 功能職責
+
 - Apple Sign-In 整合
 - JWT Token 管理
 - 用戶權限控制
 - 訂閱狀態驗證
 
 #### 3.1.2 資料庫設計
+
 ```sql
 -- 用戶表
 CREATE TABLE users (
@@ -132,6 +145,7 @@ CREATE TABLE user_settings (
 ```
 
 #### 3.1.3 API 端點設計
+
 ```python
 @router.post("/auth/apple-signin")
 async def apple_signin(token: str) -> AuthResponse
@@ -146,12 +160,14 @@ async def logout(current_user: User) -> SuccessResponse
 ### 3.2 AI 助手管理服務 (Assistant Service)
 
 #### 3.2.1 功能職責
+
 - 助手 CRUD 操作
 - 助手資料管理
 - 權限與限制控制
 - 資料隔離機制
 
 #### 3.2.2 資料庫設計
+
 ```sql
 -- 助手表
 CREATE TABLE assistants (
@@ -191,6 +207,7 @@ CREATE TABLE assistant_conversations (
 ```
 
 #### 3.2.3 API 端點設計
+
 ```python
 @router.post("/assistants")
 async def create_assistant(data: AssistantCreateRequest, current_user: User) -> AssistantResponse
@@ -217,63 +234,124 @@ async def import_conversations(assistant_id: UUID, data: ConversationImportReque
 ### 3.3 AI 分析引擎 (Analysis Engine)
 
 #### 3.3.1 功能職責
-- 多模態資料分析
-- 個性檔案生成
-- 分層 AI 模型管理
-- 成本優化策略
 
-#### 3.3.2 分析管道設計
+- 多模態資料分析 (GPT-4o-mini 統一處理)
+- 個性檔案生成
+- 向量嵌入管理 (pgvector)
+- 成本優化與統一介面
+
+#### 3.3.2 統一分析管道設計
+
 ```python
 class AnalysisPipeline:
     def __init__(self):
-        self.photo_analyzer = PhotoAnalyzer()
-        self.text_analyzer = TextAnalyzer()
-        self.personality_generator = PersonalityGenerator()
+        self.ai_client = UnifiedAIClient()  # GPT-4o-mini 統一介面
+        self.vector_store = PgVectorStore()
 
     async def analyze_assistant(self, assistant_id: UUID) -> PersonalityProfile:
-        # 1. 圖片分析
-        photo_analysis = await self.photo_analyzer.analyze_photos(assistant_id)
+        # 1. 多模態分析 (GPT-4o-mini 處理圖片+文字)
+        multimodal_analysis = await self.ai_client.analyze_multimodal(assistant_id)
 
-        # 2. 文字分析
-        text_analysis = await self.text_analyzer.analyze_conversations(assistant_id)
+        # 2. 生成向量嵌入並存儲
+        embeddings = await self.ai_client.generate_embeddings(multimodal_analysis)
+        await self.vector_store.store_vectors(assistant_id, embeddings)
 
         # 3. 個性檔案生成
-        personality = await self.personality_generator.generate_profile(
-            photo_analysis, text_analysis
+        personality = await self.ai_client.generate_personality_profile(
+            multimodal_analysis
         )
 
         return personality
 ```
 
-#### 3.3.3 分層 AI 使用策略
-```python
-class AIModelManager:
-    def __init__(self):
-        self.gpt4o = OpenAIClient(model="gpt-4o")
-        self.gpt4o_mini = OpenAIClient(model="gpt-4o-mini")
+#### 3.3.3 統一 AI 介面設計
 
-    async def get_analysis(self, complexity: str, prompt: str) -> str:
-        if complexity == "deep":
-            return await self.gpt4o.complete(prompt)
-        else:
-            return await self.gpt4o_mini.complete(prompt)
+```python
+class UnifiedAIClient:
+    def __init__(self):
+        self.client = OpenAIClient(model="gpt-4o-mini")
+
+    async def analyze_multimodal(self, assistant_id: UUID) -> dict:
+        """使用 GPT-4o-mini 統一處理圖片和文字分析"""
+
+        # 獲取助手的所有資料
+        photos = await self.get_assistant_photos(assistant_id)
+        conversations = await self.get_assistant_conversations(assistant_id)
+
+        # 構建多模態 prompt
+        messages = []
+        messages.append({
+            "role": "system",
+            "content": "你是一個個性分析專家，請分析以下圖片和對話內容，生成詳細的個性檔案。"
+        })
+
+        # 添加圖片
+        for photo in photos:
+            messages.append({
+                "role": "user",
+                "content": [
+                    {"type": "image_url", "image_url": {"url": photo.url}},
+                    {"type": "text", "text": "請分析這張照片的個性特徵"}
+                ]
+            })
+
+        # 添加對話內容
+        messages.append({
+            "role": "user",
+            "content": f"對話內容分析：\n{conversations}"
+        })
+
+        # 調用 GPT-4o-mini
+        response = await self.client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=messages,
+            response_format={"type": "json_object"}
+        )
+
+        return json.loads(response.choices[0].message.content)
+
+    async def perform_ocr(self, image_data: bytes) -> str:
+        """使用 GPT-4o-mini 進行 OCR 文字識別"""
+
+        messages = [{
+            "role": "user",
+            "content": [
+                {
+                    "type": "image_url",
+                    "image_url": {"url": f"data:image/jpeg;base64,{base64.b64encode(image_data).decode()}"}
+                },
+                {
+                    "type": "text",
+                    "text": "請將圖片中的所有文字內容轉換為純文字格式，保持原有的格式和段落。"
+                }
+            ]
+        }]
+
+        response = await self.client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=messages
+        )
+
+        return response.choices[0].message.content
 ```
 
 ### 3.4 對話模擬引擎 (Conversation Engine)
 
 #### 3.4.1 功能職責
+
 - 基於個性的對話生成
 - 實時建議生成
 - 對話歷史管理
 - 上下文記憶維護
 
 #### 3.4.2 對話引擎設計
+
 ```python
 class ConversationEngine:
     def __init__(self):
-        self.model_manager = AIModelManager()
-        self.personality_loader = PersonalityLoader()
-        self.suggestion_generator = SuggestionGenerator()
+        self.ai_client = UnifiedAIClient()  # 統一使用 GPT-4o-mini
+        self.vector_store = PgVectorStore()
+        self.db_cache = DatabaseCache()  # 使用 PostgreSQL 快取
 
     async def generate_response(
         self,
@@ -283,30 +361,68 @@ class ConversationEngine:
         scenario: str = "casual"
     ) -> ConversationResponse:
 
-        # 載入個性檔案
-        personality = await self.personality_loader.load(assistant_id)
+        # 從快取或資料庫載入個性檔案
+        personality = await self.db_cache.get_personality(assistant_id)
+        if not personality:
+            personality = await self.load_personality_from_db(assistant_id)
+            await self.db_cache.set_personality(assistant_id, personality)
 
-        # 建構 prompt
-        prompt = self._build_conversation_prompt(
-            personality, user_message, conversation_history, scenario
+        # 使用向量搜索找出相似對話
+        similar_conversations = await self.vector_store.similarity_search(
+            assistant_id, user_message, limit=3
         )
 
-        # 生成回應
-        ai_response = await self.model_manager.get_analysis("medium", prompt)
-
-        # 生成建議
-        suggestions = await self.suggestion_generator.generate_suggestions(
-            user_message, ai_response, personality
+        # 建構統一 prompt
+        conversation_prompt = self._build_unified_prompt(
+            personality, user_message, conversation_history, similar_conversations, scenario
         )
+
+        # 使用 GPT-4o-mini 生成回應和建議
+        response = await self.ai_client.generate_conversation_response(conversation_prompt)
 
         return ConversationResponse(
-            ai_response=ai_response,
-            suggestions=suggestions,
-            scenario=scenario
+            ai_response=response.get("response"),
+            suggestions=response.get("suggestions", []),
+            scenario=scenario,
+            confidence_score=response.get("confidence", 0.8)
         )
+
+    def _build_unified_prompt(
+        self,
+        personality: dict,
+        user_message: str,
+        history: List[Message],
+        similar_conversations: List[dict],
+        scenario: str
+    ) -> str:
+        """建構統一的對話生成 prompt"""
+
+        prompt = f"""
+        你是一個 AI 戀愛助手，正在模擬以下個性的人：
+
+        個性檔案：
+        {json.dumps(personality, ensure_ascii=False, indent=2)}
+
+        相似對話參考：
+        {json.dumps(similar_conversations, ensure_ascii=False, indent=2)}
+
+        對話歷史：
+        {self._format_conversation_history(history)}
+
+        當前場景：{scenario}
+        用戶訊息：{user_message}
+
+        請生成一個 JSON 回應，包含：
+        1. response: 模擬該人的回應
+        2. suggestions: 3-5 個對用戶的建議
+        3. confidence: 回應的信心度 (0-1)
+        """
+
+        return prompt
 ```
 
 #### 3.4.3 資料庫設計
+
 ```sql
 -- 對話會話表
 CREATE TABLE conversation_sessions (
@@ -333,18 +449,21 @@ CREATE TABLE conversation_messages (
 ### 3.5 語音處理服務 (Voice Service)
 
 #### 3.5.1 功能職責
-- 語音識別 (STT)
-- 文字轉語音 (TTS)
-- 語音品質處理
-- 即時語音對話
 
-#### 3.5.2 語音處理管道
+- 語音識別 (Whisper)
+- 文字轉語音 (TTS)
+- 語音快取管理
+- 語音對話整合
+
+#### 3.5.2 簡化語音處理管道
+
 ```python
 class VoiceProcessor:
     def __init__(self):
         self.whisper_client = WhisperClient()
         self.tts_client = TTSClient()
-        self.audio_processor = AudioProcessor()
+        self.conversation_engine = ConversationEngine()
+        self.voice_cache = VoiceCache()  # PostgreSQL 快取
 
     async def process_voice_input(
         self,
@@ -352,31 +471,62 @@ class VoiceProcessor:
         assistant_id: UUID
     ) -> VoiceResponse:
 
-        # 1. 語音轉文字
+        # 1. 語音轉文字 (Whisper)
         text = await self.whisper_client.transcribe(audio_data)
 
-        # 2. 對話處理
+        # 2. 對話處理 (GPT-4o-mini)
         conversation_response = await self.conversation_engine.generate_response(
             assistant_id, text, conversation_history=[]
         )
 
-        # 3. 文字轉語音
-        audio_response = await self.tts_client.synthesize(
+        # 3. 檢查語音快取
+        cached_audio = await self.voice_cache.get_cached_audio(
             conversation_response.ai_response
         )
 
-        # 4. 音頻處理
-        processed_audio = await self.audio_processor.enhance(audio_response)
+        if cached_audio:
+            audio_response = cached_audio
+        else:
+            # 4. 文字轉語音 (TTS)
+            audio_response = await self.tts_client.synthesize(
+                conversation_response.ai_response
+            )
+            # 快取語音結果
+            await self.voice_cache.cache_audio(
+                conversation_response.ai_response, audio_response
+            )
 
         return VoiceResponse(
             transcribed_text=text,
             response_text=conversation_response.ai_response,
-            response_audio=processed_audio,
+            response_audio=audio_response,
             suggestions=conversation_response.suggestions
+        )
+
+class VoiceCache:
+    """基於 PostgreSQL 的語音快取"""
+
+    async def get_cached_audio(self, text: str) -> bytes:
+        # 從資料庫檢查快取的語音
+        hash_key = hashlib.md5(text.encode()).hexdigest()
+        result = await self.db.fetch_one(
+            "SELECT audio_data FROM voice_cache WHERE text_hash = $1", hash_key
+        )
+        return result['audio_data'] if result else None
+
+    async def cache_audio(self, text: str, audio_data: bytes):
+        # 快取語音到資料庫
+        hash_key = hashlib.md5(text.encode()).hexdigest()
+        await self.db.execute(
+            """INSERT INTO voice_cache (text_hash, text_content, audio_data, created_at)
+               VALUES ($1, $2, $3, NOW())
+               ON CONFLICT (text_hash) DO NOTHING""",
+            hash_key, text, audio_data
         )
 ```
 
 #### 3.5.3 API 端點設計
+
 ```python
 @router.post("/voice/conversation")
 async def voice_conversation(
@@ -396,18 +546,21 @@ async def text_to_speech(
 ### 3.6 檔案管理服務 (File Service)
 
 #### 3.6.1 功能職責
+
 - 圖片上傳與處理
 - 檔案格式驗證
 - 圖片壓縮與優化
-- CDN 整合
+- 本地檔案系統管理
+- 檔案存取權限控制
 
 #### 3.6.2 檔案處理管道
+
 ```python
 class FileProcessor:
     def __init__(self):
-        self.storage_client = DigitalOceanSpacesClient()
+        self.local_storage = LocalFileStorage()
         self.image_processor = ImageProcessor()
-        self.ocr_processor = OCRProcessor()
+        self.ai_client = UnifiedAIClient()  # 使用 GPT-4o-mini 處理 OCR
 
     async def process_image_upload(
         self,
@@ -422,20 +575,180 @@ class FileProcessor:
         # 2. 圖片處理
         processed_image = await self.image_processor.process(file)
 
-        # 3. 上傳到 CDN
-        cdn_url = await self.storage_client.upload(processed_image, assistant_id)
+        # 3. 儲存到本地檔案系統
+        file_path = await self.local_storage.save_file(processed_image, assistant_id)
 
-        # 4. 如果是截圖，執行 OCR
+        # 4. 如果是截圖，使用 GPT-4o-mini 執行 OCR
         ocr_result = None
         if file_type == "screenshot":
-            ocr_result = await self.ocr_processor.extract_text(processed_image)
+            ocr_result = await self.ai_client.perform_ocr(processed_image.data)
+
+        # 5. 如果是助手照片，進行個性分析
+        personality_analysis = None
+        if file_type in ["avatar", "lifestyle"]:
+            personality_analysis = await self.ai_client.analyze_photo_personality(
+                processed_image.data, assistant_id
+            )
 
         return FileUploadResponse(
-            file_url=cdn_url,
+            file_path=file_path,
             ocr_result=ocr_result,
+            personality_analysis=personality_analysis,
             file_metadata=processed_image.metadata
         )
+
+#### 3.6.3 本地檔案儲存實現
+
+**檔案目錄結構：**
 ```
+
+/var/app/storage/
+├── photos/
+│ ├── {user_id}/
+│ │ ├── {assistant_id}/
+│ │ │ ├── avatars/
+│ │ │ └── lifestyle/
+├── audio/
+│ ├── {user_id}/
+│ │ ├── {assistant_id}/
+│ │ │ ├── conversations/
+│ │ │ └── tts_cache/
+├── backups/
+│ ├── daily/
+│ └── weekly/
+└── temp/
+└── uploads/
+
+````
+
+**本地儲存管理類：**
+```python
+class LocalFileStorage:
+    def __init__(self, base_path: str = "/var/app/storage"):
+        self.base_path = base_path
+        self.photo_path = f"{base_path}/photos"
+        self.audio_path = f"{base_path}/audio"
+        self.backup_path = f"{base_path}/backups"
+        self.temp_path = f"{base_path}/temp"
+
+    async def save_file(
+        self,
+        file_data: bytes,
+        user_id: str,
+        assistant_id: str = None,
+        file_type: str = "photo",
+        category: str = "avatar"
+    ) -> str:
+        """儲存檔案到本地檔案系統"""
+
+        # 1. 建立目錄結構
+        if file_type == "photo":
+            dir_path = f"{self.photo_path}/{user_id}/{assistant_id}/{category}"
+        elif file_type == "audio":
+            dir_path = f"{self.audio_path}/{user_id}/{assistant_id}/{category}"
+
+        os.makedirs(dir_path, exist_ok=True)
+
+        # 2. 生成檔案名稱
+        file_id = str(uuid4())
+        file_extension = self._get_file_extension(file_data)
+        filename = f"{file_id}.{file_extension}"
+        file_path = f"{dir_path}/{filename}"
+
+        # 3. 寫入檔案
+        async with aiofiles.open(file_path, 'wb') as f:
+            await f.write(file_data)
+
+        # 4. 設定檔案權限
+        os.chmod(file_path, 0o644)
+
+        return file_path
+
+    async def get_file_url(self, file_path: str) -> str:
+        """生成檔案存取 URL"""
+        # 轉換本地路徑為 HTTP URL
+        relative_path = file_path.replace(self.base_path, "")
+        return f"/api/files{relative_path}"
+
+    async def delete_file(self, file_path: str) -> bool:
+        """刪除檔案"""
+        try:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                return True
+            return False
+        except Exception as e:
+            logger.error(f"Failed to delete file {file_path}: {e}")
+            return False
+
+    async def save_backup(self, backup_data: bytes, backup_name: str) -> str:
+        """儲存備份檔案"""
+        backup_path = f"{self.backup_path}/{backup_name}"
+        os.makedirs(os.path.dirname(backup_path), exist_ok=True)
+
+        async with aiofiles.open(backup_path, 'wb') as f:
+            await f.write(backup_data)
+
+        return backup_path
+
+    def _get_file_extension(self, file_data: bytes) -> str:
+        """根據檔案內容判斷副檔名"""
+        # 使用 python-magic 或類似工具判斷檔案類型
+        if file_data.startswith(b'\xff\xd8\xff'):
+            return 'jpg'
+        elif file_data.startswith(b'\x89PNG'):
+            return 'png'
+        elif file_data.startswith(b'RIFF') and b'WEBP' in file_data[:12]:
+            return 'webp'
+        else:
+            return 'bin'
+````
+
+**檔案存取 API 端點：**
+
+```python
+@router.get("/files/{file_path:path}")
+async def serve_file(
+    file_path: str,
+    current_user: User,
+    request: Request
+):
+    """提供檔案存取服務"""
+
+    # 1. 驗證檔案權限
+    if not await _check_file_permission(file_path, current_user.id):
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    # 2. 檢查檔案是否存在
+    full_path = f"/var/app/storage/{file_path}"
+    if not os.path.exists(full_path):
+        raise HTTPException(status_code=404, detail="File not found")
+
+    # 3. 設定快取標頭
+    headers = {
+        "Cache-Control": "public, max-age=86400",  # 24小時快取
+        "ETag": await _generate_etag(full_path)
+    }
+
+    # 4. 回傳檔案
+    return FileResponse(
+        path=full_path,
+        headers=headers,
+        media_type=_get_media_type(full_path)
+    )
+
+async def _check_file_permission(file_path: str, user_id: str) -> bool:
+    """檢查用戶是否有權限存取檔案"""
+    # 檢查檔案路徑是否包含用戶 ID
+    return user_id in file_path
+
+async def _generate_etag(file_path: str) -> str:
+    """生成檔案 ETag"""
+    stat = os.stat(file_path)
+    return f'"{stat.st_mtime}-{stat.st_size}"'
+```
+
+````
 
 ## 4. 資料庫設計詳細規格
 
@@ -498,7 +811,7 @@ CREATE TABLE conversation_sessions (
 CREATE TABLE api_usage_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    service_type ENUM('gpt4o', 'gpt4o_mini', 'whisper', 'tts', 'vision') NOT NULL,
+    service_type ENUM('gpt4o_mini', 'whisper', 'tts') NOT NULL,
     tokens_used INTEGER,
     cost_usd DECIMAL(10,4),
     request_timestamp TIMESTAMP DEFAULT NOW(),
@@ -506,50 +819,189 @@ CREATE TABLE api_usage_logs (
     INDEX idx_api_usage_user_id_timestamp (user_id, request_timestamp),
     INDEX idx_api_usage_service_type_timestamp (service_type, request_timestamp)
 );
+````
+
+### 4.2 向量資料庫設計 (PostgreSQL + pgvector)
+
+#### 4.2.1 向量存儲表結構
+
+```sql
+-- 安裝 pgvector 擴展
+CREATE EXTENSION IF NOT EXISTS vector;
+
+-- 對話語義向量表
+CREATE TABLE conversation_vectors (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    assistant_id UUID REFERENCES assistants(id) ON DELETE CASCADE,
+    conversation_id UUID,
+    text_chunk TEXT NOT NULL,
+    embedding VECTOR(1536),  -- OpenAI embedding dimension
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 個性特徵向量表
+CREATE TABLE personality_vectors (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    assistant_id UUID REFERENCES assistants(id) ON DELETE CASCADE,
+    feature_type VARCHAR(100) NOT NULL,  -- mbti, communication_style, interests
+    feature_value TEXT NOT NULL,
+    embedding VECTOR(1536),
+    confidence_score FLOAT DEFAULT 0.0,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 向量相似性查詢索引
+CREATE INDEX ON conversation_vectors USING ivfflat (embedding vector_cosine_ops);
+CREATE INDEX ON personality_vectors USING ivfflat (embedding vector_cosine_ops);
 ```
 
-### 4.2 向量資料庫設計 (Pinecone/Chroma)
+#### 4.2.2 向量操作實現
 
-#### 4.2.1 向量儲存策略
 ```python
-# 對話語義向量
-conversation_vectors = {
-    "assistant_id": "uuid",
-    "conversation_id": "uuid",
-    "text_chunk": "string",
-    "embedding": [float] * 1536,  # OpenAI embedding dimension
-    "metadata": {
-        "timestamp": "datetime",
-        "sentiment": "string",
-        "topic": "string"
-    }
-}
+class VectorDatabase:
+    def __init__(self, db_connection):
+        self.db = db_connection
 
-# 個性特徵向量
-personality_vectors = {
-    "assistant_id": "uuid",
-    "feature_type": "string",  # mbti, communication_style, interests
-    "feature_value": "string",
-    "embedding": [float] * 1536,
-    "confidence_score": "float"
-}
+    async def store_conversation_vector(
+        self,
+        assistant_id: UUID,
+        conversation_id: UUID,
+        text_chunk: str,
+        embedding: List[float],
+        metadata: dict = None
+    ):
+        """存儲對話向量"""
+        await self.db.execute(
+            """
+            INSERT INTO conversation_vectors
+            (assistant_id, conversation_id, text_chunk, embedding, metadata)
+            VALUES ($1, $2, $3, $4, $5)
+            """,
+            assistant_id, conversation_id, text_chunk, embedding, metadata or {}
+        )
+
+    async def find_similar_conversations(
+        self,
+        assistant_id: UUID,
+        query_embedding: List[float],
+        limit: int = 5
+    ) -> List[dict]:
+        """查找相似對話"""
+        return await self.db.fetch(
+            """
+            SELECT text_chunk, metadata,
+                   embedding <=> $2 as distance
+            FROM conversation_vectors
+            WHERE assistant_id = $1
+            ORDER BY embedding <=> $2
+            LIMIT $3
+            """,
+            assistant_id, query_embedding, limit
+        )
+
+    async def store_personality_vector(
+        self,
+        assistant_id: UUID,
+        feature_type: str,
+        feature_value: str,
+        embedding: List[float],
+        confidence_score: float = 0.0
+    ):
+        """存儲個性特徵向量"""
+        await self.db.execute(
+            """
+            INSERT INTO personality_vectors
+            (assistant_id, feature_type, feature_value, embedding, confidence_score)
+            VALUES ($1, $2, $3, $4, $5)
+            ON CONFLICT (assistant_id, feature_type)
+            DO UPDATE SET
+                feature_value = EXCLUDED.feature_value,
+                embedding = EXCLUDED.embedding,
+                confidence_score = EXCLUDED.confidence_score
+            """,
+            assistant_id, feature_type, feature_value, embedding, confidence_score
+        )
 ```
 
-### 4.3 快取策略 (Redis)
+### 4.3 快取策略 (PostgreSQL 內建)
 
-#### 4.3.1 快取設計
+#### 4.3.1 快取表設計
+
+```sql
+-- 通用快取表
+CREATE TABLE app_cache (
+    cache_key VARCHAR(255) PRIMARY KEY,
+    cache_value JSONB NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 定期清理過期快取
+CREATE INDEX idx_cache_expires ON app_cache(expires_at);
+
+-- 語音快取表（專用於TTS音頻）
+CREATE TABLE voice_cache (
+    text_hash VARCHAR(64) PRIMARY KEY,
+    audio_data BYTEA NOT NULL,
+    voice_model VARCHAR(50) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+#### 4.3.2 快取實現
+
 ```python
-# 個性檔案快取 (24小時)
-personality_cache_key = f"personality:{assistant_id}"
+class PostgreSQLCache:
+    def __init__(self, db_connection):
+        self.db = db_connection
 
-# 對話建議快取 (1小時)
-suggestion_cache_key = f"suggestions:{assistant_id}:{message_hash}"
+    async def set(self, key: str, value: dict, ttl_seconds: int = 3600):
+        """設置快取"""
+        expires_at = datetime.now() + timedelta(seconds=ttl_seconds)
+        await self.db.execute(
+            """
+            INSERT INTO app_cache (cache_key, cache_value, expires_at)
+            VALUES ($1, $2, $3)
+            ON CONFLICT (cache_key)
+            DO UPDATE SET
+                cache_value = EXCLUDED.cache_value,
+                expires_at = EXCLUDED.expires_at
+            """,
+            key, json.dumps(value), expires_at
+        )
 
-# 用戶訂閱狀態快取 (6小時)
-subscription_cache_key = f"subscription:{user_id}"
+    async def get(self, key: str) -> Optional[dict]:
+        """獲取快取"""
+        result = await self.db.fetch_one(
+            """
+            SELECT cache_value FROM app_cache
+            WHERE cache_key = $1 AND expires_at > NOW()
+            """,
+            key
+        )
+        return json.loads(result['cache_value']) if result else None
 
-# API 使用量快取 (1小時)
-usage_cache_key = f"usage:{user_id}:{date}"
+    async def delete(self, key: str):
+        """刪除快取"""
+        await self.db.execute(
+            "DELETE FROM app_cache WHERE cache_key = $1", key
+        )
+
+    async def cleanup_expired(self):
+        """清理過期快取"""
+        await self.db.execute(
+            "DELETE FROM app_cache WHERE expires_at <= NOW()"
+        )
+
+# 快取鍵設計
+class CacheKeys:
+    PERSONALITY = "personality:{assistant_id}"
+    SUGGESTIONS = "suggestions:{assistant_id}:{message_hash}"
+    SUBSCRIPTION = "subscription:{user_id}"
+    USAGE = "usage:{user_id}:{date}"
+    VOICE_TTS = "voice:{text_hash}:{voice_model}"
 ```
 
 ## 5. API 設計規範
@@ -557,6 +1009,7 @@ usage_cache_key = f"usage:{user_id}:{date}"
 ### 5.1 RESTful API 設計原則
 
 #### 5.1.1 統一回應格式
+
 ```python
 class StandardResponse(BaseModel):
     success: bool
@@ -567,6 +1020,7 @@ class StandardResponse(BaseModel):
 ```
 
 #### 5.1.2 錯誤處理
+
 ```python
 class APIError(Exception):
     def __init__(self, code: str, message: str, status_code: int = 400):
@@ -587,6 +1041,7 @@ ERROR_CODES = {
 ### 5.2 WebSocket 設計 (即時功能)
 
 #### 5.2.1 即時對話連接
+
 ```python
 @websocket_router.websocket("/ws/conversation/{assistant_id}")
 async def conversation_websocket(
@@ -621,6 +1076,7 @@ async def conversation_websocket(
 ### 6.1 身份認證與授權
 
 #### 6.1.1 JWT Token 設計
+
 ```python
 class JWTPayload(BaseModel):
     user_id: UUID
@@ -631,6 +1087,7 @@ class JWTPayload(BaseModel):
 ```
 
 #### 6.1.2 權限控制
+
 ```python
 class PermissionChecker:
     def __init__(self, user: User):
@@ -652,6 +1109,7 @@ class PermissionChecker:
 ### 6.2 資料加密
 
 #### 6.2.1 敏感資料加密
+
 ```python
 class DataEncryption:
     def __init__(self, secret_key: str):
@@ -667,6 +1125,7 @@ class DataEncryption:
 ### 6.3 API 安全防護
 
 #### 6.3.1 頻率限制
+
 ```python
 @limiter.limit("100/minute")
 @router.post("/conversation/generate")
@@ -684,6 +1143,7 @@ async def analyze_assistant(request: Request, ...):
 ### 7.1 資料庫優化
 
 #### 7.1.1 索引策略
+
 ```sql
 -- 常用查詢索引
 CREATE INDEX idx_assistants_user_created ON assistants(user_id, created_at DESC);
@@ -695,6 +1155,7 @@ CREATE INDEX idx_messages_session_created ON conversation_messages(session_id, c
 ```
 
 #### 7.1.2 查詢優化
+
 ```python
 # 使用連接減少 N+1 查詢
 def get_user_assistants_with_stats(user_id: UUID):
@@ -707,10 +1168,11 @@ def get_user_assistants_with_stats(user_id: UUID):
 ### 7.2 快取策略
 
 #### 7.2.1 多層快取設計
+
 ```python
 class CacheManager:
-    def __init__(self):
-        self.redis = redis.Redis()
+    def __init__(self, db_connection):
+        self.db_cache = PostgreSQLCache(db_connection)
         self.local_cache = TTLCache(maxsize=1000, ttl=300)
 
     async def get_personality(self, assistant_id: UUID) -> Optional[PersonalityProfile]:
@@ -718,20 +1180,21 @@ class CacheManager:
         if assistant_id in self.local_cache:
             return self.local_cache[assistant_id]
 
-        # 2. Redis 快取
-        cached = await self.redis.get(f"personality:{assistant_id}")
+        # 2. PostgreSQL 快取
+        cache_key = CacheKeys.PERSONALITY.format(assistant_id=assistant_id)
+        cached = await self.db_cache.get(cache_key)
         if cached:
-            profile = PersonalityProfile.parse_raw(cached)
+            profile = PersonalityProfile.parse_obj(cached)
             self.local_cache[assistant_id] = profile
             return profile
 
         # 3. 資料庫查詢
         profile = await self.load_from_database(assistant_id)
         if profile:
-            await self.redis.setex(
-                f"personality:{assistant_id}",
-                86400,  # 24 hours
-                profile.json()
+            await self.db_cache.set(
+                cache_key,
+                profile.dict(),
+                ttl_seconds=86400  # 24 hours
             )
             self.local_cache[assistant_id] = profile
 
@@ -741,6 +1204,7 @@ class CacheManager:
 ### 7.3 AI API 優化
 
 #### 7.3.1 請求批次處理
+
 ```python
 class BatchProcessor:
     def __init__(self, batch_size: int = 10):
@@ -772,6 +1236,7 @@ class BatchProcessor:
 ### 8.1 系統監控
 
 #### 8.1.1 關鍵指標監控
+
 ```python
 # Prometheus 指標定義
 request_count = Counter('api_requests_total', 'API 請求總數', ['method', 'endpoint'])
@@ -781,12 +1246,12 @@ active_users = Gauge('active_users_count', '活躍用戶數')
 ```
 
 #### 8.1.2 健康檢查
+
 ```python
 @router.get("/health")
 async def health_check():
     checks = {
         "database": await check_database_connection(),
-        "redis": await check_redis_connection(),
         "ai_services": await check_ai_services(),
         "file_storage": await check_file_storage()
     }
@@ -807,6 +1272,7 @@ async def health_check():
 ### 8.2 日誌管理
 
 #### 8.2.1 結構化日誌
+
 ```python
 import structlog
 
@@ -833,9 +1299,10 @@ async def log_conversation_generation(
 ### 9.1 DigitalOcean 基礎設施
 
 #### 9.1.1 伺服器配置
+
 ```yaml
 # docker-compose.yml
-version: '3.8'
+version: "3.8"
 services:
   app:
     image: love-boost-api:latest
@@ -843,15 +1310,10 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_URL=${DATABASE_URL}
-      - REDIS_URL=${REDIS_URL}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-    depends_on:
-      - redis
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
 
   nginx:
     image: nginx:alpine
@@ -864,6 +1326,7 @@ services:
 ```
 
 #### 9.1.2 CI/CD 管道
+
 ```yaml
 # .github/workflows/deploy.yml
 name: Deploy to DigitalOcean
@@ -895,11 +1358,12 @@ jobs:
 ### 10.1 資料備份策略
 
 #### 10.1.1 自動化備份
+
 ```python
 class BackupManager:
     def __init__(self):
         self.db_client = DatabaseClient()
-        self.storage_client = DigitalOceanSpacesClient()
+        self.local_storage = LocalFileStorage()
 
     async def create_daily_backup(self):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -907,16 +1371,16 @@ class BackupManager:
         # 1. 資料庫備份
         db_backup = await self.db_client.create_backup()
 
-        # 2. 上傳到儲存空間
-        backup_url = await self.storage_client.upload(
+        # 2. 儲存到本地備份目錄
+        backup_path = await self.local_storage.save_backup(
             db_backup,
             f"backups/db_backup_{timestamp}.sql"
         )
 
         # 3. 記錄備份
-        await self.record_backup(backup_url, timestamp)
+        await self.record_backup(backup_path, timestamp)
 
-    async def restore_from_backup(self, backup_url: str):
+    async def restore_from_backup(self, backup_path: str):
         # 災難恢復邏輯
         pass
 ```
@@ -924,6 +1388,7 @@ class BackupManager:
 ### 10.2 故障轉移機制
 
 #### 10.2.1 AI 服務降級
+
 ```python
 class AIServiceFallback:
     def __init__(self):
@@ -943,6 +1408,7 @@ class AIServiceFallback:
 本技術架構文件定義了 AI 戀愛模擬助手系統的完整技術實現方案。系統採用現代微服務架構，確保高可擴展性、高可用性和用戶隱私保護。
 
 **關鍵技術特點：**
+
 1. **模組化設計** - 各服務獨立開發和部署
 2. **多模態 AI 整合** - 統一處理文字、圖片、語音
 3. **成本優化** - 智能分層 AI 使用策略
@@ -950,6 +1416,7 @@ class AIServiceFallback:
 5. **效能優化** - 多層快取與查詢優化
 
 **下一步行動：**
+
 - 開始 MVP 階段的後端 API 開發
 - 建立基礎的助手管理功能
 - 整合 OpenAI API 服務
