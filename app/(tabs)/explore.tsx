@@ -92,10 +92,10 @@ export default function ChatAnalysisScreen() {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
-      <View style={styles.header}>
+      <ThemedView style={styles.header}>
         <ThemedText style={styles.title}>📊 聊天分析</ThemedText>
-        <Text style={styles.subtitle}>上傳聊天截圖，獲得AI深度分析</Text>
-      </View>
+        <ThemedText style={styles.subtitle}>上傳聊天截圖，獲得AI深度分析</ThemedText>
+      </ThemedView>
 
       {/* Upload Section */}
       <ThemedView style={styles.section}>
@@ -239,23 +239,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8fafc',
   },
   header: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#fff',
     paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 24,
     alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
   },
   title: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#fff',
     fontFamily: Fonts.rounded,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#ffffff80',
     textAlign: 'center',
+    opacity: 0.7,
   },
   section: {
     backgroundColor: '#fff',
