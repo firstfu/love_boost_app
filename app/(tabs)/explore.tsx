@@ -1,227 +1,234 @@
 /**
- * AI戀愛助手功能介紹頁面
- * 展示應用的主要功能特色和使用方法
+ * 聊天分析頁面
+ * 提供上傳聊天截圖並進行AI分析的功能
  */
 
-import React from 'react'
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity } from 'react-native'
+import React, { useState } from 'react'
+import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Image, Alert, Platform } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import * as ImagePicker from 'expo-image-picker'
 import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
 import { Fonts } from '@/constants/theme'
 
-export default function ExploreScreen() {
-  const features = [
-    {
-      icon: 'people',
-      title: 'AI助手管理',
-      description: '為每個心動對象建立專屬AI分身，深度學習她的個性和喜好',
-      benefits: ['個性化分析', '多助手管理', '隱私保護']
-    },
-    {
-      icon: 'camera',
-      title: '多模態分析',
-      description: '上傳照片和聊天記錄，AI深度分析外貌特徵、興趣愛好和溝通風格',
-      benefits: ['照片分析', '對話解析', '個性識別']
-    },
-    {
-      icon: 'chatbubbles',
-      title: '對話模擬練習',
-      description: '與AI助手進行真實對話模擬，獲得智能回覆建議和聊天技巧',
-      benefits: ['實時建議', '話術優化', '情境練習']
-    },
-    {
-      icon: 'call',
-      title: '語音通話模擬',
-      description: '練習語音對話技巧，AI模擬她的說話風格和反應模式',
-      benefits: ['語調指導', '通話練習', '語音分析']
-    },
-    {
-      icon: 'analytics',
-      title: '關係洞察分析',
-      description: '即時分析聊天截圖，提供關係發展建議和改進方向',
-      benefits: ['關係追蹤', '效果評估', '策略建議']
-    },
-    {
-      icon: 'shield-checkmark',
-      title: '隱私安全保護',
-      description: '採用端到端加密存儲，完全隔離不同助手的資料',
-      benefits: ['資料加密', '隱私隔離', '安全存儲']
-    }
-  ]
+interface AnalysisResult {
+  id: string
+  timestamp: Date
+  images: string[]
+  analysis: {
+    photoAnalysis: string
+    conversationAnalysis: string
+    personalityInsights: string
+    suggestions: string[]
+  }
+}
 
-  const useCases = [
-    {
-      emoji: '💕',
-      title: '暗戀對象',
-      description: '想要了解她的喜好，但不知道如何開始對話'
-    },
-    {
-      emoji: '💬',
-      title: '聊天技巧',
-      description: '經常冷場或不知道該說什麼，需要聊天建議'
-    },
-    {
-      emoji: '📱',
-      title: '約會邀請',
-      description: '想約她出去，但不確定最佳的邀請方式'
-    },
-    {
-      emoji: '💭',
-      title: '關係發展',
-      description: '想知道關係進展如何，是否有進一步發展的機會'
-    }
-  ]
+export default function ChatAnalysisScreen() {
+  const [selectedImages, setSelectedImages] = useState<string[]>([])
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [analysisResults, setAnalysisResults] = useState<AnalysisResult[]>([])
+  const [currentAnalysis, setCurrentAnalysis] = useState<AnalysisResult | null>(null)
 
-  const steps = [
-    {
-      step: '1',
-      title: '建立AI助手',
-      description: '上傳她的照片和聊天記錄，AI開始學習分析'
-    },
-    {
-      step: '2',
-      title: '個性分析完成',
-      description: '獲得詳細的個性檔案和興趣愛好分析'
-    },
-    {
-      step: '3',
-      title: '開始對話練習',
-      description: '與AI助手模擬對話，獲得實時建議'
-    },
-    {
-      step: '4',
-      title: '實戰應用',
-      description: '在真實聊天中應用學到的技巧和策略'
+  const pickImages = async () => {
+    if (Platform.OS !== 'web') {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+      if (status !== 'granted') {
+        Alert.alert('需要權限', '請允許存取相片庫以上傳聊天截圖')
+        return
+      }
     }
-  ]
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true,
+      quality: 1,
+      base64: false,
+    })
+
+    if (!result.canceled) {
+      const newImages = result.assets.map(asset => asset.uri)
+      setSelectedImages(prev => [...prev, ...newImages])
+    }
+  }
+
+  const removeImage = (index: number) => {
+    setSelectedImages(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const analyzeImages = async () => {
+    if (selectedImages.length === 0) {
+      Alert.alert('提示', '請先上傳聊天截圖')
+      return
+    }
+
+    setIsAnalyzing(true)
+
+    // 模擬AI分析過程
+    setTimeout(() => {
+      const mockAnalysis: AnalysisResult = {
+        id: Date.now().toString(),
+        timestamp: new Date(),
+        images: selectedImages,
+        analysis: {
+          photoAnalysis: '根據聊天截圖分析，對方的頭像顯示她喜歡自然風景，可能個性比較文青，喜歡戶外活動。',
+          conversationAnalysis: '對話風格偏向溫和友善，回覆頻率較高，表示對你有一定好感。使用表情符號頻率中等，溝通方式較為直接。',
+          personalityInsights: '從對話內容推測，她可能是個內向但友善的人，喜歡深度對話勝過表面閒聊，對藝術和文化話題較有興趣。',
+          suggestions: [
+            '可以分享一些攝影作品或美景照片',
+            '嘗試聊一些文藝電影或展覽話題',
+            '保持目前的聊天節奏，不要過於急進',
+            '可以適度分享自己的生活感悟'
+          ]
+        }
+      }
+
+      setCurrentAnalysis(mockAnalysis)
+      setAnalysisResults(prev => [mockAnalysis, ...prev])
+      setIsAnalyzing(false)
+      setSelectedImages([])
+    }, 3000)
+  }
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.heroSection}>
-          <Text style={styles.heroTitle}>AI 戀愛助手</Text>
-          <Text style={styles.heroSubtitle}>
-            讓AI幫你理解她的心意，提升聊天技巧
-          </Text>
-          <Text style={styles.heroDescription}>
-            基於先進的多模態AI分析技術，為每個心動對象建立專屬助手，
-            深度學習她的個性和喜好，提供個人化的聊天建議和關係指導
-          </Text>
-        </View>
+        <ThemedText style={styles.title}>📊 聊天分析</ThemedText>
+        <Text style={styles.subtitle}>上傳聊天截圖，獲得AI深度分析</Text>
       </View>
 
-      {/* Features Section */}
+      {/* Upload Section */}
       <ThemedView style={styles.section}>
-        <ThemedText type="title" style={styles.sectionTitle}>
-          🚀 核心功能
-        </ThemedText>
+        <ThemedText style={styles.sectionTitle}>📷 上傳聊天截圖</ThemedText>
 
-        {features.map((feature, index) => (
-          <View key={index} style={styles.featureCard}>
-            <View style={styles.featureHeader}>
-              <View style={styles.featureIcon}>
-                <Ionicons name={feature.icon as any} size={24} color="#007AFF" />
+        {selectedImages.length > 0 && (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imagePreview}>
+            {selectedImages.map((uri, index) => (
+              <View key={index} style={styles.imageContainer}>
+                <Image source={{ uri }} style={styles.previewImage} />
+                <TouchableOpacity
+                  style={styles.removeButton}
+                  onPress={() => removeImage(index)}
+                >
+                  <Ionicons name="close-circle" size={20} color="#FF3B30" />
+                </TouchableOpacity>
               </View>
-              <View style={styles.featureContent}>
-                <Text style={styles.featureTitle}>{feature.title}</Text>
-                <Text style={styles.featureDescription}>{feature.description}</Text>
+            ))}
+          </ScrollView>
+        )}
+
+        <TouchableOpacity style={styles.uploadButton} onPress={pickImages}>
+          <Ionicons name="camera" size={24} color="#007AFF" />
+          <Text style={styles.uploadButtonText}>選擇聊天截圖</Text>
+          <Text style={styles.uploadHint}>支援多張圖片上傳</Text>
+        </TouchableOpacity>
+
+        {selectedImages.length > 0 && (
+          <TouchableOpacity
+            style={[styles.analyzeButton, isAnalyzing && styles.disabledButton]}
+            onPress={analyzeImages}
+            disabled={isAnalyzing}
+          >
+            {isAnalyzing ? (
+              <>
+                <Ionicons name="hourglass" size={20} color="#fff" />
+                <Text style={styles.analyzeButtonText}>AI分析中...</Text>
+              </>
+            ) : (
+              <>
+                <Ionicons name="analytics" size={20} color="#fff" />
+                <Text style={styles.analyzeButtonText}>開始AI分析</Text>
+              </>
+            )}
+          </TouchableOpacity>
+        )}
+      </ThemedView>
+
+      {/* Current Analysis Results */}
+      {currentAnalysis && (
+        <ThemedView style={styles.section}>
+          <ThemedText style={styles.sectionTitle}>🔍 最新分析結果</ThemedText>
+
+          <View style={styles.analysisCard}>
+            <View style={styles.analysisSection}>
+              <View style={styles.analysisSectionHeader}>
+                <Ionicons name="image" size={16} color="#007AFF" />
+                <Text style={styles.analysisSectionTitle}>照片分析</Text>
               </View>
+              <Text style={styles.analysisText}>{currentAnalysis.analysis.photoAnalysis}</Text>
             </View>
-            <View style={styles.benefitsList}>
-              {feature.benefits.map((benefit, bIndex) => (
-                <View key={bIndex} style={styles.benefitItem}>
-                  <Ionicons name="checkmark-circle" size={16} color="#4CAF50" />
-                  <Text style={styles.benefitText}>{benefit}</Text>
+
+            <View style={styles.analysisSection}>
+              <View style={styles.analysisSectionHeader}>
+                <Ionicons name="chatbubbles" size={16} color="#34C759" />
+                <Text style={styles.analysisSectionTitle}>對話解析</Text>
+              </View>
+              <Text style={styles.analysisText}>{currentAnalysis.analysis.conversationAnalysis}</Text>
+            </View>
+
+            <View style={styles.analysisSection}>
+              <View style={styles.analysisSectionHeader}>
+                <Ionicons name="person" size={16} color="#FF9500" />
+                <Text style={styles.analysisSectionTitle}>個性洞察</Text>
+              </View>
+              <Text style={styles.analysisText}>{currentAnalysis.analysis.personalityInsights}</Text>
+            </View>
+
+            <View style={styles.analysisSection}>
+              <View style={styles.analysisSectionHeader}>
+                <Ionicons name="bulb" size={16} color="#FF3B30" />
+                <Text style={styles.analysisSectionTitle}>聊天建議</Text>
+              </View>
+              {currentAnalysis.analysis.suggestions.map((suggestion, index) => (
+                <View key={index} style={styles.suggestionItem}>
+                  <Ionicons name="checkmark-circle" size={14} color="#34C759" />
+                  <Text style={styles.suggestionText}>{suggestion}</Text>
                 </View>
               ))}
             </View>
           </View>
-        ))}
-      </ThemedView>
+        </ThemedView>
+      )}
 
-      {/* Use Cases */}
-      <ThemedView style={styles.section}>
-        <ThemedText type="title" style={styles.sectionTitle}>
-          🎯 適用場景
-        </ThemedText>
+      {/* History */}
+      {analysisResults.length > 1 && (
+        <ThemedView style={styles.section}>
+          <ThemedText style={styles.sectionTitle}>📋 分析歷史</ThemedText>
 
-        <View style={styles.useCasesGrid}>
-          {useCases.map((useCase, index) => (
-            <View key={index} style={styles.useCaseCard}>
-              <Text style={styles.useCaseEmoji}>{useCase.emoji}</Text>
-              <Text style={styles.useCaseTitle}>{useCase.title}</Text>
-              <Text style={styles.useCaseDescription}>{useCase.description}</Text>
-            </View>
-          ))}
-        </View>
-      </ThemedView>
-
-      {/* How it Works */}
-      <ThemedView style={styles.section}>
-        <ThemedText type="title" style={styles.sectionTitle}>
-          📋 使用流程
-        </ThemedText>
-
-        <View style={styles.stepsContainer}>
-          {steps.map((step, index) => (
-            <View key={index} style={styles.stepItem}>
-              <View style={styles.stepNumber}>
-                <Text style={styles.stepNumberText}>{step.step}</Text>
+          {analysisResults.slice(1).map((result) => (
+            <TouchableOpacity key={result.id} style={styles.historyItem}>
+              <View style={styles.historyHeader}>
+                <Text style={styles.historyDate}>
+                  {result.timestamp.toLocaleDateString('zh-TW', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </Text>
+                <Text style={styles.historyImageCount}>
+                  {result.images.length} 張圖片
+                </Text>
               </View>
-              <View style={styles.stepContent}>
-                <Text style={styles.stepTitle}>{step.title}</Text>
-                <Text style={styles.stepDescription}>{step.description}</Text>
-              </View>
-              {index < steps.length - 1 && (
-                <View style={styles.stepConnector} />
-              )}
-            </View>
+              <Text style={styles.historyPreview} numberOfLines={2}>
+                {result.analysis.conversationAnalysis}
+              </Text>
+              <Ionicons name="chevron-forward" size={16} color="#8E8E93" />
+            </TouchableOpacity>
           ))}
+        </ThemedView>
+      )}
+
+      {/* Empty State */}
+      {analysisResults.length === 0 && !isAnalyzing && (
+        <View style={styles.emptyState}>
+          <Ionicons name="analytics-outline" size={64} color="#8E8E93" />
+          <Text style={styles.emptyStateTitle}>還沒有分析記錄</Text>
+          <Text style={styles.emptyStateDescription}>
+            上傳聊天截圖開始您的第一次AI分析
+          </Text>
         </View>
-      </ThemedView>
-
-      {/* Privacy & Security */}
-      <ThemedView style={styles.section}>
-        <ThemedText type="title" style={styles.sectionTitle}>
-          🔒 隱私保護承諾
-        </ThemedText>
-
-        <View style={styles.privacyCard}>
-          <View style={styles.privacyItem}>
-            <Ionicons name="lock-closed" size={20} color="#4CAF50" />
-            <Text style={styles.privacyText}>
-              所有資料採用端到端加密存儲，確保隱私安全
-            </Text>
-          </View>
-          <View style={styles.privacyItem}>
-            <Ionicons name="shield-checkmark" size={20} color="#4CAF50" />
-            <Text style={styles.privacyText}>
-              不同助手的資料完全隔離，絕不交叉使用
-            </Text>
-          </View>
-          <View style={styles.privacyItem}>
-            <Ionicons name="trash" size={20} color="#4CAF50" />
-            <Text style={styles.privacyText}>
-              隨時可以完全刪除助手資料，不留任何痕跡
-            </Text>
-          </View>
-        </View>
-      </ThemedView>
-
-      {/* CTA */}
-      <View style={styles.ctaSection}>
-        <Text style={styles.ctaTitle}>準備開始你的戀愛之旅嗎？</Text>
-        <Text style={styles.ctaDescription}>
-          點擊主頁面的「助手管理」開始建立第一個AI助手
-        </Text>
-
-        <TouchableOpacity style={styles.ctaButton}>
-          <Ionicons name="heart" size={20} color="#fff" />
-          <Text style={styles.ctaButtonText}>開始使用</Text>
-        </TouchableOpacity>
-      </View>
+      )}
     </ScrollView>
   )
 }
@@ -235,32 +242,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#007AFF',
     paddingHorizontal: 20,
     paddingTop: 60,
-    paddingBottom: 40,
-  },
-  heroSection: {
+    paddingBottom: 24,
     alignItems: 'center',
   },
-  heroTitle: {
-    fontSize: 32,
+  title: {
+    fontSize: 28,
     fontWeight: '800',
     color: '#fff',
-    textAlign: 'center',
     fontFamily: Fonts.rounded,
     marginBottom: 8,
   },
-  heroSubtitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#ffffff90',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  heroDescription: {
-    fontSize: 14,
+  subtitle: {
+    fontSize: 16,
     color: '#ffffff80',
     textAlign: 'center',
-    lineHeight: 20,
-    paddingHorizontal: 10,
   },
   section: {
     backgroundColor: '#fff',
@@ -269,188 +264,170 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
-    marginBottom: 20,
+    marginBottom: 16,
     fontFamily: Fonts.rounded,
   },
-  featureCard: {
+  uploadButton: {
     backgroundColor: '#f8fafc',
+    borderWidth: 2,
+    borderColor: '#007AFF',
+    borderStyle: 'dashed',
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    borderLeftWidth: 4,
-    borderLeftColor: '#007AFF',
-  },
-  featureHeader: {
-    flexDirection: 'row',
-    marginBottom: 12,
-  },
-  featureIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#007AFF20',
+    padding: 24,
     alignItems: 'center',
-    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  uploadButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#007AFF',
+    marginTop: 8,
+  },
+  uploadHint: {
+    fontSize: 12,
+    color: '#8E8E93',
+    marginTop: 4,
+  },
+  imagePreview: {
+    marginBottom: 16,
+  },
+  imageContainer: {
+    position: 'relative',
     marginRight: 12,
   },
-  featureContent: {
-    flex: 1,
+  previewImage: {
+    width: 80,
+    height: 120,
+    borderRadius: 8,
+    resizeMode: 'cover',
   },
-  featureTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1a202c',
-    marginBottom: 4,
+  removeButton: {
+    position: 'absolute',
+    top: -8,
+    right: -8,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
-  featureDescription: {
-    fontSize: 14,
-    color: '#64748b',
-    lineHeight: 18,
-  },
-  benefitsList: {
-    gap: 6,
-  },
-  benefitItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  benefitText: {
-    fontSize: 12,
-    color: '#374151',
-    fontWeight: '500',
-  },
-  useCasesGrid: {
-    gap: 12,
-  },
-  useCaseCard: {
-    backgroundColor: '#f8fafc',
+  analyzeButton: {
+    backgroundColor: '#34C759',
+    paddingHorizontal: 24,
+    paddingVertical: 14,
     borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#e1e8ed',
-  },
-  useCaseEmoji: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  useCaseTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1a202c',
-    marginBottom: 6,
-  },
-  useCaseDescription: {
-    fontSize: 13,
-    color: '#64748b',
-    textAlign: 'center',
-    lineHeight: 18,
-  },
-  stepsContainer: {
-    paddingLeft: 8,
-  },
-  stepItem: {
     flexDirection: 'row',
-    position: 'relative',
-    marginBottom: 24,
-  },
-  stepNumber: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#007AFF',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 16,
-    zIndex: 1,
-  },
-  stepNumberText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#fff',
-  },
-  stepContent: {
-    flex: 1,
-    paddingTop: 2,
-  },
-  stepTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1a202c',
-    marginBottom: 4,
-  },
-  stepDescription: {
-    fontSize: 14,
-    color: '#64748b',
-    lineHeight: 18,
-  },
-  stepConnector: {
-    position: 'absolute',
-    left: 15,
-    top: 32,
-    bottom: -24,
-    width: 2,
-    backgroundColor: '#e1e8ed',
-    zIndex: 0,
-  },
-  privacyCard: {
-    backgroundColor: '#f0f9ff',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#bae6fd',
-  },
-  privacyItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-    gap: 12,
-  },
-  privacyText: {
-    fontSize: 14,
-    color: '#374151',
-    lineHeight: 18,
-    flex: 1,
-  },
-  ctaSection: {
-    backgroundColor: '#fff',
-    padding: 24,
-    margin: 12,
-    borderRadius: 16,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#e1e8ed',
-  },
-  ctaTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1a202c',
-    textAlign: 'center',
-    marginBottom: 8,
-    fontFamily: Fonts.rounded,
-  },
-  ctaDescription: {
-    fontSize: 14,
-    color: '#64748b',
-    textAlign: 'center',
-    marginBottom: 20,
-    lineHeight: 18,
-  },
-  ctaButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
     gap: 8,
   },
-  ctaButtonText: {
+  disabledButton: {
+    backgroundColor: '#8E8E93',
+  },
+  analyzeButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  analysisCard: {
+    backgroundColor: '#f8fafc',
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#e1e8ed',
+  },
+  analysisSection: {
+    marginBottom: 20,
+  },
+  analysisSectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    gap: 8,
+  },
+  analysisSectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1a202c',
+  },
+  analysisText: {
+    fontSize: 14,
+    color: '#4a5568',
+    lineHeight: 20,
+    paddingLeft: 24,
+  },
+  suggestionItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+    paddingLeft: 24,
+    gap: 8,
+  },
+  suggestionText: {
+    fontSize: 14,
+    color: '#4a5568',
+    lineHeight: 18,
+    flex: 1,
+  },
+  historyItem: {
+    backgroundColor: '#f8fafc',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#e1e8ed',
+  },
+  historyHeader: {
+    flex: 1,
+  },
+  historyDate: {
+    fontSize: 12,
+    color: '#8E8E93',
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  historyImageCount: {
+    fontSize: 10,
+    color: '#8E8E93',
+    backgroundColor: '#e1e8ed',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    alignSelf: 'flex-start',
+    marginBottom: 8,
+  },
+  historyPreview: {
+    fontSize: 13,
+    color: '#4a5568',
+    lineHeight: 18,
+    flex: 1,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 20,
+  },
+  emptyStateTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#4a5568',
+    marginTop: 16,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptyStateDescription: {
+    fontSize: 14,
+    color: '#8E8E93',
+    textAlign: 'center',
+    lineHeight: 20,
   },
 })
