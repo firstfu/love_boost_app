@@ -303,12 +303,12 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
+    height: 108,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingTop: 40,
-    paddingBottom: 12,
+    paddingTop: 44,
     backgroundColor: 'rgba(255, 107, 107, 0.95)',
     zIndex: 1000,
     borderBottomWidth: 1,
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flex: 1,
-    marginTop: 80, // 為固定 header 留空間
+    marginTop: 108, // 為固定 header 留空間
   },
   profileHeader: {
     paddingTop: 20,
