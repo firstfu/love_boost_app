@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react'
 import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Image, Alert, Platform } from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient'
 import { Ionicons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import { ThemedText } from '@/components/themed-text'
@@ -90,12 +91,22 @@ export default function ChatAnalysisScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header */}
-      <ThemedView style={styles.header}>
-        <ThemedText style={styles.title}>📊 聊天分析</ThemedText>
-        <ThemedText style={styles.subtitle}>上傳聊天截圖，獲得AI深度分析</ThemedText>
-      </ThemedView>
+    <View style={styles.container}>
+      {/* 漸層背景頭部 */}
+      <LinearGradient
+        colors={['#4ECDC4', '#44A08D', '#44A08D']}
+        locations={[0, 0.5, 1]}
+        style={styles.backgroundGradient}
+      >
+        <View style={styles.header}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>📊 聊天分析</Text>
+            <Text style={styles.subtitle}>上傳聊天截圖，獲得AI深度分析</Text>
+          </View>
+        </View>
+      </LinearGradient>
+
+      <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
 
       {/* Upload Section */}
       <ThemedView style={styles.section}>
@@ -229,34 +240,48 @@ export default function ChatAnalysisScreen() {
           </Text>
         </View>
       )}
-    </ScrollView>
+      </ScrollView>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#ffffff',
+  },
+  backgroundGradient: {
+    paddingBottom: 20,
   },
   header: {
-    backgroundColor: '#fff',
-    paddingHorizontal: 20,
     paddingTop: 60,
-    paddingBottom: 24,
+    paddingHorizontal: 24,
+    paddingBottom: 30,
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+  },
+  titleContainer: {
+    alignItems: 'center',
   },
   title: {
-    fontSize: 28,
-    fontWeight: '800',
-    fontFamily: Fonts.rounded,
+    fontSize: 32,
+    fontWeight: '900',
+    color: '#ffffff',
     marginBottom: 8,
+    textAlign: 'center',
+    fontFamily: Fonts.rounded,
   },
   subtitle: {
     fontSize: 16,
+    color: 'rgba(255,255,255,0.9)',
     textAlign: 'center',
-    opacity: 0.7,
+    fontWeight: '500',
+  },
+  scrollContainer: {
+    flex: 1,
+    marginTop: -10,
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
   },
   section: {
     backgroundColor: '#fff',
@@ -271,19 +296,24 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.rounded,
   },
   uploadButton: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: 'rgba(78, 205, 196, 0.1)',
     borderWidth: 2,
-    borderColor: '#007AFF',
+    borderColor: '#4ECDC4',
     borderStyle: 'dashed',
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 24,
     alignItems: 'center',
     marginBottom: 16,
+    shadowColor: '#4ECDC4',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
   },
   uploadButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#007AFF',
+    color: '#4ECDC4',
     marginTop: 8,
   },
   uploadHint: {
@@ -320,17 +350,23 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   analyzeButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: '#4ECDC4',
     paddingHorizontal: 24,
     paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
+    shadowColor: '#4ECDC4',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
   disabledButton: {
-    backgroundColor: '#8E8E93',
+    backgroundColor: '#B0B0B0',
+    shadowOpacity: 0.1,
   },
   analyzeButtonText: {
     color: '#fff',
