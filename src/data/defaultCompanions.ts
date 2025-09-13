@@ -30,10 +30,11 @@ export const DEFAULT_COMPANIONS: AICompanion[] = [
       photo_samples: 12
     },
     interaction_stats: {
-      practice_sessions: 156,
-      total_messages: 1892,
-      conversation_quality_score: 8.2,
-      improvement_trend: 'improving'
+      chat_assistance_sessions: 156,
+      total_messages_analyzed: 1892,
+      relationship_insight_score: 8.2,
+      assistance_effectiveness: 89,
+      trend: 'improving'
     },
     voice_simulation: {
       tone: 'gentle',
@@ -67,10 +68,11 @@ export const DEFAULT_COMPANIONS: AICompanion[] = [
       photo_samples: 18
     },
     interaction_stats: {
-      practice_sessions: 203,
-      total_messages: 2456,
-      conversation_quality_score: 8.7,
-      improvement_trend: 'improving'
+      chat_assistance_sessions: 203,
+      total_messages_analyzed: 2456,
+      relationship_insight_score: 8.7,
+      assistance_effectiveness: 92,
+      trend: 'improving'
     },
     voice_simulation: {
       tone: 'lively',
@@ -104,10 +106,11 @@ export const DEFAULT_COMPANIONS: AICompanion[] = [
       photo_samples: 15
     },
     interaction_stats: {
-      practice_sessions: 134,
-      total_messages: 1567,
-      conversation_quality_score: 8.9,
-      improvement_trend: 'stable'
+      chat_assistance_sessions: 134,
+      total_messages_analyzed: 1567,
+      relationship_insight_score: 8.9,
+      assistance_effectiveness: 94,
+      trend: 'stable'
     },
     voice_simulation: {
       tone: 'calm',
@@ -141,10 +144,11 @@ export const DEFAULT_COMPANIONS: AICompanion[] = [
       photo_samples: 16
     },
     interaction_stats: {
-      practice_sessions: 187,
-      total_messages: 2134,
-      conversation_quality_score: 9.1,
-      improvement_trend: 'improving'
+      chat_assistance_sessions: 187,
+      total_messages_analyzed: 2134,
+      relationship_insight_score: 9.1,
+      assistance_effectiveness: 96,
+      trend: 'improving'
     },
     voice_simulation: {
       tone: 'sweet',
@@ -178,10 +182,11 @@ export const DEFAULT_COMPANIONS: AICompanion[] = [
       photo_samples: 21
     },
     interaction_stats: {
-      practice_sessions: 142,
-      total_messages: 1789,
-      conversation_quality_score: 8.4,
-      improvement_trend: 'stable'
+      chat_assistance_sessions: 142,
+      total_messages_analyzed: 1789,
+      relationship_insight_score: 8.4,
+      assistance_effectiveness: 87,
+      trend: 'stable'
     },
     voice_simulation: {
       tone: 'lively',

@@ -57,12 +57,13 @@ export interface AICompanion {
     photo_samples: number        // 照片樣本數量
   }
 
-  // 對話統計
+  // 互動統計
   interaction_stats: {
-    practice_sessions: number     // 練習次數
-    total_messages: number       // 總訊息數
-    conversation_quality_score: number  // 對話品質分數
-    improvement_trend: 'improving' | 'stable' | 'declining'
+    chat_assistance_sessions: number    // 聊天輔助次數
+    total_messages_analyzed: number     // 總分析訊息數
+    relationship_insight_score: number  // 關係洞察分數
+    assistance_effectiveness: number    // 輔助效果評分
+    trend: 'improving' | 'stable' | 'declining'
   }
 
   // 語音特性（模擬她的說話方式）
@@ -164,33 +165,34 @@ export interface PersonalityProfile {
   updated_at: string
 }
 
-// 對話模擬會話（與AI分身的練習對話）
-export interface SimulationSession {
+// 聊天輔助會話（實戰聊天支援）
+export interface ChatAssistanceSession {
   id: string
   companion_id: string         // AI分身ID
-  scenario: ConversationScenario
 
-  // 會話記錄
-  messages: SimulationMessage[]
+  // 真實聊天資料
+  uploaded_chat_images: string[] // 聊天截圖
+  extracted_messages: SimulationMessage[] // 從截圖提取的對話
 
-  // 她的模擬狀態
-  companion_mood: string       // 她當前的心情
+  // 當前聊天狀態
   relationship_temperature: number  // 關係熱度 0-100
+  her_current_mood: string     // 她當前的情緒狀態
+  conversation_topic: string   // 目前話題
 
-  // 用戶表現評估
-  performance_metrics: {
-    response_speed: number     // 回應速度
-    conversation_flow: number  // 對話流暢度
-    emotional_intelligence: number  // 情商表現
-    topic_relevance: number    // 話題相關性
+  // AI分析結果
+  conversation_analysis: {
+    engagement_level: number   // 她的參與度 0-100
+    interest_indicators: string[] // 興趣信號
+    warning_signs: string[]    // 需要注意的信號
+    optimal_response_timing: number // 最佳回覆時機（分鐘）
   }
 
-  // 建議和改進
-  suggested_improvements: string[]
-  successful_responses: string[]  // 成功的回應範例
+  // 實時建議
+  reply_recommendations: ReplyRecommendation[]
+  topic_suggestions: string[]
 
   created_at: string
-  ended_at?: string
+  last_updated: string
 }
 
 // 對話場景
@@ -234,6 +236,53 @@ export interface CompanionCreationStep {
   description: string
   completed: boolean
   data?: any
+}
+
+// 回覆建議
+export interface ReplyRecommendation {
+  id: string
+  type: 'text' | 'emoji' | 'question' | 'compliment' | 'topic_change'
+  content: string
+  reasoning: string           // 為什麼推薦這個回覆
+  confidence_score: number   // 信心度 0-100
+  estimated_response_rate: number // 預估她會回覆的機率
+  tone: 'casual' | 'romantic' | 'humorous' | 'caring' | 'playful'
+}
+
+// 關係洞察分析
+export interface RelationshipInsight {
+  id: string
+  companion_id: string
+
+  // 關係狀態
+  current_stage: 'strangers' | 'acquaintances' | 'friends' | 'close_friends' | 'romantic_interest' | 'dating'
+  relationship_temperature: number // 0-100
+  compatibility_score: number      // 相容性評分
+
+  // 互動分析
+  interaction_patterns: {
+    conversation_frequency: number    // 對話頻率（每週）
+    average_response_time: number    // 平均回覆時間（小時）
+    message_length_ratio: number     // 訊息長度比例（你的/她的）
+    emoji_usage_similarity: number   // 表情符號使用相似度
+  }
+
+  // 興趣匹配
+  shared_interests: string[]
+  conversation_topics: {
+    topic: string
+    engagement_level: number     // 她對此話題的參與度
+    frequency: number           // 討論頻率
+  }[]
+
+  // 建議和警示
+  relationship_advice: string[]
+  potential_concerns: string[]
+  next_step_suggestions: string[]
+
+  // 時間追蹤
+  analysis_date: string
+  trend: 'improving' | 'stable' | 'declining'
 }
 
 // API 回應介面

@@ -26,12 +26,12 @@ export const MainApp: React.FC = () => {
   }
 
   /**
-   * 處理直接選擇AI分身開始對話練習
+   * 處理直接選擇AI分身開始聊天輔助
    */
   const handleSelectCompanion = (companion: AICompanion) => {
     setSelectedCompanion(companion)
-    // TODO: 導航到對話練習介面
-    console.log('開始與', companion.name, '練習對話')
+    // TODO: 導航到聊天輔助介面
+    console.log('開始使用', companion.name, '的AI分身輔助聊天')
   }
 
   // 根據當前螢幕狀態渲染對應頁面
@@ -58,10 +58,10 @@ export const MainApp: React.FC = () => {
         )
 
       case 'conversation':
-        // TODO: 實現對話練習介面
+        // TODO: 實現聊天輔助介面
         return (
           <View style={styles.placeholderContainer}>
-            {/* 暫時顯示選擇器，後續實現對話介面 */}
+            {/* 暫時顯示選擇器，後續實現聊天輔助介面 */}
             <CompanionSelector
               onSelectCompanion={handleSelectCompanion}
               onViewProfile={handleViewCompanionProfile}

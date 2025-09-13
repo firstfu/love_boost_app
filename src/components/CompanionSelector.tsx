@@ -18,6 +18,7 @@ import { DEFAULT_COMPANIONS } from '../data/defaultCompanions'
 import { AICompanion, PersonalityTrait } from '../types/assistant'
 import { useCompanionStore } from '../stores/assistantStore'
 import { DefaultAvatar } from './DefaultAvatar'
+import { ChatAssistancePanel } from './ChatAssistancePanel'
 
 // 篩選類型
 type FilterType = 'all' | 'gentle' | 'cheerful' | 'intellectual'
@@ -36,6 +37,8 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
   const [cardAnimations, setCardAnimations] = useState<Animated.Value[]>([])
   const [fadeAnim] = useState(new Animated.Value(0))
   const [slideAnim] = useState(new Animated.Value(50))
+  const [assistancePanelVisible, setAssistancePanelVisible] = useState(false)
+  const [selectedCompanionForAssistance, setSelectedCompanionForAssistance] = useState<AICompanion | null>(null)
 
   const { setCompanions: setStoreCompanions } = useCompanionStore()
 
@@ -94,14 +97,20 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
 
   // 處理快速選擇
   const handleQuickSelect = (companion: AICompanion) => {
-    Alert.alert(
-      '開始練習',
-      `確定要和 ${companion.name} 開始對話練習嗎？\n\n她是個${getPersonalityDescription(companion)}的女生`,
-      [
-        { text: '查看詳情', onPress: () => onViewProfile(companion) },
-        { text: '開始練習', onPress: () => onSelectCompanion(companion) }
-      ]
-    )
+    setSelectedCompanionForAssistance(companion)
+    setAssistancePanelVisible(true)
+  }
+
+  // 處理聊天助手關閉
+  const handleAssistancePanelClose = () => {
+    setAssistancePanelVisible(false)
+    setSelectedCompanionForAssistance(null)
+  }
+
+  // 處理選擇回覆
+  const handleSelectReply = (reply: string) => {
+    // TODO: 實現複製到剪貼板或其他處理邏輯
+    Alert.alert('回覆已複製', reply)
   }
 
   // 獲取個性描述
@@ -192,8 +201,8 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
         {/* 頂部標題區 */}
         <View style={styles.header}>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>我的AI分身</Text>
-            <Text style={styles.subtitle}>選擇你想練習對話的她，提升你的聊天技巧</Text>
+            <Text style={styles.title}>她的AI分身</Text>
+            <Text style={styles.subtitle}>上傳她的資料，讓AI幫你更了解她</Text>
           </View>
         </View>
       </LinearGradient>
@@ -263,13 +272,13 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
                         </Text>
                       </View>
 
-                      {/* 學習狀態和品質評分 */}
+                      {/* 學習狀態和效果評分 */}
                       <View style={styles.statsRow}>
                         <Text style={[styles.confidence, { color: confidenceColor }]}>
-                          ⚡ {companion.learning_status.analysis_confidence}% 學習完成
+                          ⚡ {companion.learning_status.analysis_confidence}% 分析準確度
                         </Text>
                         <Text style={styles.quality}>
-                          ⭐ {companion.interaction_stats.conversation_quality_score}/10
+                          🎯 {companion.interaction_stats.assistance_effectiveness}% 輔助效果
                         </Text>
                       </View>
                     </View>
@@ -310,7 +319,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
                     style={styles.chatButton}
                     onPress={() => handleQuickSelect(companion)}
                   >
-                    <Text style={styles.chatButtonText}>開始練習</Text>
+                    <Text style={styles.chatButtonText}>獲得建議</Text>
                   </TouchableOpacity>
                 </View>
               </Animated.View>
@@ -321,8 +330,8 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
           <View style={styles.addCompanionCard}>
             <TouchableOpacity style={styles.addButton}>
               <Text style={styles.addIcon}>+</Text>
-              <Text style={styles.addText}>創建新的AI分身</Text>
-              <Text style={styles.addSubtext}>上傳她的資料，創建專屬練習對象</Text>
+              <Text style={styles.addText}>上傳她的資料</Text>
+              <Text style={styles.addSubtext}>分析她的個性，讓AI協助你更了解她</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -331,9 +340,19 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
       {/* 底部提示 */}
       <View style={styles.bottomTip}>
         <Text style={styles.tipText}>
-          💝 與AI分身練習對話，在真實約會中更有自信
+          💝 AI分析她的個性，提供最佳聊天建議
         </Text>
       </View>
+
+      {/* 聊天助手面板 */}
+      {selectedCompanionForAssistance && (
+        <ChatAssistancePanel
+          companion={selectedCompanionForAssistance}
+          visible={assistancePanelVisible}
+          onClose={handleAssistancePanelClose}
+          onSelectReply={handleSelectReply}
+        />
+      )}
     </View>
   )
 }
