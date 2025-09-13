@@ -36,6 +36,7 @@ interface CompanionStore {
   addCompanion: (companion: AICompanion) => void
   updateCompanion: (id: string, updates: Partial<AICompanion>) => void
   removeCompanion: (id: string) => void
+  addUserData: (id: string, userData: any) => void
 
   // 個性檔案操作
   addPersonalityProfile: (profile: PersonalityProfile) => void
@@ -86,6 +87,38 @@ export const useCompanionStore = create<CompanionStore>((set, get) => ({
     set(state => ({
       companions: state.companions.filter(companion => companion.id !== id),
       selectedCompanion: state.selectedCompanion?.id === id ? null : state.selectedCompanion
+    })),
+
+  addUserData: (id, userData) =>
+    set(state => ({
+      companions: state.companions.map(companion =>
+        companion.id === id ? {
+          ...companion,
+          user_added_data: {
+            photos: userData.photos || [],
+            conversation_records: userData.conversationText ? [userData.conversationText] : [],
+            interests: userData.interests || [],
+            personality_notes: userData.personalityNotes || '',
+            relationship_status: userData.relationshipStatus || 'stranger',
+            special_memories: userData.specialMemories || '',
+            last_updated: new Date().toISOString()
+          },
+          updated_at: new Date().toISOString()
+        } : companion
+      ),
+      selectedCompanion: state.selectedCompanion?.id === id ? {
+        ...state.selectedCompanion,
+        user_added_data: {
+          photos: userData.photos || [],
+          conversation_records: userData.conversationText ? [userData.conversationText] : [],
+          interests: userData.interests || [],
+          personality_notes: userData.personalityNotes || '',
+          relationship_status: userData.relationshipStatus || 'stranger',
+          special_memories: userData.specialMemories || '',
+          last_updated: new Date().toISOString()
+        },
+        updated_at: new Date().toISOString()
+      } : state.selectedCompanion
     })),
 
   // 個性檔案操作

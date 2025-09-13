@@ -251,6 +251,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
                       <DefaultAvatar
                         gender={companion.gender}
                         size={72}
+                        realAvatar={companion.realAvatar}
                       />
                       {/* AI分身標識 */}
                       <View style={styles.aiLabel}>

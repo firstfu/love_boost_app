@@ -6,22 +6,25 @@
 import React, { useState } from 'react'
 import { View, StyleSheet } from 'react-native'
 import { CompanionSelector } from '../CompanionSelector'
+import { CompanionProfile } from './CompanionProfile'
+import { ConversationPractice } from './ConversationPractice'
+import { AddCompanionData } from './AddCompanionData'
 import { useCompanionStore } from '../../stores/assistantStore'
 import { AICompanion } from '../../types/assistant'
 
-type AppScreen = 'selector' | 'profile' | 'conversation'
+type AppScreen = 'selector' | 'profile' | 'conversation' | 'addData'
 
 export const MainApp: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('selector')
+  const [selectedCompanion, setSelectedCompanionState] = useState<AICompanion | null>(null)
 
-  const { setSelectedCompanion } = useCompanionStore()
+  const { setSelectedCompanion, addUserData } = useCompanionStore()
 
   /**
    * 處理選擇AI分身查看詳情
    */
   const handleViewCompanionProfile = (companion: AICompanion) => {
-    // TODO: 實現AI分身詳情頁面導航
-    console.log('查看AI分身詳情:', companion.name)
+    setSelectedCompanionState(companion)
     setCurrentScreen('profile')
   }
 
@@ -30,8 +33,17 @@ export const MainApp: React.FC = () => {
    */
   const handleSelectCompanion = (companion: AICompanion) => {
     setSelectedCompanion(companion)
-    // TODO: 導航到聊天輔助介面
+    setSelectedCompanionState(companion)
+    setCurrentScreen('conversation')
     console.log('開始使用', companion.name, '的AI分身輔助聊天')
+  }
+
+  /**
+   * 返回助手選擇頁面
+   */
+  const handleBackToSelector = () => {
+    setCurrentScreen('selector')
+    setSelectedCompanionState(null)
   }
 
   // 根據當前螢幕狀態渲染對應頁面
@@ -46,27 +58,55 @@ export const MainApp: React.FC = () => {
         )
 
       case 'profile':
-        // TODO: 實現AI分身詳情頁面
-        return (
-          <View style={styles.placeholderContainer}>
-            {/* 暫時顯示選擇器，後續實現詳情頁面 */}
-            <CompanionSelector
-              onSelectCompanion={handleSelectCompanion}
-              onViewProfile={handleViewCompanionProfile}
-            />
-          </View>
+        return selectedCompanion ? (
+          <CompanionProfile
+            companion={selectedCompanion}
+            onBack={handleBackToSelector}
+            onStartChat={handleSelectCompanion}
+            onAddData={(companion) => {
+              setSelectedCompanionState(companion)
+              setCurrentScreen('addData')
+            }}
+          />
+        ) : (
+          <CompanionSelector
+            onSelectCompanion={handleSelectCompanion}
+            onViewProfile={handleViewCompanionProfile}
+          />
         )
 
       case 'conversation':
-        // TODO: 實現聊天輔助介面
-        return (
-          <View style={styles.placeholderContainer}>
-            {/* 暫時顯示選擇器，後續實現聊天輔助介面 */}
-            <CompanionSelector
-              onSelectCompanion={handleSelectCompanion}
-              onViewProfile={handleViewCompanionProfile}
-            />
-          </View>
+        return selectedCompanion ? (
+          <ConversationPractice
+            companion={selectedCompanion}
+            onBack={handleBackToSelector}
+          />
+        ) : (
+          <CompanionSelector
+            onSelectCompanion={handleSelectCompanion}
+            onViewProfile={handleViewCompanionProfile}
+          />
+        )
+
+      case 'addData':
+        return selectedCompanion ? (
+          <AddCompanionData
+            companion={selectedCompanion}
+            onBack={() => setCurrentScreen('profile')}
+            isUpdate={true}
+            onSave={(data) => {
+              console.log('儲存新增資料:', data)
+              if (selectedCompanion) {
+                addUserData(selectedCompanion.id, data)
+              }
+              setCurrentScreen('profile')
+            }}
+          />
+        ) : (
+          <CompanionSelector
+            onSelectCompanion={handleSelectCompanion}
+            onViewProfile={handleViewCompanionProfile}
+          />
         )
 
       default:

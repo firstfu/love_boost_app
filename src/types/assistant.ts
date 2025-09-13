@@ -33,6 +33,7 @@ export interface AICompanion {
   id: string
   name: string
   avatar: string
+  realAvatar?: string     // 真實頭像 URL (可選)
   age: number
   gender: Gender
   bio: string             // 個人簡介
@@ -77,6 +78,17 @@ export interface AICompanion {
   // 時間戳記
   created_at: string
   updated_at: string
+
+  // 用戶新增的資料
+  user_added_data?: {
+    photos: string[]                    // 用戶上傳的照片
+    conversation_records: string[]      // 用戶提供的對話記錄
+    interests: string[]                 // 用戶補充的興趣愛好
+    personality_notes: string           // 用戶對她個性的描述
+    relationship_status: 'stranger' | 'acquaintance' | 'friend' | 'dating'
+    special_memories: string            // 特殊回憶
+    last_updated: string               // 最後更新時間
+  }
 }
 
 // 用戶上傳的照片資料

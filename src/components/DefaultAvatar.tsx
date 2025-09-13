@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, Image } from 'react-native'
 import { Gender } from '../types/assistant'
 
 interface DefaultAvatarProps {
@@ -12,13 +12,15 @@ interface DefaultAvatarProps {
   size?: number
   backgroundColor?: string
   textColor?: string
+  realAvatar?: string
 }
 
 export const DefaultAvatar: React.FC<DefaultAvatarProps> = ({
   gender,
   size = 72,
   backgroundColor,
-  textColor = '#ffffff'
+  textColor = '#ffffff',
+  realAvatar
 }) => {
   // 根據性別選擇顏色和圖標
   const getAvatarConfig = () => {
@@ -46,6 +48,33 @@ export const DefaultAvatar: React.FC<DefaultAvatarProps> = ({
 
   const config = getAvatarConfig()
 
+  // 如果有真實頭像，顯示圖片
+  if (realAvatar) {
+    return (
+      <View
+        style={[
+          styles.avatar,
+          {
+            width: size,
+            height: size,
+            borderRadius: size / 2,
+          }
+        ]}
+      >
+        <Image
+          source={{ uri: realAvatar }}
+          style={{
+            width: size,
+            height: size,
+            borderRadius: size / 2,
+          }}
+          resizeMode="cover"
+        />
+      </View>
+    )
+  }
+
+  // 否則顯示默認圖標
   return (
     <View
       style={[
