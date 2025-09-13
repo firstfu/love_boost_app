@@ -1,19 +1,10 @@
 /**
- * AI戀愛助手相關的類型定義
- * 包含助手基本資料、個性分析、對話模擬等功能的數據結構
+ * AI戀愛模擬系統相關的類型定義
+ * 包含AI分身基本資料、個性分析、對話模擬等功能的數據結構
  */
 
-// 助手類型分類
-export type AssistantType =
-  | 'emotional_support'    // 情感支持
-  | 'conversation_coach'   // 對話教練
-  | 'dating_advisor'       // 約會顧問
-  | 'relationship_guide'   // 關係指導
-  | 'confidence_builder'   // 自信建立
-  | 'communication_expert' // 溝通專家
-
 // 性別類型
-export type Gender = 'male' | 'female' | 'non_binary'
+export type Gender = 'female' | 'male' | 'non_binary'
 
 // 個性特質類型
 export type PersonalityTrait =
@@ -25,42 +16,61 @@ export type PersonalityTrait =
   | 'passionate'    // 熱情
   | 'mysterious'    // 神秘
   | 'caring'        // 體貼
+  | 'playful'       // 俏皮
+  | 'romantic'      // 浪漫
 
-// 助手基本資料介面
-export interface AIAssistant {
+// 說話風格類型
+export type SpeakingStyle =
+  | 'casual'        // 隨性
+  | 'formal'        // 正式
+  | 'cute'          // 可愛
+  | 'mature'        // 成熟
+  | 'direct'        // 直接
+  | 'subtle'        // 委婉
+
+// AI分身基本資料介面
+export interface AICompanion {
   id: string
   name: string
   avatar: string
   age: number
   gender: Gender
-  type: AssistantType
-  tagline: string         // 一句話描述
-  description: string     // 詳細描述
+  bio: string             // 個人簡介
 
-  // 個性相關
-  personality: PersonalityTrait[]
-  specialties: string[]   // 專長領域
-
-  // 統計資料
-  stats: {
-    total_conversations: number
-    average_rating: number
-    success_rate: number
-    online_status: 'online' | 'busy' | 'offline'
+  // 個性分析結果
+  personality_analysis: {
+    dominant_traits: PersonalityTrait[]
+    speaking_style: SpeakingStyle
+    emotional_patterns: string[]
+    humor_style?: string
+    interests: string[]
+    topics_she_likes: string[]
+    topics_to_avoid: string[]
   }
 
-  // 語音特性
-  voice_characteristics?: {
-    tone: 'warm' | 'professional' | 'friendly' | 'gentle'
+  // 學習狀態
+  learning_status: {
+    data_completeness: number     // 數據完整度 0-100
+    analysis_confidence: number   // 分析可信度 0-100
+    last_training: string        // 最後訓練時間
+    conversation_samples: number  // 對話樣本數量
+    photo_samples: number        // 照片樣本數量
+  }
+
+  // 對話統計
+  interaction_stats: {
+    practice_sessions: number     // 練習次數
+    total_messages: number       // 總訊息數
+    conversation_quality_score: number  // 對話品質分數
+    improvement_trend: 'improving' | 'stable' | 'declining'
+  }
+
+  // 語音特性（模擬她的說話方式）
+  voice_simulation?: {
+    tone: 'sweet' | 'gentle' | 'lively' | 'calm'
     speed: 'slow' | 'normal' | 'fast'
+    pitch: 'high' | 'medium' | 'low'
     accent?: string
-  }
-
-  // 可用時間
-  available_hours: {
-    start: string  // "09:00"
-    end: string    // "23:00"
-    timezone: string
   }
 
   // 時間戳記
@@ -154,22 +164,30 @@ export interface PersonalityProfile {
   updated_at: string
 }
 
-// 對話模擬會話
+// 對話模擬會話（與AI分身的練習對話）
 export interface SimulationSession {
   id: string
-  assistant_id: string
-  target_profile_id: string
+  companion_id: string         // AI分身ID
   scenario: ConversationScenario
 
   // 會話記錄
   messages: SimulationMessage[]
 
-  // 建議記錄
-  suggestions_used: string[]
+  // 她的模擬狀態
+  companion_mood: string       // 她當前的心情
+  relationship_temperature: number  // 關係熱度 0-100
 
-  // 會話評估
-  performance_score?: number
-  feedback?: string
+  // 用戶表現評估
+  performance_metrics: {
+    response_speed: number     // 回應速度
+    conversation_flow: number  // 對話流暢度
+    emotional_intelligence: number  // 情商表現
+    topic_relevance: number    // 話題相關性
+  }
+
+  // 建議和改進
+  suggested_improvements: string[]
+  successful_responses: string[]  // 成功的回應範例
 
   created_at: string
   ended_at?: string
@@ -180,32 +198,42 @@ export interface ConversationScenario {
   id: string
   name: string
   description: string
-  difficulty_level: 'beginner' | 'intermediate' | 'advanced'
-  context: string
-  goals: string[]
+  context: string        // 對話情境（如第一次見面、約會、日常聊天）
+  mood: 'casual' | 'romantic' | 'serious' | 'playful'
 }
 
 // 模擬對話訊息
 export interface SimulationMessage {
   id: string
-  sender: 'user' | 'ai_assistant'
+  sender: 'user' | 'ai_companion'  // AI分身
   content: string
   timestamp: string
-  suggestions?: string[]  // AI建議的回應選項
-  selected_suggestion?: string
+  emotion_context?: string  // 她當時的情緒狀態
+  response_quality?: number // 回應品質評分
 }
 
-// 助手創建請求
-export interface CreateAssistantRequest {
+// AI分身創建請求
+export interface CreateCompanionRequest {
   name: string
-  type: AssistantType
+  age: number
+  bio: string
   photos: File[]
-  conversation_records: string[]
+  conversation_records: string[]  // 與她的聊天記錄
   additional_info: {
     interests: string[]
     personality_notes: string
-    relationship_context: string
+    relationship_status: 'stranger' | 'acquaintance' | 'friend' | 'dating'
+    special_memories?: string[]
   }
+}
+
+// AI分身創建步驟
+export interface CompanionCreationStep {
+  step: number
+  title: string
+  description: string
+  completed: boolean
+  data?: any
 }
 
 // API 回應介面

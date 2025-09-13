@@ -1,6 +1,6 @@
 /**
- * AI助手選擇器
- * 仿照Tinder風格的卡片式瀏覽界面，用戶可以選擇不同的AI助手
+ * AI分身選擇器
+ * 展示不同個性的女生AI分身，讓用戶選擇想要練習對話的目標
  */
 
 import React, { useState, useEffect } from 'react'
@@ -14,45 +14,47 @@ import {
   Alert
 } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
-import { DEFAULT_ASSISTANTS } from '../data/defaultAssistants'
-import { AIAssistant, AssistantType } from '../types/assistant'
-import { useAssistantStore } from '../stores/assistantStore'
+import { DEFAULT_COMPANIONS } from '../data/defaultCompanions'
+import { AICompanion, PersonalityTrait } from '../types/assistant'
+import { useCompanionStore } from '../stores/assistantStore'
 import { DefaultAvatar } from './DefaultAvatar'
 
 // 篩選類型
-type FilterType = 'all' | 'emotional_support' | 'conversation_coach' | 'dating_advisor'
+type FilterType = 'all' | 'gentle' | 'cheerful' | 'intellectual'
 
-interface AssistantSelectorProps {
-  onSelectAssistant: (assistant: AIAssistant) => void
-  onViewProfile: (assistant: AIAssistant) => void
+interface CompanionSelectorProps {
+  onSelectCompanion: (companion: AICompanion) => void
+  onViewProfile: (companion: AICompanion) => void
 }
 
-export const AssistantSelector: React.FC<AssistantSelectorProps> = ({
-  onSelectAssistant,
+export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
+  onSelectCompanion,
   onViewProfile
 }) => {
-  const [assistants, setAssistants] = useState<AIAssistant[]>([])
+  const [companions, setCompanions] = useState<AICompanion[]>([])
   const [selectedFilter, setSelectedFilter] = useState<FilterType>('all')
   const [cardAnimations, setCardAnimations] = useState<Animated.Value[]>([])
   const [fadeAnim] = useState(new Animated.Value(0))
   const [slideAnim] = useState(new Animated.Value(50))
 
-  const { setAssistants: setStoreAssistants } = useAssistantStore()
+  const { setCompanions: setStoreCompanions } = useCompanionStore()
 
   useEffect(() => {
-    // 初始化助手數據
-    let filteredAssistants = DEFAULT_ASSISTANTS
+    // 初始化AI分身數據
+    let filteredCompanions = DEFAULT_COMPANIONS
 
     // 根據篩選器過濾
     if (selectedFilter !== 'all') {
-      filteredAssistants = DEFAULT_ASSISTANTS.filter(a => a.type === selectedFilter)
+      filteredCompanions = DEFAULT_COMPANIONS.filter(c =>
+        c.personality_analysis.dominant_traits.includes(selectedFilter as PersonalityTrait)
+      )
     }
 
-    setAssistants(filteredAssistants)
-    setStoreAssistants(filteredAssistants)
+    setCompanions(filteredCompanions)
+    setStoreCompanions(filteredCompanions)
 
     // 重新初始化動畫數組
-    setCardAnimations(filteredAssistants.map(() => new Animated.Value(1)))
+    setCardAnimations(filteredCompanions.map(() => new Animated.Value(1)))
 
     // 初始動畫
     Animated.parallel([
@@ -67,10 +69,10 @@ export const AssistantSelector: React.FC<AssistantSelectorProps> = ({
         useNativeDriver: true,
       }),
     ]).start()
-  }, [selectedFilter, fadeAnim, slideAnim, setStoreAssistants])
+  }, [selectedFilter, fadeAnim, slideAnim, setStoreCompanions])
 
   // 處理卡片點擊
-  const handleCardPress = (assistant: AIAssistant, index: number) => {
+  const handleCardPress = (companion: AICompanion, index: number) => {
     // 添加點擊動畫
     if (cardAnimations[index]) {
       Animated.sequence([
@@ -87,42 +89,67 @@ export const AssistantSelector: React.FC<AssistantSelectorProps> = ({
       ]).start()
     }
 
-    onViewProfile(assistant)
+    onViewProfile(companion)
   }
 
   // 處理快速選擇
-  const handleQuickSelect = (assistant: AIAssistant) => {
+  const handleQuickSelect = (companion: AICompanion) => {
     Alert.alert(
-      '選擇助手',
-      `確定要選擇 ${assistant.name} 作為你的AI助手嗎？`,
+      '開始練習',
+      `確定要和 ${companion.name} 開始對話練習嗎？\n\n她是個${getPersonalityDescription(companion)}的女生`,
       [
-        { text: '查看詳情', onPress: () => onViewProfile(assistant) },
-        { text: '立即選擇', onPress: () => onSelectAssistant(assistant) }
+        { text: '查看詳情', onPress: () => onViewProfile(companion) },
+        { text: '開始練習', onPress: () => onSelectCompanion(companion) }
       ]
     )
+  }
+
+  // 獲取個性描述
+  const getPersonalityDescription = (companion: AICompanion) => {
+    const traits = companion.personality_analysis.dominant_traits
+    const traitMap = {
+      gentle: '溫柔',
+      cheerful: '開朗',
+      intellectual: '知性',
+      humorous: '幽默',
+      calm: '沉穩',
+      passionate: '熱情',
+      mysterious: '神秘',
+      caring: '體貼',
+      playful: '俏皮',
+      romantic: '浪漫'
+    }
+    return traits.map(t => traitMap[t]).join('、')
   }
 
   // 獲取篩選器標籤
   const getFilterLabel = (filter: FilterType) => {
     switch (filter) {
-      case 'all': return '全部助手'
-      case 'emotional_support': return '情感支持'
-      case 'conversation_coach': return '對話教練'
-      case 'dating_advisor': return '約會顧問'
+      case 'all': return '全部女生'
+      case 'gentle': return '溫柔型'
+      case 'cheerful': return '開朗型'
+      case 'intellectual': return '知性型'
     }
   }
 
-  // 獲取類型標籤和顏色
-  const getTypeInfo = (type: AssistantType) => {
-    const typeInfo = {
-      'emotional_support': { label: '💝 情感支持', color: '#FF6B9D', bgColor: 'rgba(255, 107, 157, 0.1)' },
-      'conversation_coach': { label: '🗣️ 對話教練', color: '#4F46E5', bgColor: 'rgba(79, 70, 229, 0.1)' },
-      'dating_advisor': { label: '💕 約會顧問', color: '#10B981', bgColor: 'rgba(16, 185, 129, 0.1)' },
-      'relationship_guide': { label: '👫 關係指導', color: '#F59E0B', bgColor: 'rgba(245, 158, 11, 0.1)' },
-      'confidence_builder': { label: '💪 自信建立', color: '#EF4444', bgColor: 'rgba(239, 68, 68, 0.1)' },
-      'communication_expert': { label: '🎯 溝通專家', color: '#8B5CF6', bgColor: 'rgba(139, 92, 246, 0.1)' }
+  // 獲取說話風格顏色
+  const getSpeakingStyleInfo = (style: string) => {
+    const styleInfo = {
+      'casual': { label: '💭 隨性聊天', color: '#FF6B9D', bgColor: 'rgba(255, 107, 157, 0.1)' },
+      'formal': { label: '🎯 正式交流', color: '#4F46E5', bgColor: 'rgba(79, 70, 229, 0.1)' },
+      'cute': { label: '🎀 可愛風格', color: '#10B981', bgColor: 'rgba(16, 185, 129, 0.1)' },
+      'mature': { label: '💼 成熟穩重', color: '#F59E0B', bgColor: 'rgba(245, 158, 11, 0.1)' },
+      'direct': { label: '⚡ 直接坦率', color: '#EF4444', bgColor: 'rgba(239, 68, 68, 0.1)' },
+      'subtle': { label: '🌸 委婉含蓄', color: '#8B5CF6', bgColor: 'rgba(139, 92, 246, 0.1)' }
     }
-    return typeInfo[type] || { label: type, color: '#6B7280', bgColor: 'rgba(107, 116, 128, 0.1)' }
+    return styleInfo[style] || { label: style, color: '#6B7280', bgColor: 'rgba(107, 116, 128, 0.1)' }
+  }
+
+  // 獲取學習狀態顏色
+  const getConfidenceColor = (confidence: number) => {
+    if (confidence >= 90) return '#10B981'
+    if (confidence >= 80) return '#F59E0B'
+    return '#EF4444'
   }
 
   // 渲染篩選器
@@ -133,7 +160,7 @@ export const AssistantSelector: React.FC<AssistantSelectorProps> = ({
         showsHorizontalScrollIndicator={false}
         style={styles.filterScrollView}
       >
-        {(['all', 'emotional_support', 'conversation_coach', 'dating_advisor'] as FilterType[]).map((filter) => (
+        {(['all', 'gentle', 'cheerful', 'intellectual'] as FilterType[]).map((filter) => (
           <TouchableOpacity
             key={filter}
             style={[
@@ -165,8 +192,8 @@ export const AssistantSelector: React.FC<AssistantSelectorProps> = ({
         {/* 頂部標題區 */}
         <View style={styles.header}>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>AI戀愛助手</Text>
-            <Text style={styles.subtitle}>專業指導，讓你的感情路更順暢</Text>
+            <Text style={styles.title}>我的AI分身</Text>
+            <Text style={styles.subtitle}>選擇你想練習對話的她，提升你的聊天技巧</Text>
           </View>
         </View>
       </LinearGradient>
@@ -174,10 +201,10 @@ export const AssistantSelector: React.FC<AssistantSelectorProps> = ({
       {/* 篩選器 */}
       {renderFilters()}
 
-      {/* AI助手卡片列表 */}
+      {/* AI分身卡片列表 */}
       <Animated.View
         style={[
-          styles.assistantListContainer,
+          styles.companionListContainer,
           {
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }]
@@ -185,19 +212,20 @@ export const AssistantSelector: React.FC<AssistantSelectorProps> = ({
         ]}
       >
         <ScrollView
-          style={styles.assistantList}
+          style={styles.companionList}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {assistants.map((assistant, index) => {
+          {companions.map((companion, index) => {
             const animation = cardAnimations[index] || new Animated.Value(1)
-            const typeInfo = getTypeInfo(assistant.type)
+            const styleInfo = getSpeakingStyleInfo(companion.personality_analysis.speaking_style)
+            const confidenceColor = getConfidenceColor(companion.learning_status.analysis_confidence)
 
             return (
               <Animated.View
-                key={assistant.id}
+                key={companion.id}
                 style={[
-                  styles.assistantCard,
+                  styles.companionCard,
                   {
                     transform: [{ scale: animation }],
                     opacity: fadeAnim
@@ -206,59 +234,64 @@ export const AssistantSelector: React.FC<AssistantSelectorProps> = ({
               >
                 <TouchableOpacity
                   activeOpacity={0.9}
-                  onPress={() => handleCardPress(assistant, index)}
+                  onPress={() => handleCardPress(companion, index)}
                 >
                   {/* 卡片頂部 */}
                   <View style={styles.cardTop}>
                     <View style={styles.avatarSection}>
                       <DefaultAvatar
-                        gender={assistant.gender}
+                        gender={companion.gender}
                         size={72}
                       />
-                      {/* 在線狀態指示器 */}
-                      <View style={[
-                        styles.statusIndicator,
-                        { backgroundColor: assistant.stats.online_status === 'online' ? '#10B981' : '#EF4444' }
-                      ]} />
+                      {/* AI分身標識 */}
+                      <View style={styles.aiLabel}>
+                        <Text style={styles.aiLabelText}>AI</Text>
+                      </View>
                     </View>
 
                     <View style={styles.infoSection}>
                       <View style={styles.nameRow}>
-                        <Text style={styles.assistantName}>{assistant.name}</Text>
-                        <Text style={styles.assistantAge}>{assistant.age}歲</Text>
+                        <Text style={styles.companionName}>{companion.name}</Text>
+                        <Text style={styles.companionAge}>{companion.age}歲</Text>
                       </View>
 
-                      <Text style={styles.tagline}>{assistant.tagline}</Text>
+                      <Text style={styles.bio}>{companion.bio}</Text>
 
-                      <View style={[styles.typeTag, { backgroundColor: typeInfo.bgColor }]}>
-                        <Text style={[styles.typeTagText, { color: typeInfo.color }]}>
-                          {typeInfo.label}
+                      <View style={[styles.styleTag, { backgroundColor: styleInfo.bgColor }]}>
+                        <Text style={[styles.styleTagText, { color: styleInfo.color }]}>
+                          {styleInfo.label}
                         </Text>
                       </View>
 
-                      {/* 評分和統計 */}
+                      {/* 學習狀態和品質評分 */}
                       <View style={styles.statsRow}>
-                        <Text style={styles.rating}>⭐ {assistant.stats.average_rating}</Text>
-                        <Text style={styles.conversations}>{assistant.stats.total_conversations} 次對話</Text>
+                        <Text style={[styles.confidence, { color: confidenceColor }]}>
+                          ⚡ {companion.learning_status.analysis_confidence}% 學習完成
+                        </Text>
+                        <Text style={styles.quality}>
+                          ⭐ {companion.interaction_stats.conversation_quality_score}/10
+                        </Text>
                       </View>
                     </View>
                   </View>
 
-                  {/* 專長標籤 */}
-                  <View style={styles.specialtiesSection}>
-                    {assistant.specialties.slice(0, 4).map((specialty, idx) => (
-                      <View key={idx} style={[styles.specialtyTag, {
-                        backgroundColor: `${typeInfo.color}15`,
-                        borderColor: `${typeInfo.color}30`
+                  {/* 個性標籤 */}
+                  <View style={styles.personalitySection}>
+                    {companion.personality_analysis.dominant_traits.slice(0, 4).map((trait, idx) => (
+                      <View key={idx} style={[styles.personalityTag, {
+                        backgroundColor: `${styleInfo.color}15`,
+                        borderColor: `${styleInfo.color}30`
                       }]}>
-                        <Text style={[styles.specialtyText, { color: typeInfo.color }]}>
-                          {specialty}
+                        <Text style={[styles.personalityText, { color: styleInfo.color }]}>
+                          {getPersonalityDescription(companion).split('、')[idx] || trait}
                         </Text>
                       </View>
                     ))}
-                    {assistant.specialties.length > 4 && (
+                    {companion.personality_analysis.dominant_traits.length > 4 && (
                       <View style={styles.moreTag}>
-                        <Text style={styles.moreText}>+{assistant.specialties.length - 4}</Text>
+                        <Text style={styles.moreText}>
+                          +{companion.personality_analysis.dominant_traits.length - 4}
+                        </Text>
                       </View>
                     )}
                   </View>
@@ -268,28 +301,37 @@ export const AssistantSelector: React.FC<AssistantSelectorProps> = ({
                 <View style={styles.actionButtons}>
                   <TouchableOpacity
                     style={styles.profileButton}
-                    onPress={() => onViewProfile(assistant)}
+                    onPress={() => onViewProfile(companion)}
                   >
                     <Text style={styles.profileButtonText}>查看詳情</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    style={styles.selectButton}
-                    onPress={() => handleQuickSelect(assistant)}
+                    style={styles.chatButton}
+                    onPress={() => handleQuickSelect(companion)}
                   >
-                    <Text style={styles.selectButtonText}>選擇助手</Text>
+                    <Text style={styles.chatButtonText}>開始練習</Text>
                   </TouchableOpacity>
                 </View>
               </Animated.View>
             )
           })}
+
+          {/* 新增分身按鈕 */}
+          <View style={styles.addCompanionCard}>
+            <TouchableOpacity style={styles.addButton}>
+              <Text style={styles.addIcon}>+</Text>
+              <Text style={styles.addText}>創建新的AI分身</Text>
+              <Text style={styles.addSubtext}>上傳她的資料，創建專屬練習對象</Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </Animated.View>
 
       {/* 底部提示 */}
       <View style={styles.bottomTip}>
         <Text style={styles.tipText}>
-          💝 專業AI助手，24小時為你的愛情保駕護航
+          💝 與AI分身練習對話，在真實約會中更有自信
         </Text>
       </View>
     </View>
@@ -367,10 +409,10 @@ const styles = StyleSheet.create({
   filterTextActive: {
     color: '#ffffff',
   },
-  assistantListContainer: {
+  companionListContainer: {
     flex: 1,
   },
-  assistantList: {
+  companionList: {
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 20,
@@ -378,7 +420,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 90,
   },
-  assistantCard: {
+  companionCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.98)',
     borderRadius: 20,
     marginBottom: 16,
@@ -399,15 +441,21 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginRight: 16,
   },
-  statusIndicator: {
+  aiLabel: {
     position: 'absolute',
-    bottom: 4,
-    right: 4,
-    width: 16,
-    height: 16,
+    top: -4,
+    right: -4,
+    backgroundColor: '#FF6B6B',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
     borderRadius: 8,
     borderWidth: 2,
     borderColor: '#ffffff',
+  },
+  aiLabelText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#ffffff',
   },
   infoSection: {
     flex: 1,
@@ -417,13 +465,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 4,
   },
-  assistantName: {
+  companionName: {
     fontSize: 24,
     fontWeight: '800',
     color: '#1e1b4b',
     marginRight: 8,
   },
-  assistantAge: {
+  companionAge: {
     fontSize: 13,
     color: '#8B5CF6',
     fontWeight: '600',
@@ -432,21 +480,21 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: 10,
   },
-  tagline: {
+  bio: {
     fontSize: 14,
     color: '#374151',
     marginBottom: 8,
     lineHeight: 20,
     fontWeight: '500',
   },
-  typeTag: {
+  styleTag: {
     alignSelf: 'flex-start',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
     marginBottom: 8,
   },
-  typeTagText: {
+  styleTagText: {
     fontSize: 12,
     fontWeight: '600',
   },
@@ -454,24 +502,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  rating: {
+  confidence: {
     fontSize: 12,
-    color: '#F59E0B',
     fontWeight: '600',
     marginRight: 12,
   },
-  conversations: {
+  quality: {
     fontSize: 12,
-    color: '#6B7280',
-    fontWeight: '500',
+    color: '#F59E0B',
+    fontWeight: '600',
   },
-  specialtiesSection: {
+  personalitySection: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     paddingHorizontal: 20,
     paddingBottom: 16,
   },
-  specialtyTag: {
+  personalityTag: {
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
@@ -479,7 +526,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     borderWidth: 1,
   },
-  specialtyText: {
+  personalityText: {
     fontSize: 11,
     fontWeight: '600',
   },
@@ -510,16 +557,47 @@ const styles = StyleSheet.create({
     color: '#FF6B6B',
     fontWeight: '600',
   },
-  selectButton: {
+  chatButton: {
     flex: 1,
     paddingVertical: 16,
     alignItems: 'center',
     backgroundColor: '#FF6B6B',
   },
-  selectButtonText: {
+  chatButtonText: {
     fontSize: 15,
     color: '#ffffff',
     fontWeight: '700',
+  },
+  addCompanionCard: {
+    backgroundColor: 'rgba(255, 107, 107, 0.05)',
+    borderRadius: 20,
+    marginBottom: 16,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 107, 107, 0.2)',
+    borderStyle: 'dashed',
+  },
+  addButton: {
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  addIcon: {
+    fontSize: 48,
+    color: '#FF6B6B',
+    fontWeight: '300',
+    marginBottom: 8,
+  },
+  addText: {
+    fontSize: 18,
+    color: '#FF6B6B',
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  addSubtext: {
+    fontSize: 14,
+    color: '#888',
+    textAlign: 'center',
+    lineHeight: 20,
   },
   bottomTip: {
     padding: 16,

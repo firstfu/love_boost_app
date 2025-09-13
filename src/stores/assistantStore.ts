@@ -1,15 +1,15 @@
 /**
- * AI助手狀態管理
- * 管理助手列表、當前選擇的助手、對話會話等狀態
+ * AI分身狀態管理
+ * 管理AI分身列表、當前選擇的分身、對話會話等狀態
  */
 
 import { create } from 'zustand'
-import { AIAssistant, SimulationSession, PersonalityProfile } from '../types/assistant'
+import { AICompanion, SimulationSession, PersonalityProfile } from '../types/assistant'
 
-interface AssistantStore {
-  // 助手相關狀態
-  assistants: AIAssistant[]
-  selectedAssistant: AIAssistant | null
+interface CompanionStore {
+  // AI分身相關狀態
+  companions: AICompanion[]
+  selectedCompanion: AICompanion | null
 
   // 個性檔案
   personalityProfiles: PersonalityProfile[]
@@ -24,18 +24,18 @@ interface AssistantStore {
   error: string | null
 
   // Actions
-  setAssistants: (assistants: AIAssistant[]) => void
-  setSelectedAssistant: (assistant: AIAssistant | null) => void
+  setCompanions: (companions: AICompanion[]) => void
+  setSelectedCompanion: (companion: AICompanion | null) => void
   setCurrentProfile: (profile: PersonalityProfile | null) => void
   setCurrentSession: (session: SimulationSession | null) => void
   addSessionToHistory: (session: SimulationSession) => void
   setLoading: (loading: boolean) => void
   setError: (error: string | null) => void
 
-  // 助手操作
-  addAssistant: (assistant: AIAssistant) => void
-  updateAssistant: (id: string, updates: Partial<AIAssistant>) => void
-  removeAssistant: (id: string) => void
+  // AI分身操作
+  addCompanion: (companion: AICompanion) => void
+  updateCompanion: (id: string, updates: Partial<AICompanion>) => void
+  removeCompanion: (id: string) => void
 
   // 個性檔案操作
   addPersonalityProfile: (profile: PersonalityProfile) => void
@@ -46,10 +46,10 @@ interface AssistantStore {
   reset: () => void
 }
 
-export const useAssistantStore = create<AssistantStore>((set, get) => ({
+export const useCompanionStore = create<CompanionStore>((set, get) => ({
   // 初始狀態
-  assistants: [],
-  selectedAssistant: null,
+  companions: [],
+  selectedCompanion: null,
   personalityProfiles: [],
   currentProfile: null,
   currentSession: null,
@@ -58,8 +58,8 @@ export const useAssistantStore = create<AssistantStore>((set, get) => ({
   error: null,
 
   // 基本設置操作
-  setAssistants: (assistants) => set({ assistants }),
-  setSelectedAssistant: (assistant) => set({ selectedAssistant: assistant }),
+  setCompanions: (companions) => set({ companions }),
+  setSelectedCompanion: (companion) => set({ selectedCompanion: companion }),
   setCurrentProfile: (profile) => set({ currentProfile: profile }),
   setCurrentSession: (session) => set({ currentSession: session }),
   addSessionToHistory: (session) =>
@@ -69,23 +69,23 @@ export const useAssistantStore = create<AssistantStore>((set, get) => ({
   setLoading: (loading) => set({ isLoading: loading }),
   setError: (error) => set({ error }),
 
-  // 助手操作
-  addAssistant: (assistant) =>
+  // AI分身操作
+  addCompanion: (companion) =>
     set(state => ({
-      assistants: [...state.assistants, assistant]
+      companions: [...state.companions, companion]
     })),
 
-  updateAssistant: (id, updates) =>
+  updateCompanion: (id, updates) =>
     set(state => ({
-      assistants: state.assistants.map(assistant =>
-        assistant.id === id ? { ...assistant, ...updates } : assistant
+      companions: state.companions.map(companion =>
+        companion.id === id ? { ...companion, ...updates } : companion
       )
     })),
 
-  removeAssistant: (id) =>
+  removeCompanion: (id) =>
     set(state => ({
-      assistants: state.assistants.filter(assistant => assistant.id !== id),
-      selectedAssistant: state.selectedAssistant?.id === id ? null : state.selectedAssistant
+      companions: state.companions.filter(companion => companion.id !== id),
+      selectedCompanion: state.selectedCompanion?.id === id ? null : state.selectedCompanion
     })),
 
   // 個性檔案操作
@@ -109,8 +109,8 @@ export const useAssistantStore = create<AssistantStore>((set, get) => ({
 
   // 重置所有狀態
   reset: () => set({
-    assistants: [],
-    selectedAssistant: null,
+    companions: [],
+    selectedCompanion: null,
     personalityProfiles: [],
     currentProfile: null,
     currentSession: null,
@@ -121,11 +121,14 @@ export const useAssistantStore = create<AssistantStore>((set, get) => ({
 }))
 
 // 選擇器輔助函數
-export const selectAssistantById = (id: string) => (state: AssistantStore) =>
-  state.assistants.find(assistant => assistant.id === id)
+export const selectCompanionById = (id: string) => (state: CompanionStore) =>
+  state.companions.find(companion => companion.id === id)
 
-export const selectProfileById = (id: string) => (state: AssistantStore) =>
+export const selectProfileById = (id: string) => (state: CompanionStore) =>
   state.personalityProfiles.find(profile => profile.id === id)
 
-export const selectSessionsByAssistant = (assistantId: string) => (state: AssistantStore) =>
-  state.sessionHistory.filter(session => session.assistant_id === assistantId)
+export const selectSessionsByCompanion = (companionId: string) => (state: CompanionStore) =>
+  state.sessionHistory.filter(session => session.companion_id === companionId)
+
+// 向後兼容的導出（暫時保留）
+export const useAssistantStore = useCompanionStore
