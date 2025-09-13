@@ -14,6 +14,7 @@ import {
   Alert
 } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
+import { Ionicons } from '@expo/vector-icons'
 import { DEFAULT_COMPANIONS } from '../data/defaultCompanions'
 import { AICompanion, PersonalityTrait } from '../types/assistant'
 import { useCompanionStore } from '../stores/assistantStore'
@@ -26,11 +27,13 @@ type FilterType = 'all' | 'gentle' | 'cheerful' | 'intellectual'
 interface CompanionSelectorProps {
   onSelectCompanion: (companion: AICompanion) => void
   onViewProfile: (companion: AICompanion) => void
+  onCreateCompanion: () => void
 }
 
 export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
   onSelectCompanion,
-  onViewProfile
+  onViewProfile,
+  onCreateCompanion
 }) => {
   const [companions, setCompanions] = useState<AICompanion[]>([])
   const [selectedFilter, setSelectedFilter] = useState<FilterType>('all')
@@ -203,6 +206,12 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
           <View style={styles.titleContainer}>
             <Text style={styles.title}>她的AI分身</Text>
             <Text style={styles.subtitle}>上傳她的資料，讓AI幫你更了解她</Text>
+
+            {/* 顯眼的新增按鈕 */}
+            <TouchableOpacity style={styles.createButtonTop} onPress={onCreateCompanion}>
+              <Ionicons name="add" size={20} color="#fff" />
+              <Text style={styles.createButtonTopText}>建立新助手</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </LinearGradient>
@@ -327,12 +336,17 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
             )
           })}
 
-          {/* 新增分身按鈕 */}
-          <View style={styles.addCompanionCard}>
-            <TouchableOpacity style={styles.addButton}>
-              <Text style={styles.addIcon}>+</Text>
-              <Text style={styles.addText}>上傳她的資料</Text>
-              <Text style={styles.addSubtext}>分析她的個性，讓AI協助你更了解她</Text>
+          {/* 強化的新增分身按鈕 */}
+          <View style={styles.addCompanionCardEnhanced}>
+            <TouchableOpacity style={styles.addButtonEnhanced} onPress={onCreateCompanion}>
+              <View style={styles.addIconContainer}>
+                <Ionicons name="add-circle" size={48} color="#FF6B6B" />
+              </View>
+              <Text style={styles.addTextEnhanced}>建立新助手</Text>
+              <Text style={styles.addSubtextEnhanced}>為心動對象建立專屬的AI分身助手</Text>
+              <View style={styles.addCallToAction}>
+                <Text style={styles.addCallToActionText}>點擊開始 ▶</Text>
+              </View>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -629,5 +643,86 @@ const styles = StyleSheet.create({
     color: '#64748b',
     textAlign: 'center',
     lineHeight: 18,
+  },
+
+  // 頂部新增按鈕樣式
+  createButtonTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 25,
+    marginTop: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+    gap: 8,
+  },
+  createButtonTopText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+
+  // 強化的新增卡片樣式
+  addCompanionCardEnhanced: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    marginBottom: 16,
+    shadowColor: '#FF6B6B',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 12,
+    borderWidth: 2,
+    borderColor: '#FF6B6B',
+    overflow: 'hidden',
+  },
+  addButtonEnhanced: {
+    paddingVertical: 32,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 107, 107, 0.05)',
+  },
+  addIconContainer: {
+    marginBottom: 12,
+    padding: 8,
+    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+    borderRadius: 40,
+  },
+  addTextEnhanced: {
+    fontSize: 22,
+    color: '#FF6B6B',
+    fontWeight: '800',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  addSubtextEnhanced: {
+    fontSize: 15,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 16,
+  },
+  addCallToAction: {
+    backgroundColor: '#FF6B6B',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    shadowColor: '#FF6B6B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  addCallToActionText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '700',
   },
 })

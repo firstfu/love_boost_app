@@ -9,16 +9,17 @@ import { CompanionSelector } from '../CompanionSelector'
 import { CompanionProfile } from './CompanionProfile'
 import { ConversationPractice } from './ConversationPractice'
 import { AddCompanionData } from './AddCompanionData'
+import { CreateCompanion } from './CreateCompanion'
 import { useCompanionStore } from '../../stores/assistantStore'
 import { AICompanion } from '../../types/assistant'
 
-type AppScreen = 'selector' | 'profile' | 'conversation' | 'addData'
+type AppScreen = 'selector' | 'profile' | 'conversation' | 'addData' | 'create'
 
 export const MainApp: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('selector')
   const [selectedCompanion, setSelectedCompanionState] = useState<AICompanion | null>(null)
 
-  const { setSelectedCompanion, addUserData } = useCompanionStore()
+  const { setSelectedCompanion, addUserData, createCompanion } = useCompanionStore()
 
   /**
    * 處理選擇AI分身查看詳情
@@ -39,11 +40,27 @@ export const MainApp: React.FC = () => {
   }
 
   /**
+   * 處理創建新AI助手
+   */
+  const handleCreateCompanion = () => {
+    setCurrentScreen('create')
+  }
+
+  /**
    * 返回助手選擇頁面
    */
   const handleBackToSelector = () => {
     setCurrentScreen('selector')
     setSelectedCompanionState(null)
+  }
+
+  /**
+   * 處理保存新建立的AI助手
+   */
+  const handleSaveNewCompanion = (companion: AICompanion) => {
+    createCompanion(companion)
+    setSelectedCompanionState(companion)
+    setCurrentScreen('addData') // 創建完成後直接進入資料新增頁面
   }
 
   // 根據當前螢幕狀態渲染對應頁面
@@ -54,6 +71,15 @@ export const MainApp: React.FC = () => {
           <CompanionSelector
             onSelectCompanion={handleSelectCompanion}
             onViewProfile={handleViewCompanionProfile}
+            onCreateCompanion={handleCreateCompanion}
+          />
+        )
+
+      case 'create':
+        return (
+          <CreateCompanion
+            onBack={handleBackToSelector}
+            onSave={handleSaveNewCompanion}
           />
         )
 
@@ -92,20 +118,38 @@ export const MainApp: React.FC = () => {
         return selectedCompanion ? (
           <AddCompanionData
             companion={selectedCompanion}
-            onBack={() => setCurrentScreen('profile')}
-            isUpdate={true}
+            onBack={() => {
+              // 判斷是否為新建立的助手（ID以 'custom_' 開頭）
+              if (selectedCompanion.id.startsWith('custom_')) {
+                // 新建助手的資料新增完成後返回選擇器
+                setCurrentScreen('selector')
+              } else {
+                // 現有助手的資料新增完成後返回詳情頁面
+                setCurrentScreen('profile')
+              }
+            }}
+            isUpdate={!selectedCompanion.id.startsWith('custom_')}
             onSave={(data) => {
               console.log('儲存新增資料:', data)
               if (selectedCompanion) {
                 addUserData(selectedCompanion.id, data)
               }
-              setCurrentScreen('profile')
+
+              // 判斷是否為新建立的助手
+              if (selectedCompanion.id.startsWith('custom_')) {
+                // 新建助手的資料新增完成後返回選擇器
+                setCurrentScreen('selector')
+              } else {
+                // 現有助手的資料新增完成後返回詳情頁面
+                setCurrentScreen('profile')
+              }
             }}
           />
         ) : (
           <CompanionSelector
             onSelectCompanion={handleSelectCompanion}
             onViewProfile={handleViewCompanionProfile}
+            onCreateCompanion={handleCreateCompanion}
           />
         )
 
@@ -114,6 +158,7 @@ export const MainApp: React.FC = () => {
           <CompanionSelector
             onSelectCompanion={handleSelectCompanion}
             onViewProfile={handleViewCompanionProfile}
+            onCreateCompanion={handleCreateCompanion}
           />
         )
     }

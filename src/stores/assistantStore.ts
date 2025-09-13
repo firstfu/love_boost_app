@@ -34,6 +34,7 @@ interface CompanionStore {
 
   // AI分身操作
   addCompanion: (companion: AICompanion) => void
+  createCompanion: (companion: AICompanion) => void
   updateCompanion: (id: string, updates: Partial<AICompanion>) => void
   removeCompanion: (id: string) => void
   addUserData: (id: string, userData: any) => void
@@ -72,6 +73,11 @@ export const useCompanionStore = create<CompanionStore>((set, get) => ({
 
   // AI分身操作
   addCompanion: (companion) =>
+    set(state => ({
+      companions: [...state.companions, companion]
+    })),
+
+  createCompanion: (companion) =>
     set(state => ({
       companions: [...state.companions, companion]
     })),
