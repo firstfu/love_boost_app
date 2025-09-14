@@ -8,7 +8,8 @@
       "Bash(npm run lint)",
       "Bash(npx expo start:*)",
       "Bash(npx tsc:*)",
-      "WebSearch"
+      "WebSearch",
+      "WebFetch(domain:expo.dev)"
     ],
     "deny": [],
     "ask": []

@@ -15,6 +15,7 @@ import {
 } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Ionicons } from '@expo/vector-icons'
+import { Link } from 'expo-router'
 import { DEFAULT_COMPANIONS } from '../data/defaultCompanions'
 import { AICompanion, PersonalityTrait } from '../types/assistant'
 import { useCompanionStore } from '../stores/assistantStore'
@@ -231,15 +232,44 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
                         </View>
 
                         {/* 更多按鈕 */}
-                        <TouchableOpacity
-                          style={styles.moreButtonHorizontal}
-                          onPress={(e) => {
-                            e.stopPropagation()
-                            // TODO: 添加更多選項功能
-                          }}
-                        >
-                          <Ionicons name="ellipsis-horizontal" size={18} color="#9CA3AF" />
-                        </TouchableOpacity>
+                        <Link href="/">
+                          <Link.Trigger asChild>
+                            <TouchableOpacity style={styles.moreButtonHorizontal}>
+                              <Ionicons name="ellipsis-horizontal" size={18} color="#9CA3AF" />
+                            </TouchableOpacity>
+                          </Link.Trigger>
+                          <Link.Menu>
+                            <Link.MenuAction
+                              title="編輯資料"
+                              icon="square.and.pencil"
+                              onPress={() => {
+                                console.log('編輯', companion.name, '的資料')
+                              }}
+                            />
+                            <Link.MenuAction
+                              title="重新命名"
+                              icon="pencil.line"
+                              onPress={() => {
+                                console.log('重新命名', companion.name)
+                              }}
+                            />
+                            <Link.MenuAction
+                              title="建立副本"
+                              icon="doc.on.doc"
+                              onPress={() => {
+                                console.log('建立', companion.name, '的副本')
+                              }}
+                            />
+                            <Link.MenuAction
+                              title="刪除"
+                              icon="trash"
+                              destructive
+                              onPress={() => {
+                                console.log('刪除AI助手:', companion.id)
+                              }}
+                            />
+                          </Link.Menu>
+                        </Link>
                       </View>
 
                       {/* 簡介文字 */}
@@ -289,6 +319,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
           💝 AI分析她的個性，提供最佳聊天建議
         </Text>
       </View>
+
 
     </View>
   )
@@ -617,4 +648,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
   },
+
 })
