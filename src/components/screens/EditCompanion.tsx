@@ -16,7 +16,7 @@ import {
 import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
 import { DefaultAvatar } from '../DefaultAvatar'
-import { AICompanion } from '../../types/assistant'
+import { AICompanion, PersonalityTrait, SpeakingStyle } from '../../types/assistant'
 
 interface EditCompanionProps {
   companion: AICompanion
@@ -105,14 +105,14 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
     { key: 'cute', label: '可愛' },
     { key: 'mature', label: '成熟' },
     { key: 'direct', label: '直接' },
-    { key: 'gentle', label: '委婉' }
+    { key: 'subtle', label: '委婉' }
   ]
 
   const togglePersonalityTrait = (trait: string) => {
     const currentTraits = editedCompanion.personality_analysis.dominant_traits
-    const updatedTraits = currentTraits.includes(trait)
+    const updatedTraits = currentTraits.includes(trait as PersonalityTrait)
       ? currentTraits.filter(t => t !== trait)
-      : [...currentTraits, trait]
+      : [...currentTraits, trait as PersonalityTrait]
 
     updatePersonalityField('dominant_traits', updatedTraits)
   }
@@ -261,17 +261,17 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
                   key={trait.key}
                   style={[
                     styles.traitTag,
-                    editedCompanion.personality_analysis.dominant_traits.includes(trait.key) && styles.traitTagActive
+                    editedCompanion.personality_analysis.dominant_traits.includes(trait.key as PersonalityTrait) && styles.traitTagActive
                   ]}
                   onPress={() => togglePersonalityTrait(trait.key)}
                   disabled={
-                    !editedCompanion.personality_analysis.dominant_traits.includes(trait.key) &&
+                    !editedCompanion.personality_analysis.dominant_traits.includes(trait.key as PersonalityTrait) &&
                     editedCompanion.personality_analysis.dominant_traits.length >= 5
                   }
                 >
                   <Text style={[
                     styles.traitText,
-                    editedCompanion.personality_analysis.dominant_traits.includes(trait.key) && styles.traitTextActive
+                    editedCompanion.personality_analysis.dominant_traits.includes(trait.key as PersonalityTrait) && styles.traitTextActive
                   ]}>
                     {trait.label}
                   </Text>
@@ -292,7 +292,7 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
                     styles.styleOption,
                     editedCompanion.personality_analysis.speaking_style === style.key && styles.styleOptionActive
                   ]}
-                  onPress={() => updatePersonalityField('speaking_style', style.key)}
+                  onPress={() => updatePersonalityField('speaking_style', style.key as SpeakingStyle)}
                 >
                   <Text style={[
                     styles.styleOptionText,
@@ -333,7 +333,7 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
                     { text: '取消', style: 'cancel' },
                     {
                       text: '新增',
-                      onPress: (text) => text && addInterest(text)
+                      onPress: (text?: string) => text && addInterest(text)
                     }
                   ],
                   'plain-text'

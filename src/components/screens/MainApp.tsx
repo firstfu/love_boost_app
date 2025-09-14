@@ -114,6 +114,7 @@ export const MainApp: React.FC = () => {
           <CompanionSelector
             onSelectCompanion={handleSelectCompanion}
             onViewProfile={handleViewCompanionProfile}
+            onCreateCompanion={handleCreateCompanion}
           />
         )
 
@@ -127,6 +128,7 @@ export const MainApp: React.FC = () => {
           <CompanionSelector
             onSelectCompanion={handleSelectCompanion}
             onViewProfile={handleViewCompanionProfile}
+            onCreateCompanion={handleCreateCompanion}
           />
         )
 
