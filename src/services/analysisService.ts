@@ -17,7 +17,7 @@ import {
 export class AnalysisService {
 
   /**
-   * 選擇圖片（相機或相簿）
+   * 選擇單張圖片（相機或相簿）
    */
   static async pickImage(): Promise<ImagePicker.ImagePickerResult> {
     // 請求權限
@@ -31,6 +31,27 @@ export class AnalysisService {
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [4, 3],
+      quality: 0.8,
+      base64: true
+    })
+
+    return result
+  }
+
+  /**
+   * 選擇多張圖片（相簿）
+   */
+  static async pickMultipleImages(): Promise<ImagePicker.ImagePickerResult> {
+    // 請求權限
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync()
+
+    if (permissionResult.granted === false) {
+      throw new Error('需要相簿權限才能選擇圖片')
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsMultipleSelection: true,
       quality: 0.8,
       base64: true
     })
@@ -88,17 +109,53 @@ export class AnalysisService {
    * 構建分析提示詞
    */
   private static buildAnalysisPrompt(request: QuickAnalysisRequest): string {
-    const isImage = request.input_type === 'image'
+    let contentSection = ''
+
+    if (request.input_type === 'image') {
+      const imageCount = Array.isArray(request.input_data) ? request.input_data.length : 1
+      contentSection = `請分析這${imageCount > 1 ? `${imageCount}張` : '張'}聊天截圖，理解對話內容和情境：\n\n`
+
+      if (Array.isArray(request.input_data)) {
+        request.input_data.forEach((_, index) => {
+          contentSection += `圖片 ${index + 1}: [聊天截圖]\n`
+        })
+      } else {
+        contentSection += '[聊天截圖]'
+      }
+    } else if (request.input_type === 'text') {
+      const textCount = Array.isArray(request.input_data) ? request.input_data.length : 1
+      contentSection = `請分析以下${textCount > 1 ? `${textCount}段` : ''}對話內容：\n\n`
+
+      if (Array.isArray(request.input_data)) {
+        request.input_data.forEach((text, index) => {
+          contentSection += `對話 ${index + 1}: ${text}\n\n`
+        })
+      } else {
+        contentSection += request.input_data
+      }
+    } else if (request.input_type === 'mixed') {
+      contentSection = '請分析以下混合內容（圖片和文字）：\n\n'
+
+      if (request.images && request.images.length > 0) {
+        contentSection += `圖片內容 (${request.images.length}張):\n`
+        request.images.forEach((_, index) => {
+          contentSection += `圖片 ${index + 1}: [聊天截圖]\n`
+        })
+        contentSection += '\n'
+      }
+
+      if (request.texts && request.texts.length > 0) {
+        contentSection += `文字內容 (${request.texts.length}段):\n`
+        request.texts.forEach((text, index) => {
+          contentSection += `文字 ${index + 1}: ${text}\n\n`
+        })
+      }
+    }
 
     return `
 你是一個專業的戀愛諮詢助手，擅長分析對話和提供聊天建議。
 
-${isImage ?
-  '請分析這張聊天截圖，理解對話內容和情境：' :
-  '請分析以下對話內容：'
-}
-
-${request.input_data}
+${contentSection}
 
 請提供以下格式的分析結果（請用繁體中文回答）：
 
@@ -124,6 +181,10 @@ ${request.input_data}
 5. 時機建議
 6. 可探索話題
 7. 需要避免的話題
+
+${request.input_type === 'mixed' || Array.isArray(request.input_data)
+  ? '請綜合分析所有提供的內容，提供整體性的建議。'
+  : ''}
 
 請確保建議實用且符合台灣本地文化背景。
 `

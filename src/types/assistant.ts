@@ -348,8 +348,10 @@ export interface QuickReplyRecommendation {
 // 快速分析請求
 export interface QuickAnalysisRequest {
   companion_id: string
-  input_type: 'image' | 'text'
-  input_data: string // base64 image or text content
+  input_type: 'image' | 'text' | 'mixed'
+  input_data: string | string[] // single or multiple inputs
+  images?: string[] // multiple base64 images
+  texts?: string[] // multiple text contents
   context?: {
     relationship_stage?: string
     recent_conversation_context?: string
