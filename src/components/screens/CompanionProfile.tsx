@@ -26,7 +26,6 @@ interface CompanionProfileProps {
   onBack: () => void
   onStartChat: (companion: AICompanion) => void
   onAddData?: (companion: AICompanion) => void
-  onViewAnalysis?: (companion: AICompanion) => void
   onEditProfile?: (companion: AICompanion) => void
   onViewHistory?: (companion: AICompanion) => void
 }
@@ -36,7 +35,6 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
   onBack,
   onStartChat,
   onAddData,
-  onViewAnalysis,
   onEditProfile,
   onViewHistory
 }) => {
@@ -125,7 +123,6 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
           companion={companion}
           onStartChat={onStartChat}
           onAddData={onAddData}
-          onViewAnalysis={onViewAnalysis}
         />
 
         {/* 內容區域 */}

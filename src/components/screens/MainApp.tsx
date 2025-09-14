@@ -12,12 +12,11 @@ import { AddCompanionData } from './AddCompanionData'
 import { CreateCompanion } from './CreateCompanion'
 import { EditCompanion } from './EditCompanion'
 import { ConversationHistory } from './ConversationHistory'
-import AnalysisReportScreen from '../../../app/analysis-report'
 import ChatAnalysisScreen from '../../../app/(tabs)/explore'
 import { useCompanionStore } from '../../stores/assistantStore'
 import { AICompanion } from '../../types/assistant'
 
-type AppScreen = 'selector' | 'profile' | 'conversation' | 'addData' | 'create' | 'editCompanion' | 'conversationHistory' | 'analysisReport' | 'chatAnalysis'
+type AppScreen = 'selector' | 'profile' | 'conversation' | 'addData' | 'create' | 'editCompanion' | 'conversationHistory' | 'chatAnalysis'
 
 export const MainApp: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('selector')
@@ -96,10 +95,6 @@ export const MainApp: React.FC = () => {
             onAddData={(companion) => {
               setSelectedCompanionState(companion)
               setCurrentScreen('addData')
-            }}
-            onViewAnalysis={(companion) => {
-              setSelectedCompanionState(companion)
-              setCurrentScreen('analysisReport')
             }}
             onEditProfile={(companion) => {
               setSelectedCompanionState(companion)
@@ -207,13 +202,6 @@ export const MainApp: React.FC = () => {
           />
         )
 
-      case 'analysisReport':
-        return (
-          <AnalysisReportScreen
-            onBack={() => setCurrentScreen('profile')}
-            onChatAnalysis={() => setCurrentScreen('chatAnalysis')}
-          />
-        )
 
       case 'chatAnalysis':
         return (

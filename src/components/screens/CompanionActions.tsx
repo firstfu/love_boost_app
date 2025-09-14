@@ -1,6 +1,6 @@
 /**
  * AI助手詳情頁面主要功能按鈕組件
- * 提供開始對話練習、上傳資料、查看分析報告等核心功能
+ * 提供開始對話練習、上傳資料等核心功能
  */
 
 import React from 'react'
@@ -12,22 +12,13 @@ interface CompanionActionsProps {
   companion: AICompanion
   onStartChat: (companion: AICompanion) => void
   onAddData?: (companion: AICompanion) => void
-  onViewAnalysis?: (companion: AICompanion) => void
 }
 
 export const CompanionActions: React.FC<CompanionActionsProps> = ({
   companion,
   onStartChat,
-  onAddData,
-  onViewAnalysis
+  onAddData
 }) => {
-  const handleAnalysisPress = () => {
-    if (onViewAnalysis) {
-      onViewAnalysis(companion)
-    }
-  }
-
-  const isAnalysisReady = true // 讓分析報告功能總是可用
 
   return (
     <View style={styles.container}>
@@ -60,35 +51,6 @@ export const CompanionActions: React.FC<CompanionActionsProps> = ({
         )}
       </View>
 
-      {/* 次要功能按鈕組 */}
-      <View style={styles.secondaryActions}>
-        {/* 查看分析報告 */}
-        <TouchableOpacity
-          style={[
-            styles.featureButton,
-            !isAnalysisReady && styles.disabledButton
-          ]}
-          onPress={handleAnalysisPress}
-          disabled={!isAnalysisReady}
-        >
-          <Ionicons
-            name="analytics"
-            size={18}
-            color={isAnalysisReady ? "#FF6B9D" : "#94a3b8"}
-          />
-          <Text style={[
-            styles.featureButtonText,
-            !isAnalysisReady && styles.disabledText
-          ]}>
-            查看分析報告
-          </Text>
-          {!isAnalysisReady && (
-            <View style={styles.comingSoonBadge}>
-              <Text style={styles.comingSoonText}>需要更多資料</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      </View>
 
     </View>
   )
@@ -104,7 +66,7 @@ const styles = StyleSheet.create({
   mainActions: {
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 16,
+    marginBottom: 0,
   },
   actionButton: {
     flex: 1,
@@ -138,61 +100,5 @@ const styles = StyleSheet.create({
     color: '#FF6B9D',
     fontSize: 16,
     fontWeight: '600',
-  },
-  secondaryActions: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 16,
-  },
-  featureButton: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255, 107, 157, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 107, 157, 0.15)',
-    position: 'relative',
-    minHeight: 70,
-  },
-  disabledButton: {
-    backgroundColor: 'rgba(148, 163, 184, 0.05)',
-    borderColor: 'rgba(148, 163, 184, 0.15)',
-  },
-  featureButtonText: {
-    color: '#FF6B9D',
-    fontSize: 13,
-    fontWeight: '600',
-    marginTop: 8,
-    textAlign: 'center',
-    lineHeight: 16,
-  },
-  disabledText: {
-    color: '#94a3b8',
-  },
-  comingSoonBadge: {
-    position: 'absolute',
-    top: 6,
-    right: 6,
-    backgroundColor: '#f59e0b',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 8,
-  },
-  comingSoonText: {
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: '600',
-  },
-  hintText: {
-    fontSize: 12,
-    color: '#64748b',
-    textAlign: 'center',
-    lineHeight: 16,
-    paddingHorizontal: 16,
-    fontStyle: 'italic',
   },
 })
