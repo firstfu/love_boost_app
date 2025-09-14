@@ -71,7 +71,7 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
     ))
   }
 
-  const renderProgressBar = (value: number, color: string = '#9F7AEA') => (
+  const renderProgressBar = (value: number, color: string = '#FF6B9D') => (
     <View style={styles.progressBarContainer}>
       <View style={[styles.progressBar, { width: `${value}%` }]} />
     </View>
@@ -118,7 +118,7 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
         {/* 漸層背景個人資料區 */}
         {isHeaderVisible && (
           <LinearGradient
-            colors={['#9F7AEA', '#FF8E8E', '#FFB3B3']}
+            colors={['#FF6B9D', '#FF8E8E', '#FFB3B3']}
             locations={[0, 0.5, 1]}
             style={styles.profileHeader}
           >
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingTop: 44,
-    backgroundColor: 'rgba(159, 122, 234, 0.95)',
+    backgroundColor: 'rgba(255, 107, 157, 0.95)',
     zIndex: 1000,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.2)',
@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     borderRadius: 20,
     padding: 20,
-    shadowColor: '#9F7AEA',
+    shadowColor: '#FF6B9D',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
@@ -406,16 +406,16 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   traitTag: {
-    backgroundColor: 'rgba(159, 122, 234, 0.1)',
+    backgroundColor: 'rgba(255, 107, 157, 0.1)',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(159, 122, 234, 0.2)',
+    borderColor: 'rgba(255, 107, 157, 0.2)',
   },
   traitText: {
     fontSize: 12,
-    color: '#9F7AEA',
+    color: '#FF6B9D',
     fontWeight: '600',
   },
   styleText: {
@@ -458,7 +458,7 @@ const styles = StyleSheet.create({
   progressBar: {
     height: '100%',
     borderRadius: 2,
-    backgroundColor: '#9F7AEA',
+    backgroundColor: '#FF6B9D',
   },
   dataRow: {
     flexDirection: 'row',
@@ -474,7 +474,7 @@ const styles = StyleSheet.create({
   dataNumber: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#9F7AEA',
+    color: '#FF6B9D',
     marginBottom: 4,
   },
   dataLabel: {
@@ -528,7 +528,7 @@ const styles = StyleSheet.create({
   scoreNumber: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#9F7AEA',
+    color: '#FF6B9D',
   },
   scoreOutOf: {
     fontSize: 14,

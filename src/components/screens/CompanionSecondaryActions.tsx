@@ -83,7 +83,7 @@ export const CompanionSecondaryActions: React.FC<CompanionSecondaryActionsProps>
               <Ionicons
                 name={action.icon}
                 size={22}
-                color={action.available ? "#9F7AEA" : "#94a3b8"}
+                color={action.available ? "#FF6B9D" : "#94a3b8"}
               />
             </View>
 
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 20,
     padding: 20,
-    shadowColor: '#9F7AEA',
+    shadowColor: '#FF6B9D',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     borderRadius: 12,
     marginBottom: 8,
-    backgroundColor: 'rgba(159, 122, 234, 0.02)',
+    backgroundColor: 'rgba(255, 107, 157, 0.02)',
   },
   disabledActionItem: {
     backgroundColor: 'rgba(148, 163, 184, 0.02)',
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(159, 122, 234, 0.1)',
+    backgroundColor: 'rgba(255, 107, 157, 0.1)',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,

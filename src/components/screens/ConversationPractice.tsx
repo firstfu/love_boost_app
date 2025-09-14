@@ -204,7 +204,7 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
     >
       {/* 漸層背景 Header */}
       <LinearGradient
-        colors={['#9F7AEA', '#FF8E8E', '#FFB3B3']}
+        colors={['#FF6B9D', '#FF8E8E', '#FFB3B3']}
         locations={[0, 0.5, 1]}
         style={styles.headerGradient}
       >
@@ -466,7 +466,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   userBubble: {
-    backgroundColor: '#9F7AEA',
+    backgroundColor: '#FF6B9D',
     borderBottomRightRadius: 8,
   },
   aiBubble: {
@@ -528,8 +528,8 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingLeft: 16,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(159, 122, 234, 0.2)',
-    shadowColor: '#9F7AEA',
+    borderTopColor: 'rgba(255, 107, 157, 0.2)',
+    shadowColor: '#FF6B9D',
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -582,8 +582,8 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     backgroundColor: 'rgba(255,255,255,0.95)',
     borderTopWidth: 1,
-    borderTopColor: 'rgba(159, 122, 234, 0.2)',
-    shadowColor: '#9F7AEA',
+    borderTopColor: 'rgba(255, 107, 157, 0.2)',
+    shadowColor: '#FF6B9D',
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -592,7 +592,7 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     borderWidth: 1,
-    borderColor: 'rgba(159, 122, 234, 0.3)',
+    borderColor: 'rgba(255, 107, 157, 0.3)',
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -605,17 +605,17 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#9F7AEA',
+    backgroundColor: '#FF6B9D',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#9F7AEA',
+    shadowColor: '#FF6B9D',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 4,
   },
   sendButtonDisabled: {
-    backgroundColor: 'rgba(159, 122, 234, 0.3)',
+    backgroundColor: 'rgba(255, 107, 157, 0.3)',
     shadowOpacity: 0,
     elevation: 0,
   },

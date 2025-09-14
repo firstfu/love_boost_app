@@ -119,7 +119,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({ onSelectCo
   return (
     <View style={styles.container}>
       {/* 漸層背景 */}
-      <LinearGradient colors={["#9F7AEA", "#B794F4", "#D6BCFA"]} locations={[0, 0.5, 1]} style={styles.backgroundGradient}>
+      <LinearGradient colors={["#FF9A8B", "#FF6B9D", "#C44569"]} locations={[0, 0.5, 1]} style={styles.backgroundGradient}>
         {/* 頂部標題區 */}
         <View style={styles.header}>
           <View style={styles.titleContainer}>
@@ -282,7 +282,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({ onSelectCo
           <View style={styles.addCompanionCardEnhanced}>
             <TouchableOpacity style={styles.addButtonEnhanced} onPress={onCreateCompanion}>
               <View style={styles.addIconContainer}>
-                <Ionicons name="add-circle" size={48} color="#9F7AEA" />
+                <Ionicons name="add-circle" size={48} color="#FF6B9D" />
               </View>
               <Text style={styles.addTextEnhanced}>建立新助手</Text>
               <Text style={styles.addSubtextEnhanced}>為心動對象建立專屬的AI分身助手</Text>
@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
     marginTop: -5,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    shadowColor: "#9F7AEA",
+    shadowColor: "#FF6B9D",
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -351,15 +351,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 10,
     borderRadius: 20,
-    backgroundColor: "rgba(159, 122, 234, 0.1)",
+    backgroundColor: "rgba(255, 107, 157, 0.1)",
     marginRight: 12,
     borderWidth: 1,
-    borderColor: "rgba(159, 122, 234, 0.2)",
+    borderColor: "rgba(255, 107, 157, 0.2)",
   },
   filterButtonActive: {
-    backgroundColor: "#9F7AEA",
-    borderColor: "#9F7AEA",
-    shadowColor: "#9F7AEA",
+    backgroundColor: "#FF6B9D",
+    borderColor: "#FF6B9D",
+    shadowColor: "#FF6B9D",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
   },
   filterText: {
     fontSize: 14,
-    color: "#9F7AEA",
+    color: "#FF6B9D",
     fontWeight: "600",
   },
   filterTextActive: {
@@ -389,14 +389,14 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginBottom: 16,
     marginHorizontal: 1,
-    shadowColor: "#9F7AEA",
+    shadowColor: "#FF6B9D",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 16,
     elevation: 8,
     overflow: "hidden",
     borderWidth: 0.5,
-    borderColor: "rgba(159, 122, 234, 0.06)",
+    borderColor: "rgba(255, 107, 157, 0.06)",
   },
   cardTouchable: {
     flex: 1,
@@ -416,13 +416,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -4,
     right: -4,
-    backgroundColor: "#9F7AEA",
+    backgroundColor: "#FF6B9D",
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 10,
     borderWidth: 1.5,
     borderColor: "#ffffff",
-    shadowColor: "#9F7AEA",
+    shadowColor: "#FF6B9D",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
@@ -457,14 +457,14 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   ageTagHorizontal: {
-    backgroundColor: "rgba(159, 122, 234, 0.12)",
+    backgroundColor: "rgba(255, 107, 157, 0.12)",
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 12,
   },
   ageTagHorizontalText: {
     fontSize: 11,
-    color: "#9F7AEA",
+    color: "#FF6B9D",
     fontWeight: "600",
   },
   moreButtonHorizontal: {
@@ -489,11 +489,11 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   viewProfileBtn: {
-    backgroundColor: "#9F7AEA",
+    backgroundColor: "#FF6B9D",
     paddingHorizontal: 16,
     paddingVertical: 6,
     borderRadius: 16,
-    shadowColor: "#9F7AEA",
+    shadowColor: "#FF6B9D",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -505,11 +505,11 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   addCompanionCard: {
-    backgroundColor: "rgba(159, 122, 234, 0.05)",
+    backgroundColor: "rgba(255, 107, 157, 0.05)",
     borderRadius: 20,
     marginBottom: 16,
     borderWidth: 2,
-    borderColor: "rgba(159, 122, 234, 0.2)",
+    borderColor: "rgba(255, 107, 157, 0.2)",
     borderStyle: "dashed",
   },
   addButton: {
@@ -519,13 +519,13 @@ const styles = StyleSheet.create({
   },
   addIcon: {
     fontSize: 48,
-    color: "#9F7AEA",
+    color: "#FF6B9D",
     fontWeight: "300",
     marginBottom: 8,
   },
   addText: {
     fontSize: 18,
-    color: "#9F7AEA",
+    color: "#FF6B9D",
     fontWeight: "600",
     marginBottom: 4,
   },
@@ -576,30 +576,30 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 20,
     marginBottom: 16,
-    shadowColor: "#9F7AEA",
+    shadowColor: "#FF6B9D",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,
     shadowRadius: 16,
     elevation: 12,
     borderWidth: 2,
-    borderColor: "#9F7AEA",
+    borderColor: "#FF6B9D",
     overflow: "hidden",
   },
   addButtonEnhanced: {
     paddingVertical: 32,
     paddingHorizontal: 24,
     alignItems: "center",
-    backgroundColor: "rgba(159, 122, 234, 0.05)",
+    backgroundColor: "rgba(255, 107, 157, 0.05)",
   },
   addIconContainer: {
     marginBottom: 12,
     padding: 8,
-    backgroundColor: "rgba(159, 122, 234, 0.1)",
+    backgroundColor: "rgba(255, 107, 157, 0.1)",
     borderRadius: 40,
   },
   addTextEnhanced: {
     fontSize: 22,
-    color: "#9F7AEA",
+    color: "#FF6B9D",
     fontWeight: "800",
     marginBottom: 8,
     textAlign: "center",
@@ -612,11 +612,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   addCallToAction: {
-    backgroundColor: "#9F7AEA",
+    backgroundColor: "#FF6B9D",
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 20,
-    shadowColor: "#9F7AEA",
+    shadowColor: "#FF6B9D",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

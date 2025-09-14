@@ -142,7 +142,7 @@ export const CreateCompanion: React.FC<CreateCompanionProps> = ({
     <View style={styles.container}>
       {/* 漸層背景 Header */}
       <LinearGradient
-        colors={['#9F7AEA', '#FF8E8E', '#FFB3B3']}
+        colors={['#FF6B9D', '#FF8E8E', '#FFB3B3']}
         locations={[0, 0.5, 1]}
         style={styles.backgroundGradient}
       >
@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: 'rgba(159, 122, 234, 0.2)',
+    borderColor: 'rgba(255, 107, 157, 0.2)',
     color: '#1a202c',
   },
   textArea: {
@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(159, 122, 234, 0.1)',
+    borderColor: 'rgba(255, 107, 157, 0.1)',
     gap: 8,
   },
   traitButtonActive: {
@@ -440,11 +440,11 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(159, 122, 234, 0.1)',
+    borderColor: 'rgba(255, 107, 157, 0.1)',
   },
   styleOptionActive: {
-    backgroundColor: 'rgba(159, 122, 234, 0.05)',
-    borderColor: '#9F7AEA',
+    backgroundColor: 'rgba(255, 107, 157, 0.05)',
+    borderColor: '#FF6B9D',
     borderWidth: 2,
   },
   styleOptionContent: {
@@ -457,14 +457,14 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   styleOptionLabelActive: {
-    color: '#9F7AEA',
+    color: '#FF6B9D',
   },
   styleOptionDescription: {
     fontSize: 14,
     color: '#64748b',
   },
   styleOptionDescriptionActive: {
-    color: '#9F7AEA',
+    color: '#FF6B9D',
   },
   radioButton: {
     width: 20,
@@ -479,7 +479,7 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#9F7AEA',
+    backgroundColor: '#FF6B9D',
   },
   bottomActions: {
     flexDirection: 'row',
@@ -488,8 +488,8 @@ const styles = StyleSheet.create({
     gap: 12,
     backgroundColor: 'rgba(255,255,255,0.95)',
     borderTopWidth: 1,
-    borderTopColor: 'rgba(159, 122, 234, 0.1)',
-    shadowColor: '#9F7AEA',
+    borderTopColor: 'rgba(255, 107, 157, 0.1)',
+    shadowColor: '#FF6B9D',
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -503,17 +503,17 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   primaryButton: {
-    backgroundColor: '#9F7AEA',
-    shadowColor: '#9F7AEA',
+    backgroundColor: '#FF6B9D',
+    shadowColor: '#FF6B9D',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
   },
   secondaryButton: {
-    backgroundColor: 'rgba(159, 122, 234, 0.1)',
+    backgroundColor: 'rgba(255, 107, 157, 0.1)',
     borderWidth: 1,
-    borderColor: '#9F7AEA',
+    borderColor: '#FF6B9D',
   },
   primaryButtonText: {
     color: '#fff',
@@ -521,7 +521,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   secondaryButtonText: {
-    color: '#9F7AEA',
+    color: '#FF6B9D',
     fontSize: 16,
     fontWeight: '600',
   },

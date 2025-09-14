@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 44,
     paddingBottom: 16,
-    backgroundColor: '#9F7AEA',
+    backgroundColor: '#FF6B9D',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.2)',
   },
@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f1f5f9',
   },
   filterButtonActive: {
-    backgroundColor: '#9F7AEA',
+    backgroundColor: '#FF6B9D',
   },
   filterText: {
     fontSize: 14,
