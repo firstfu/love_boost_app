@@ -17,9 +17,11 @@ This is an Expo React Native app using:
 
 - **Expo Router** for file-based routing (expo-router v6)
 - **TypeScript** with strict mode enabled
-- **React Navigation** for tab-based navigation 
+- **React Navigation** for tab-based navigation
 - **Reanimated v4** for animations with React Compiler experimental support
 - **Expo SDK 54** with new architecture enabled
+- **Zustand** for state management
+- **React 19.1.0** with React Native 0.81.4
 
 ### Key Directory Structure
 
@@ -28,6 +30,11 @@ This is an Expo React Native app using:
   - `app/_layout.tsx` - Root layout with theme provider
   - `app/modal.tsx` - Modal screen
 - `components/` - Reusable React components including UI components in `components/ui/`
+- `src/` - Main application logic
+  - `src/components/screens/` - Screen components for the love boost app
+  - `src/stores/` - Zustand state stores (e.g., assistantStore.ts)
+  - `src/types/` - TypeScript type definitions
+  - `src/data/` - Data files and mock data
 - `hooks/` - Custom React hooks (color scheme, theme management)
 - `constants/` - App constants like theme definitions
 - `assets/` - Static assets (images, icons, etc.)
@@ -45,6 +52,22 @@ The app uses a comprehensive theme system with:
 - ESLint with Expo config for code quality
 - VS Code settings for auto-formatting and import organization
 - TypeScript strict mode enabled for type safety
+- React Compiler experimental support enabled
+- Typed routes enabled for Expo Router
+- EAS Updates configured for over-the-air updates
+
+### State Management
+
+The app uses **Zustand** for state management with stores located in `src/stores/`. Key stores include:
+- `assistantStore.ts` - Manages AI assistant/companion state and interactions
+
+### Key Features
+
+Based on the screen components in `src/components/screens/`, this appears to be a love/relationship coaching app with:
+- AI companion creation and management
+- Conversation practice with AI assistants
+- Conversation history tracking
+- Companion profile customization
 ## 專案管理指引
 
 ### 文檔管理
