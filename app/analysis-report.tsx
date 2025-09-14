@@ -37,9 +37,9 @@ export default function AnalysisReportScreen({ onBack, onChatAnalysis }: Analysi
   }
 
   const personalityTraits = [
-    { label: '溫柔', color: '#FF8E8E', icon: 'heart-outline' },
-    { label: '知性', color: '#FFB3B3', icon: 'library-outline' },
-    { label: '沈穩', color: '#FF6B6B', icon: 'leaf-outline' },
+    { label: '溫柔', color: '#FF9A8B', icon: 'heart-outline' },
+    { label: '知性', color: '#FFC4BA', icon: 'library-outline' },
+    { label: '沈穩', color: '#FF6B9D', icon: 'leaf-outline' },
   ]
 
   const speakingStyle = {
@@ -59,7 +59,7 @@ export default function AnalysisReportScreen({ onBack, onChatAnalysis }: Analysi
     <View style={styles.container}>
       {/* 漸層背景頭部 */}
       <LinearGradient
-        colors={['#FF6B6B', '#FF8E8E', '#FFB3B3']}
+        colors={['#FF9A8B', '#FF6B9D', '#C44569']}
         locations={[0, 0.5, 1]}
         style={styles.backgroundGradient}
       >
@@ -102,7 +102,7 @@ export default function AnalysisReportScreen({ onBack, onChatAnalysis }: Analysi
           <View style={styles.speakingStyleCard}>
             <View style={styles.styleHeader}>
               <View style={styles.styleTypeContainer}>
-                <Ionicons name="chatbubble-ellipses" size={20} color="#FF6B6B" />
+                <Ionicons name="chatbubble-ellipses" size={20} color="#FF6B9D" />
                 <Text style={styles.styleType}>{speakingStyle.type}</Text>
               </View>
             </View>
@@ -129,7 +129,7 @@ export default function AnalysisReportScreen({ onBack, onChatAnalysis }: Analysi
             {interests.map((interest, index) => (
               <View key={index} style={styles.interestCard}>
                 <View style={styles.interestIcon}>
-                  <Ionicons name={interest.icon as any} size={24} color="#FF6B6B" />
+                  <Ionicons name={interest.icon as any} size={24} color="#FF6B9D" />
                 </View>
                 <Text style={styles.interestName}>{interest.name}</Text>
                 <Text style={styles.interestDescription}>{interest.description}</Text>
@@ -141,7 +141,7 @@ export default function AnalysisReportScreen({ onBack, onChatAnalysis }: Analysi
         {/* 底部導航 */}
         <View style={styles.bottomNavigation}>
           <TouchableOpacity style={[styles.navButton, styles.activeNavButton]}>
-            <Ionicons name="people" size={20} color="#FF6B6B" />
+            <Ionicons name="people" size={20} color="#FF6B9D" />
             <Text style={[styles.navButtonText, styles.activeNavButtonText]}>她的分身</Text>
           </TouchableOpacity>
 
@@ -256,8 +256,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     borderWidth: 1,
-    borderColor: 'rgba(255, 107, 107, 0.2)',
-    shadowColor: '#FF6B6B',
+    borderColor: 'rgba(255, 107, 157, 0.2)',
+    shadowColor: '#FF6B9D',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
   styleType: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FF6B6B',
+    color: '#FF6B9D',
   },
   styleDescription: {
     fontSize: 15,
@@ -288,16 +288,16 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   characteristicTag: {
-    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+    backgroundColor: 'rgba(255, 107, 157, 0.1)',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(255, 107, 107, 0.3)',
+    borderColor: 'rgba(255, 107, 157, 0.3)',
   },
   characteristicText: {
     fontSize: 12,
-    color: '#FF6B6B',
+    color: '#FF6B9D',
     fontWeight: '500',
   },
   interestsGrid: {
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+    backgroundColor: 'rgba(255, 107, 157, 0.1)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
@@ -363,9 +363,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   activeNavButton: {
-    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+    backgroundColor: 'rgba(255, 107, 157, 0.1)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 107, 107, 0.3)',
+    borderColor: 'rgba(255, 107, 157, 0.3)',
   },
   navButtonText: {
     fontSize: 14,
@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   activeNavButtonText: {
-    color: '#FF6B6B',
+    color: '#FF6B9D',
     fontWeight: '600',
   },
 })
