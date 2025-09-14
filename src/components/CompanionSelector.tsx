@@ -233,7 +233,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
 
                         {/* 更多按鈕 */}
                         <Link href="/">
-                          <Link.Trigger asChild>
+                          <Link.Trigger>
                             <TouchableOpacity style={styles.moreButtonHorizontal}>
                               <Ionicons name="ellipsis-horizontal" size={18} color="#9CA3AF" />
                             </TouchableOpacity>
