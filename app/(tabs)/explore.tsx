@@ -94,7 +94,7 @@ export default function ChatAnalysisScreen() {
     <View style={styles.container}>
       {/* 漸層背景頭部 */}
       <LinearGradient
-        colors={['#4ECDC4', '#44A08D', '#44A08D']}
+        colors={['#FF6B6B', '#FF8E8E', '#FFB3B3']}
         locations={[0, 0.5, 1]}
         style={styles.backgroundGradient}
       >
@@ -163,7 +163,7 @@ export default function ChatAnalysisScreen() {
           <View style={styles.analysisCard}>
             <View style={styles.analysisSection}>
               <View style={styles.analysisSectionHeader}>
-                <Ionicons name="image" size={16} color="#007AFF" />
+                <Ionicons name="image" size={16} color="#FF6B6B" />
                 <Text style={styles.analysisSectionTitle}>照片分析</Text>
               </View>
               <Text style={styles.analysisText}>{currentAnalysis.analysis.photoAnalysis}</Text>
@@ -171,7 +171,7 @@ export default function ChatAnalysisScreen() {
 
             <View style={styles.analysisSection}>
               <View style={styles.analysisSectionHeader}>
-                <Ionicons name="chatbubbles" size={16} color="#34C759" />
+                <Ionicons name="chatbubbles" size={16} color="#FF8E8E" />
                 <Text style={styles.analysisSectionTitle}>對話解析</Text>
               </View>
               <Text style={styles.analysisText}>{currentAnalysis.analysis.conversationAnalysis}</Text>
@@ -179,7 +179,7 @@ export default function ChatAnalysisScreen() {
 
             <View style={styles.analysisSection}>
               <View style={styles.analysisSectionHeader}>
-                <Ionicons name="person" size={16} color="#FF9500" />
+                <Ionicons name="person" size={16} color="#FF6B6B" />
                 <Text style={styles.analysisSectionTitle}>個性洞察</Text>
               </View>
               <Text style={styles.analysisText}>{currentAnalysis.analysis.personalityInsights}</Text>
@@ -187,12 +187,12 @@ export default function ChatAnalysisScreen() {
 
             <View style={styles.analysisSection}>
               <View style={styles.analysisSectionHeader}>
-                <Ionicons name="bulb" size={16} color="#FF3B30" />
+                <Ionicons name="bulb" size={16} color="#FF8E8E" />
                 <Text style={styles.analysisSectionTitle}>聊天建議</Text>
               </View>
               {currentAnalysis.analysis.suggestions.map((suggestion, index) => (
                 <View key={index} style={styles.suggestionItem}>
-                  <Ionicons name="checkmark-circle" size={14} color="#34C759" />
+                  <Ionicons name="checkmark-circle" size={14} color="#FF6B6B" />
                   <Text style={styles.suggestionText}>{suggestion}</Text>
                 </View>
               ))}
@@ -296,15 +296,15 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.rounded,
   },
   uploadButton: {
-    backgroundColor: 'rgba(78, 205, 196, 0.1)',
+    backgroundColor: 'rgba(255, 107, 107, 0.1)',
     borderWidth: 2,
-    borderColor: '#4ECDC4',
+    borderColor: '#FF6B6B',
     borderStyle: 'dashed',
     borderRadius: 16,
     padding: 24,
     alignItems: 'center',
     marginBottom: 16,
-    shadowColor: '#4ECDC4',
+    shadowColor: '#FF6B6B',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
   uploadButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#4ECDC4',
+    color: '#FF6B6B',
     marginTop: 8,
   },
   uploadHint: {
@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   analyzeButton: {
-    backgroundColor: '#4ECDC4',
+    backgroundColor: '#FF6B6B',
     paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 16,
@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    shadowColor: '#4ECDC4',
+    shadowColor: '#FF6B6B',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -374,11 +374,17 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   analysisCard: {
-    backgroundColor: '#f8fafc',
-    borderRadius: 16,
-    padding: 20,
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 24,
+    marginHorizontal: 4,
+    shadowColor: '#FF6B6B',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 12,
     borderWidth: 1,
-    borderColor: '#e1e8ed',
+    borderColor: 'rgba(255, 107, 107, 0.1)',
   },
   analysisSection: {
     marginBottom: 20,
