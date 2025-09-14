@@ -378,12 +378,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   backgroundGradient: {
-    paddingBottom: 20,
+    paddingBottom: 10,
   },
   header: {
     paddingTop: 60,
     paddingHorizontal: 24,
-    paddingBottom: 30,
+    paddingBottom: 15,
     alignItems: 'center',
   },
   titleContainer: {
@@ -405,7 +405,7 @@ const styles = StyleSheet.create({
   filterSection: {
     backgroundColor: 'rgba(255,255,255,0.95)',
     paddingVertical: 16,
-    marginTop: -10,
+    marginTop: -5,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     shadowColor: '#FF6B6B',
