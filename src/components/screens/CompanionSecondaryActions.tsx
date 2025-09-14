@@ -12,16 +12,12 @@ interface CompanionSecondaryActionsProps {
   companion: AICompanion
   onEditProfile?: (companion: AICompanion) => void
   onViewHistory?: (companion: AICompanion) => void
-  onViewProgress?: (companion: AICompanion) => void
-  onSettings?: (companion: AICompanion) => void
 }
 
 export const CompanionSecondaryActions: React.FC<CompanionSecondaryActionsProps> = ({
   companion,
   onEditProfile,
-  onViewHistory,
-  onViewProgress,
-  onSettings
+  onViewHistory
 }) => {
   const handleEditPress = () => {
     if (onEditProfile) {
@@ -47,29 +43,6 @@ export const CompanionSecondaryActions: React.FC<CompanionSecondaryActionsProps>
     }
   }
 
-  const handleProgressPress = () => {
-    if (onViewProgress) {
-      onViewProgress(companion)
-    } else {
-      Alert.alert(
-        '學習進度詳情',
-        '詳細進度分析功能開發中，敬請期待！',
-        [{ text: '了解', style: 'default' }]
-      )
-    }
-  }
-
-  const handleSettingsPress = () => {
-    if (onSettings) {
-      onSettings(companion)
-    } else {
-      Alert.alert(
-        '助手設定',
-        '個人化設定功能開發中，敬請期待！',
-        [{ text: '了解', style: 'default' }]
-      )
-    }
-  }
 
   const secondaryActions = [
     {
@@ -85,20 +58,6 @@ export const CompanionSecondaryActions: React.FC<CompanionSecondaryActionsProps>
       subtitle: '查看過往記錄',
       onPress: handleHistoryPress,
       available: companion.interaction_stats.chat_assistance_sessions > 0
-    },
-    {
-      icon: 'trending-up-outline' as const,
-      title: '學習進度',
-      subtitle: '詳細進度分析',
-      onPress: handleProgressPress,
-      available: true
-    },
-    {
-      icon: 'settings-outline' as const,
-      title: '助手設定',
-      subtitle: '個人化偏好',
-      onPress: handleSettingsPress,
-      available: true
     }
   ]
 

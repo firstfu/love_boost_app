@@ -12,18 +12,18 @@ import { AddCompanionData } from './AddCompanionData'
 import { CreateCompanion } from './CreateCompanion'
 import { EditCompanion } from './EditCompanion'
 import { ConversationHistory } from './ConversationHistory'
-import { LearningProgress } from './LearningProgress'
-import { CompanionSettings } from './CompanionSettings'
+import AnalysisReportScreen from '../../../app/analysis-report'
+import ChatAnalysisScreen from '../../../app/(tabs)/explore'
 import { useCompanionStore } from '../../stores/assistantStore'
 import { AICompanion } from '../../types/assistant'
 
-type AppScreen = 'selector' | 'profile' | 'conversation' | 'addData' | 'create' | 'editCompanion' | 'conversationHistory' | 'learningProgress' | 'companionSettings'
+type AppScreen = 'selector' | 'profile' | 'conversation' | 'addData' | 'create' | 'editCompanion' | 'conversationHistory' | 'analysisReport' | 'chatAnalysis'
 
 export const MainApp: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('selector')
   const [selectedCompanion, setSelectedCompanionState] = useState<AICompanion | null>(null)
 
-  const { setSelectedCompanion, addUserData, createCompanion } = useCompanionStore()
+  const { setSelectedCompanion, addUserData, createCompanion, updateCompanion } = useCompanionStore()
 
   /**
    * 處理選擇AI分身查看詳情
@@ -98,12 +98,8 @@ export const MainApp: React.FC = () => {
               setCurrentScreen('addData')
             }}
             onViewAnalysis={(companion) => {
-              // TODO: 實現分析報告功能
-              console.log('查看分析報告:', companion.name)
-            }}
-            onVoiceCall={(companion) => {
-              // TODO: 實現語音通話功能
-              console.log('語音通話:', companion.name)
+              setSelectedCompanionState(companion)
+              setCurrentScreen('analysisReport')
             }}
             onEditProfile={(companion) => {
               setSelectedCompanionState(companion)
@@ -112,14 +108,6 @@ export const MainApp: React.FC = () => {
             onViewHistory={(companion) => {
               setSelectedCompanionState(companion)
               setCurrentScreen('conversationHistory')
-            }}
-            onViewProgress={(companion) => {
-              setSelectedCompanionState(companion)
-              setCurrentScreen('learningProgress')
-            }}
-            onSettings={(companion) => {
-              setSelectedCompanionState(companion)
-              setCurrentScreen('companionSettings')
             }}
           />
         ) : (
@@ -217,41 +205,17 @@ export const MainApp: React.FC = () => {
           />
         )
 
-      case 'learningProgress':
-        return selectedCompanion ? (
-          <LearningProgress
-            companion={selectedCompanion}
+      case 'analysisReport':
+        return (
+          <AnalysisReportScreen
             onBack={() => setCurrentScreen('profile')}
-          />
-        ) : (
-          <CompanionSelector
-            onSelectCompanion={handleSelectCompanion}
-            onViewProfile={handleViewCompanionProfile}
-            onCreateCompanion={handleCreateCompanion}
+            onChatAnalysis={() => setCurrentScreen('chatAnalysis')}
           />
         )
 
-      case 'companionSettings':
-        return selectedCompanion ? (
-          <CompanionSettings
-            companion={selectedCompanion}
-            onBack={() => setCurrentScreen('profile')}
-            onUpdateSettings={(updatedCompanion) => {
-              updateCompanion(updatedCompanion.id, updatedCompanion)
-              setSelectedCompanionState(updatedCompanion)
-            }}
-            onDeleteCompanion={(companionId) => {
-              removeCompanion(companionId)
-              setSelectedCompanionState(null)
-              setCurrentScreen('selector')
-            }}
-          />
-        ) : (
-          <CompanionSelector
-            onSelectCompanion={handleSelectCompanion}
-            onViewProfile={handleViewCompanionProfile}
-            onCreateCompanion={handleCreateCompanion}
-          />
+      case 'chatAnalysis':
+        return (
+          <ChatAnalysisScreen />
         )
 
       default:

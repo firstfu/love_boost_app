@@ -27,11 +27,8 @@ interface CompanionProfileProps {
   onStartChat: (companion: AICompanion) => void
   onAddData?: (companion: AICompanion) => void
   onViewAnalysis?: (companion: AICompanion) => void
-  onVoiceCall?: (companion: AICompanion) => void
   onEditProfile?: (companion: AICompanion) => void
   onViewHistory?: (companion: AICompanion) => void
-  onViewProgress?: (companion: AICompanion) => void
-  onSettings?: (companion: AICompanion) => void
 }
 
 export const CompanionProfile: React.FC<CompanionProfileProps> = ({
@@ -40,11 +37,8 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
   onStartChat,
   onAddData,
   onViewAnalysis,
-  onVoiceCall,
   onEditProfile,
-  onViewHistory,
-  onViewProgress,
-  onSettings
+  onViewHistory
 }) => {
   const [isHeaderVisible, setIsHeaderVisible] = useState(true)
 
@@ -149,7 +143,6 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
           onStartChat={onStartChat}
           onAddData={onAddData}
           onViewAnalysis={onViewAnalysis}
-          onVoiceCall={onVoiceCall}
         />
 
         {/* 內容區域 */}
@@ -289,8 +282,6 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
           companion={companion}
           onEditProfile={onEditProfile}
           onViewHistory={onViewHistory}
-          onViewProgress={onViewProgress}
-          onSettings={onSettings}
         />
 
         </View>

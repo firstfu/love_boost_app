@@ -12,8 +12,29 @@ import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
 import { Fonts } from '@/constants/theme'
 
-export default function AnalysisReportScreen() {
+interface AnalysisReportScreenProps {
+  onBack?: () => void
+  onChatAnalysis?: () => void
+}
+
+export default function AnalysisReportScreen({ onBack, onChatAnalysis }: AnalysisReportScreenProps = {}) {
   const router = useRouter()
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack()
+    } else {
+      router.back()
+    }
+  }
+
+  const handleChatAnalysis = () => {
+    if (onChatAnalysis) {
+      onChatAnalysis()
+    } else {
+      router.push('/explore')
+    }
+  }
 
   const personalityTraits = [
     { label: '溫柔', color: '#FF8E8E', icon: 'heart-outline' },
@@ -45,7 +66,7 @@ export default function AnalysisReportScreen() {
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => router.back()}
+            onPress={handleBack}
           >
             <Ionicons name="arrow-back" size={24} color="#fff" />
           </TouchableOpacity>
@@ -126,7 +147,7 @@ export default function AnalysisReportScreen() {
 
           <TouchableOpacity
             style={styles.navButton}
-            onPress={() => router.push('/explore')}
+            onPress={handleChatAnalysis}
           >
             <Ionicons name="trending-up" size={20} color="#8E8E93" />
             <Text style={styles.navButtonText}>聊天分析</Text>
