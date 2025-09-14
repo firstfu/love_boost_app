@@ -118,8 +118,8 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
         {/* 漸層背景個人資料區 */}
         {isHeaderVisible && (
           <LinearGradient
-            colors={['#FF6B9D', '#FF8E8E', '#FFB3B3']}
-            locations={[0, 0.5, 1]}
+            colors={['#FF7BA7', '#FF87B2', '#FF96C0']}
+            locations={[0, 0.4, 1]}
             style={styles.profileHeader}
           >
             <View style={styles.profileSection}>

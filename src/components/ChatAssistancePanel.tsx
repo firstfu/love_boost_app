@@ -199,7 +199,8 @@ export const ChatAssistancePanel: React.FC<ChatAssistancePanelProps> = ({
       <View style={styles.container}>
         {/* 頂部標題區 */}
         <LinearGradient
-          colors={['#FF6B9D', '#FF8E8E']}
+          colors={['#FF7BA7', '#FF87B2', '#FF96C0']}
+          locations={[0, 0.4, 1]}
           style={styles.header}
         >
           <View style={styles.headerContent}>

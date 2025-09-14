@@ -59,8 +59,8 @@ export default function AnalysisReportScreen({ onBack, onChatAnalysis }: Analysi
     <View style={styles.container}>
       {/* 漸層背景頭部 */}
       <LinearGradient
-        colors={['#FF9A8B', '#FF6B9D', '#C44569']}
-        locations={[0, 0.5, 1]}
+        colors={['#FF7BA7', '#FF87B2', '#FF96C0']}
+        locations={[0, 0.4, 1]}
         style={styles.backgroundGradient}
       >
         <View style={styles.header}>

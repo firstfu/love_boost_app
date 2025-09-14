@@ -204,8 +204,8 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
     >
       {/* 漸層背景 Header */}
       <LinearGradient
-        colors={['#FF6B9D', '#FF8E8E', '#FFB3B3']}
-        locations={[0, 0.5, 1]}
+        colors={['#FF7BA7', '#FF87B2', '#FF96C0']}
+        locations={[0, 0.4, 1]}
         style={styles.headerGradient}
       >
         <View style={styles.header}>

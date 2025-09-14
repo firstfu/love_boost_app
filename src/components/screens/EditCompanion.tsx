@@ -151,8 +151,8 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
       <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         {/* 個人資料標題區 */}
         <LinearGradient
-          colors={['#FF6B9D', '#FF8E8E', '#FFB3B3']}
-          locations={[0, 0.5, 1]}
+          colors={['#FF7BA7', '#FF87B2', '#FF96C0']}
+          locations={[0, 0.4, 1]}
           style={styles.profileHeader}
         >
           <View style={styles.avatarSection}>
