@@ -19,7 +19,6 @@ import { DEFAULT_COMPANIONS } from '../data/defaultCompanions'
 import { AICompanion, PersonalityTrait } from '../types/assistant'
 import { useCompanionStore } from '../stores/assistantStore'
 import { DefaultAvatar } from './DefaultAvatar'
-import { ChatAssistancePanel } from './ChatAssistancePanel'
 
 // 篩選類型
 type FilterType = 'all' | 'gentle' | 'cheerful' | 'intellectual'
@@ -40,8 +39,6 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
   const [cardAnimations, setCardAnimations] = useState<Animated.Value[]>([])
   const [fadeAnim] = useState(new Animated.Value(0))
   const [slideAnim] = useState(new Animated.Value(50))
-  const [assistancePanelVisible, setAssistancePanelVisible] = useState(false)
-  const [selectedCompanionForAssistance, setSelectedCompanionForAssistance] = useState<AICompanion | null>(null)
 
   const { setCompanions: setStoreCompanions } = useCompanionStore()
 
@@ -98,41 +95,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
     onViewProfile(companion)
   }
 
-  // 處理快速選擇
-  const handleQuickSelect = (companion: AICompanion) => {
-    setSelectedCompanionForAssistance(companion)
-    setAssistancePanelVisible(true)
-  }
 
-  // 處理聊天助手關閉
-  const handleAssistancePanelClose = () => {
-    setAssistancePanelVisible(false)
-    setSelectedCompanionForAssistance(null)
-  }
-
-  // 處理選擇回覆
-  const handleSelectReply = (reply: string) => {
-    // TODO: 實現複製到剪貼板或其他處理邏輯
-    Alert.alert('回覆已複製', reply)
-  }
-
-  // 獲取個性描述
-  const getPersonalityDescription = (companion: AICompanion) => {
-    const traits = companion.personality_analysis.dominant_traits
-    const traitMap = {
-      gentle: '溫柔',
-      cheerful: '開朗',
-      intellectual: '知性',
-      humorous: '幽默',
-      calm: '沉穩',
-      passionate: '熱情',
-      mysterious: '神秘',
-      caring: '體貼',
-      playful: '俏皮',
-      romantic: '浪漫'
-    }
-    return traits.map(t => traitMap[t]).join('、')
-  }
 
   // 獲取篩選器標籤
   const getFilterLabel = (filter: FilterType) => {
@@ -144,25 +107,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
     }
   }
 
-  // 獲取說話風格顏色
-  const getSpeakingStyleInfo = (style: string) => {
-    const styleInfo: Record<string, { label: string; color: string; bgColor: string }> = {
-      'casual': { label: '💭 隨性聊天', color: '#FF6B9D', bgColor: 'rgba(255, 107, 157, 0.1)' },
-      'formal': { label: '🎯 正式交流', color: '#4F46E5', bgColor: 'rgba(79, 70, 229, 0.1)' },
-      'cute': { label: '🎀 可愛風格', color: '#10B981', bgColor: 'rgba(16, 185, 129, 0.1)' },
-      'mature': { label: '💼 成熟穩重', color: '#F59E0B', bgColor: 'rgba(245, 158, 11, 0.1)' },
-      'direct': { label: '⚡ 直接坦率', color: '#EF4444', bgColor: 'rgba(239, 68, 68, 0.1)' },
-      'subtle': { label: '🌸 委婉含蓄', color: '#8B5CF6', bgColor: 'rgba(139, 92, 246, 0.1)' }
-    }
-    return styleInfo[style] || { label: style, color: '#6B7280', bgColor: 'rgba(107, 116, 128, 0.1)' }
-  }
 
-  // 獲取學習狀態顏色
-  const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 90) return '#10B981'
-    if (confidence >= 80) return '#F59E0B'
-    return '#EF4444'
-  }
 
   // 渲染篩選器
   const renderFilters = () => (
@@ -236,8 +181,6 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
         >
           {companions.map((companion, index) => {
             const animation = cardAnimations[index] || new Animated.Value(1)
-            const styleInfo = getSpeakingStyleInfo(companion.personality_analysis.speaking_style)
-            const confidenceColor = getConfidenceColor(companion.learning_status.analysis_confidence)
 
             return (
               <Animated.View
@@ -276,60 +219,19 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
 
                       <Text style={styles.bio}>{companion.bio}</Text>
 
-                      <View style={[styles.styleTag, { backgroundColor: styleInfo.bgColor }]}>
-                        <Text style={[styles.styleTagText, { color: styleInfo.color }]}>
-                          {styleInfo.label}
-                        </Text>
-                      </View>
 
-                      {/* 學習狀態和效果評分 */}
-                      <View style={styles.statsRow}>
-                        <Text style={[styles.confidence, { color: confidenceColor }]}>
-                          ⚡ {companion.learning_status.analysis_confidence}% 分析準確度
-                        </Text>
-                        <Text style={styles.quality}>
-                          🎯 {companion.interaction_stats.assistance_effectiveness}% 輔助效果
-                        </Text>
-                      </View>
                     </View>
                   </View>
 
-                  {/* 個性標籤 */}
-                  <View style={styles.personalitySection}>
-                    {companion.personality_analysis.dominant_traits.slice(0, 4).map((trait, idx) => (
-                      <View key={idx} style={[styles.personalityTag, {
-                        backgroundColor: `${styleInfo.color}15`,
-                        borderColor: `${styleInfo.color}30`
-                      }]}>
-                        <Text style={[styles.personalityText, { color: styleInfo.color }]}>
-                          {getPersonalityDescription(companion).split('、')[idx] || trait}
-                        </Text>
-                      </View>
-                    ))}
-                    {companion.personality_analysis.dominant_traits.length > 4 && (
-                      <View style={styles.moreTag}>
-                        <Text style={styles.moreText}>
-                          +{companion.personality_analysis.dominant_traits.length - 4}
-                        </Text>
-                      </View>
-                    )}
-                  </View>
                 </TouchableOpacity>
 
                 {/* 快速操作按鈕 */}
                 <View style={styles.actionButtons}>
                   <TouchableOpacity
-                    style={styles.profileButton}
+                    style={styles.profileButtonFull}
                     onPress={() => onViewProfile(companion)}
                   >
                     <Text style={styles.profileButtonText}>查看詳情</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={styles.chatButton}
-                    onPress={() => handleQuickSelect(companion)}
-                  >
-                    <Text style={styles.chatButtonText}>獲得建議</Text>
                   </TouchableOpacity>
                 </View>
               </Animated.View>
@@ -359,15 +261,6 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
         </Text>
       </View>
 
-      {/* 聊天助手面板 */}
-      {selectedCompanionForAssistance && (
-        <ChatAssistancePanel
-          companion={selectedCompanionForAssistance}
-          visible={assistancePanelVisible}
-          onClose={handleAssistancePanelClose}
-          onSelectReply={handleSelectReply}
-        />
-      )}
     </View>
   )
 }
@@ -521,86 +414,21 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontWeight: '500',
   },
-  styleTag: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginBottom: 8,
-  },
-  styleTagText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  statsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  confidence: {
-    fontSize: 12,
-    fontWeight: '600',
-    marginRight: 12,
-  },
-  quality: {
-    fontSize: 12,
-    color: '#F59E0B',
-    fontWeight: '600',
-  },
-  personalitySection: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: 20,
-    paddingBottom: 16,
-  },
-  personalityTag: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginRight: 6,
-    marginBottom: 6,
-    borderWidth: 1,
-  },
-  personalityText: {
-    fontSize: 11,
-    fontWeight: '600',
-  },
-  moreTag: {
-    backgroundColor: '#e2e8f0',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  moreText: {
-    fontSize: 11,
-    color: '#64748b',
-    fontWeight: '600',
-  },
   actionButtons: {
     flexDirection: 'row',
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 107, 107, 0.1)',
   },
-  profileButton: {
-    flex: 1,
-    paddingVertical: 16,
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 107, 107, 0.08)',
-  },
-  profileButtonText: {
-    fontSize: 15,
-    color: '#FF6B6B',
-    fontWeight: '600',
-  },
-  chatButton: {
+  profileButtonFull: {
     flex: 1,
     paddingVertical: 16,
     alignItems: 'center',
     backgroundColor: '#FF6B6B',
   },
-  chatButtonText: {
+  profileButtonText: {
     fontSize: 15,
     color: '#ffffff',
-    fontWeight: '700',
+    fontWeight: '600',
   },
   addCompanionCard: {
     backgroundColor: 'rgba(255, 107, 107, 0.05)',
