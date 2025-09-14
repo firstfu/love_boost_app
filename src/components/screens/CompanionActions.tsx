@@ -23,17 +23,6 @@ export const CompanionActions: React.FC<CompanionActionsProps> = ({
   onEditProfile,
   onViewHistory
 }) => {
-  const handleEditPress = () => {
-    if (onEditProfile) {
-      onEditProfile(companion)
-    } else {
-      Alert.alert(
-        '編輯助手資料',
-        '編輯功能開發中，敬請期待！',
-        [{ text: '了解', style: 'default' }]
-      )
-    }
-  }
 
   const handleHistoryPress = () => {
     if (onViewHistory) {
@@ -42,6 +31,22 @@ export const CompanionActions: React.FC<CompanionActionsProps> = ({
       Alert.alert(
         '對話歷史',
         '對話歷史功能開發中，敬請期待！',
+        [{ text: '了解', style: 'default' }]
+      )
+    }
+  }
+
+  // 合併新增/編輯資料的處理
+  const handleManageData = () => {
+    // 優先使用編輯功能（因為編輯包含新增），如果沒有編輯功能才用新增
+    if (onEditProfile) {
+      onEditProfile(companion)
+    } else if (onAddData) {
+      onAddData(companion)
+    } else {
+      Alert.alert(
+        '管理資料',
+        '資料管理功能開發中，敬請期待！',
         [{ text: '了解', style: 'default' }]
       )
     }
@@ -58,21 +63,12 @@ export const CompanionActions: React.FC<CompanionActionsProps> = ({
       available: true
     },
     {
-      id: 'addData',
-      icon: (companion.user_added_data ? "refresh-circle" : "add-circle") as const,
-      title: companion.user_added_data ? '繼續新增' : '新增資料',
+      id: 'manageData',
+      icon: 'folder-open' as const,
+      title: '管理資料',
       type: 'secondary',
-      onPress: () => onAddData?.(companion),
-      available: !!onAddData
-    },
-    {
-      id: 'editProfile',
-      icon: 'create-outline' as const,
-      title: '編輯資料',
-      subtitle: '修改助手資訊',
-      type: 'tertiary',
-      onPress: handleEditPress,
-      available: true
+      onPress: handleManageData,
+      available: !!(onAddData || onEditProfile)
     },
     {
       id: 'viewHistory',
