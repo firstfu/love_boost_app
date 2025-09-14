@@ -76,21 +76,25 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
 
   // 處理卡片點擊
   const handleCardPress = (companion: AICompanion, index: number) => {
-    // 添加點擊動畫
+    // 添加點擊動畫 - 更細綻的縮放效果
     if (cardAnimations[index]) {
       Animated.sequence([
         Animated.timing(cardAnimations[index], {
-          toValue: 0.95,
-          duration: 100,
+          toValue: 0.96,
+          duration: 120,
           useNativeDriver: true,
         }),
-        Animated.timing(cardAnimations[index], {
+        Animated.spring(cardAnimations[index], {
           toValue: 1,
-          duration: 100,
+          tension: 300,
+          friction: 10,
           useNativeDriver: true,
         }),
       ]).start()
     }
+
+    // 添加點擊反饋
+    // TODO: 可以添加震動效果
 
     onViewProfile(companion)
   }
@@ -194,46 +198,91 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
                 ]}
               >
                 <TouchableOpacity
-                  activeOpacity={0.9}
+                  activeOpacity={0.95}
                   onPress={() => handleCardPress(companion, index)}
+                  style={styles.cardTouchable}
                 >
-                  {/* 卡片頂部 */}
-                  <View style={styles.cardTop}>
-                    <View style={styles.avatarSection}>
-                      <DefaultAvatar
-                        gender={companion.gender}
-                        size={72}
-                        realAvatar={companion.realAvatar}
-                      />
-                      {/* AI分身標識 */}
-                      <View style={styles.aiLabel}>
-                        <Text style={styles.aiLabelText}>AI</Text>
+                  {/* 卡片內容 - 橫向佈局 */}
+                  <View style={styles.cardContentHorizontal}>
+                    {/* 左側頭像區域 */}
+                    <View style={styles.leftSection}>
+                      <View style={styles.avatarWrapperHorizontal}>
+                        <DefaultAvatar
+                          gender={companion.gender}
+                          size={80}
+                          realAvatar={companion.realAvatar}
+                        />
+                        {/* AI標識 - 右上角 */}
+                        <View style={styles.aiLabelHorizontal}>
+                          <Text style={styles.aiLabelHorizontalText}>AI</Text>
+                        </View>
                       </View>
                     </View>
 
-                    <View style={styles.infoSection}>
-                      <View style={styles.nameRow}>
-                        <Text style={styles.companionName}>{companion.name}</Text>
-                        <Text style={styles.companionAge}>{companion.age}歲</Text>
+                    {/* 右側資訊區域 */}
+                    <View style={styles.rightSection}>
+                      {/* 頭部資訊 */}
+                      <View style={styles.headerInfo}>
+                        <View style={styles.nameAgeRow}>
+                          <Text style={styles.nameHorizontal}>{companion.name}</Text>
+                          <View style={styles.ageTagHorizontal}>
+                            <Text style={styles.ageTagHorizontalText}>{companion.age}</Text>
+                          </View>
+                        </View>
+
+                        {/* 更多按鈕 */}
+                        <TouchableOpacity
+                          style={styles.moreButtonHorizontal}
+                          onPress={(e) => {
+                            e.stopPropagation()
+                            // TODO: 添加更多選項功能
+                          }}
+                        >
+                          <Ionicons name="ellipsis-horizontal" size={18} color="#9CA3AF" />
+                        </TouchableOpacity>
                       </View>
 
-                      <Text style={styles.bio}>{companion.bio}</Text>
+                      {/* 簡介文字 */}
+                      <Text style={styles.bioHorizontal} numberOfLines={2}>
+                        {companion.bio}
+                      </Text>
 
+                      {/* 底部操作區 */}
+                      <View style={styles.bottomActions}>
+                        <TouchableOpacity
+                          style={[styles.actionBtn, styles.heartBtn]}
+                          onPress={(e) => {
+                            e.stopPropagation()
+                            // TODO: 收藏功能
+                          }}
+                        >
+                          <Ionicons name="heart-outline" size={16} color="#FF6B6B" />
+                        </TouchableOpacity>
 
+                        <TouchableOpacity
+                          style={[styles.actionBtn, styles.chatBtn]}
+                          onPress={(e) => {
+                            e.stopPropagation()
+                            onViewProfile(companion)
+                          }}
+                        >
+                          <Ionicons name="chatbubble-ellipses-outline" size={16} color="#6366F1" />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          style={[styles.actionBtn, styles.starBtn]}
+                          onPress={(e) => {
+                            e.stopPropagation()
+                            // TODO: 超級喜歡
+                          }}
+                        >
+                          <Ionicons name="star-outline" size={16} color="#F59E0B" />
+                        </TouchableOpacity>
+                      </View>
                     </View>
                   </View>
 
                 </TouchableOpacity>
-
-                {/* 快速操作按鈕 */}
-                <View style={styles.actionButtons}>
-                  <TouchableOpacity
-                    style={styles.profileButtonFull}
-                    onPress={() => onViewProfile(companion)}
-                  >
-                    <Text style={styles.profileButtonText}>查看詳情</Text>
-                  </TouchableOpacity>
-                </View>
               </Animated.View>
             )
           })}
@@ -348,87 +397,132 @@ const styles = StyleSheet.create({
     paddingBottom: 90,
   },
   companionCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    backgroundColor: '#FFFFFF',
     borderRadius: 20,
     marginBottom: 16,
+    marginHorizontal: 1,
     shadowColor: '#FF6B6B',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
     elevation: 8,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.8)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(255, 107, 107, 0.06)',
   },
-  cardTop: {
+  cardTouchable: {
+    flex: 1,
+  },
+  cardContentHorizontal: {
     flexDirection: 'row',
-    padding: 20,
+    padding: 18,
+    alignItems: 'flex-start',
   },
-  avatarSection: {
-    position: 'relative',
+  leftSection: {
     marginRight: 16,
   },
-  aiLabel: {
+  avatarWrapperHorizontal: {
+    position: 'relative',
+  },
+  aiLabelHorizontal: {
     position: 'absolute',
     top: -4,
     right: -4,
     backgroundColor: '#FF6B6B',
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: 8,
-    borderWidth: 2,
+    borderRadius: 10,
+    borderWidth: 1.5,
     borderColor: '#ffffff',
+    shadowColor: '#FF6B6B',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 3,
   },
-  aiLabelText: {
-    fontSize: 10,
-    fontWeight: '600',
+  aiLabelHorizontalText: {
+    fontSize: 9,
+    fontWeight: '700',
     color: '#ffffff',
+    letterSpacing: 0.3,
   },
-  infoSection: {
+  rightSection: {
     flex: 1,
+    justifyContent: 'space-between',
+    minHeight: 80,
   },
-  nameRow: {
+  headerInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 6,
+  },
+  nameAgeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    flex: 1,
   },
-  companionName: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: '#1e1b4b',
+  nameHorizontal: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1A1A1A',
     marginRight: 8,
   },
-  companionAge: {
-    fontSize: 13,
-    color: '#8B5CF6',
-    fontWeight: '600',
-    backgroundColor: 'rgba(139, 92, 246, 0.1)',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 10,
+  ageTagHorizontal: {
+    backgroundColor: 'rgba(255, 107, 107, 0.12)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
   },
-  bio: {
+  ageTagHorizontalText: {
+    fontSize: 11,
+    color: '#FF6B6B',
+    fontWeight: '600',
+  },
+  moreButtonHorizontal: {
+    padding: 6,
+    borderRadius: 15,
+    backgroundColor: 'rgba(156, 163, 175, 0.08)',
+  },
+  bioHorizontal: {
     fontSize: 14,
-    color: '#374151',
-    marginBottom: 8,
+    color: '#6B7280',
     lineHeight: 20,
-    fontWeight: '500',
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 107, 107, 0.1)',
-  },
-  profileButtonFull: {
+    fontWeight: '400',
+    marginBottom: 12,
     flex: 1,
-    paddingVertical: 16,
-    alignItems: 'center',
-    backgroundColor: '#FF6B6B',
   },
-  profileButtonText: {
-    fontSize: 15,
-    color: '#ffffff',
-    fontWeight: '600',
+  bottomActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    gap: 10,
+  },
+  actionBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(248, 250, 252, 0.8)',
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  heartBtn: {
+    borderColor: 'rgba(255, 107, 107, 0.15)',
+    backgroundColor: 'rgba(255, 107, 107, 0.05)',
+  },
+  chatBtn: {
+    borderColor: 'rgba(99, 102, 241, 0.15)',
+    backgroundColor: 'rgba(99, 102, 241, 0.05)',
+  },
+  starBtn: {
+    borderColor: 'rgba(245, 158, 11, 0.15)',
+    backgroundColor: 'rgba(245, 158, 11, 0.05)',
   },
   addCompanionCard: {
     backgroundColor: 'rgba(255, 107, 107, 0.05)',
