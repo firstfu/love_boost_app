@@ -17,7 +17,6 @@ import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
 import { DefaultAvatar } from '../DefaultAvatar'
 import { CompanionActions } from './CompanionActions'
-import { CompanionSecondaryActions } from './CompanionSecondaryActions'
 import { AICompanion } from '../../types/assistant'
 
 
@@ -123,6 +122,8 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
           companion={companion}
           onStartChat={onStartChat}
           onAddData={onAddData}
+          onEditProfile={onEditProfile}
+          onViewHistory={onViewHistory}
         />
 
         {/* 內容區域 */}
@@ -200,12 +201,6 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
           </Text>
         </View>
 
-        {/* 次要功能區域 */}
-        <CompanionSecondaryActions
-          companion={companion}
-          onEditProfile={onEditProfile}
-          onViewHistory={onViewHistory}
-        />
 
         </View>
       </ScrollView>
