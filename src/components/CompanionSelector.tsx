@@ -3,7 +3,7 @@
  * 展示不同個性的女生AI分身，讓用戶選擇想要練習對話的目標
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient'
 import { Ionicons } from '@expo/vector-icons'
 import { Link } from 'expo-router'
+import * as Haptics from 'expo-haptics'
 import { DEFAULT_COMPANIONS } from '../data/defaultCompanions'
 import { AICompanion, PersonalityTrait } from '../types/assistant'
 import { useCompanionStore } from '../stores/assistantStore'
@@ -40,6 +41,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
   const [cardAnimations, setCardAnimations] = useState<Animated.Value[]>([])
   const [fadeAnim] = useState(new Animated.Value(0))
   const [slideAnim] = useState(new Animated.Value(50))
+  const [longPressAnimations, setLongPressAnimations] = useState<Animated.Value[]>([])
 
   const { setCompanions: setStoreCompanions } = useCompanionStore()
 
@@ -59,6 +61,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
 
     // 重新初始化動畫數組
     setCardAnimations(filteredCompanions.map(() => new Animated.Value(1)))
+    setLongPressAnimations(filteredCompanions.map(() => new Animated.Value(1)))
 
     // 初始動畫
     Animated.parallel([
@@ -231,28 +234,53 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
                           </View>
                         </View>
 
-                        {/* 更多按鈕 */}
+                        {/* 更多按鈕 - 使用 settings 圖標更直觀 */}
                         <Link href="/">
                           <Link.Trigger>
-                            <TouchableOpacity style={styles.moreButtonHorizontal}>
-                              <Ionicons name="ellipsis-horizontal" size={18} color="#9CA3AF" />
+                            <TouchableOpacity
+                              style={styles.moreButtonHorizontal}
+                              onPressIn={() => {
+                                // 長按開始時的動畫和震動反饋
+                                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+                                if (longPressAnimations[index]) {
+                                  Animated.loop(
+                                    Animated.sequence([
+                                      Animated.timing(longPressAnimations[index], {
+                                        toValue: 1.2,
+                                        duration: 500,
+                                        useNativeDriver: true,
+                                      }),
+                                      Animated.timing(longPressAnimations[index], {
+                                        toValue: 1,
+                                        duration: 500,
+                                        useNativeDriver: true,
+                                      }),
+                                    ])
+                                  ).start()
+                                }
+                              }}
+                              onPressOut={() => {
+                                // 停止動畫
+                                if (longPressAnimations[index]) {
+                                  longPressAnimations[index].stopAnimation()
+                                  Animated.timing(longPressAnimations[index], {
+                                    toValue: 1,
+                                    duration: 200,
+                                    useNativeDriver: true,
+                                  }).start()
+                                }
+                              }}
+                            >
+                              <Animated.View
+                                style={{
+                                  transform: [{ scale: longPressAnimations[index] || 1 }]
+                                }}
+                              >
+                                <Ionicons name="settings-outline" size={20} color="#6B7280" />
+                              </Animated.View>
                             </TouchableOpacity>
                           </Link.Trigger>
                           <Link.Menu>
-                            <Link.MenuAction
-                              title="編輯資料"
-                              icon="square.and.pencil"
-                              onPress={() => {
-                                console.log('編輯', companion.name, '的資料')
-                              }}
-                            />
-                            <Link.MenuAction
-                              title="重新命名"
-                              icon="pencil.line"
-                              onPress={() => {
-                                console.log('重新命名', companion.name)
-                              }}
-                            />
                             <Link.MenuAction
                               title="建立副本"
                               icon="doc.on.doc"
@@ -491,9 +519,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   moreButtonHorizontal: {
-    padding: 6,
-    borderRadius: 15,
-    backgroundColor: 'rgba(156, 163, 175, 0.08)',
+    padding: 8,
+    borderRadius: 16,
+    backgroundColor: 'rgba(156, 163, 175, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(156, 163, 175, 0.15)',
   },
   bioHorizontal: {
     fontSize: 14,
