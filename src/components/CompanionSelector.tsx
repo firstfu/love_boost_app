@@ -276,7 +276,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
                                   transform: [{ scale: longPressAnimations[index] || 1 }]
                                 }}
                               >
-                                <Ionicons name="settings-outline" size={20} color="#6B7280" />
+                                <Ionicons name="chevron-down-circle-outline" size={20} color="#6B7280" />
                               </Animated.View>
                             </TouchableOpacity>
                           </Link.Trigger>
