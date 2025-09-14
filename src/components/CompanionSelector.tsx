@@ -247,36 +247,16 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
                         {companion.bio}
                       </Text>
 
-                      {/* 底部操作區 */}
-                      <View style={styles.bottomActions}>
+                      {/* 簡化的操作區 */}
+                      <View style={styles.simpleActions}>
                         <TouchableOpacity
-                          style={[styles.actionBtn, styles.heartBtn]}
-                          onPress={(e) => {
-                            e.stopPropagation()
-                            // TODO: 收藏功能
-                          }}
-                        >
-                          <Ionicons name="heart-outline" size={16} color="#FF6B6B" />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                          style={[styles.actionBtn, styles.chatBtn]}
+                          style={styles.viewProfileBtn}
                           onPress={(e) => {
                             e.stopPropagation()
                             onViewProfile(companion)
                           }}
                         >
-                          <Ionicons name="chatbubble-ellipses-outline" size={16} color="#6366F1" />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                          style={[styles.actionBtn, styles.starBtn]}
-                          onPress={(e) => {
-                            e.stopPropagation()
-                            // TODO: 超級喜歡
-                          }}
-                        >
-                          <Ionicons name="star-outline" size={16} color="#F59E0B" />
+                          <Text style={styles.viewProfileBtnText}>查看詳情</Text>
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -492,37 +472,27 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     flex: 1,
   },
-  bottomActions: {
+  simpleActions: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    justifyContent: 'flex-end',
     alignItems: 'center',
-    gap: 10,
+    marginTop: 4,
   },
-  actionBtn: {
-    width: 32,
-    height: 32,
+  viewProfileBtn: {
+    backgroundColor: '#FF6B6B',
+    paddingHorizontal: 16,
+    paddingVertical: 6,
     borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(248, 250, 252, 0.8)',
-    borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 3,
-    elevation: 2,
+    shadowColor: '#FF6B6B',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  heartBtn: {
-    borderColor: 'rgba(255, 107, 107, 0.15)',
-    backgroundColor: 'rgba(255, 107, 107, 0.05)',
-  },
-  chatBtn: {
-    borderColor: 'rgba(99, 102, 241, 0.15)',
-    backgroundColor: 'rgba(99, 102, 241, 0.05)',
-  },
-  starBtn: {
-    borderColor: 'rgba(245, 158, 11, 0.15)',
-    backgroundColor: 'rgba(245, 158, 11, 0.05)',
+  viewProfileBtnText: {
+    fontSize: 12,
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
   addCompanionCard: {
     backgroundColor: 'rgba(255, 107, 107, 0.05)',
