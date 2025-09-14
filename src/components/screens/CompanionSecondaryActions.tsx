@@ -111,42 +111,6 @@ export const CompanionSecondaryActions: React.FC<CompanionSecondaryActionsProps>
         ))}
       </View>
 
-      {/* 快速統計卡片 */}
-      <View style={styles.quickStatsContainer}>
-        <Text style={styles.quickStatsTitle}>快速統計</Text>
-
-        <View style={styles.statsRow}>
-          <View style={styles.statCard}>
-            <View style={styles.statIconContainer}>
-              <Ionicons name="chatbubbles" size={20} color="#3b82f6" />
-            </View>
-            <Text style={styles.statNumber}>
-              {companion.interaction_stats.chat_assistance_sessions}
-            </Text>
-            <Text style={styles.statLabel}>練習次數</Text>
-          </View>
-
-          <View style={styles.statCard}>
-            <View style={[styles.statIconContainer, { backgroundColor: 'rgba(16, 185, 129, 0.1)' }]}>
-              <Ionicons name="analytics" size={20} color="#10b981" />
-            </View>
-            <Text style={styles.statNumber}>
-              {companion.learning_status.data_completeness}%
-            </Text>
-            <Text style={styles.statLabel}>資料完整度</Text>
-          </View>
-
-          <View style={styles.statCard}>
-            <View style={[styles.statIconContainer, { backgroundColor: 'rgba(245, 158, 11, 0.1)' }]}>
-              <Ionicons name="star" size={20} color="#f59e0b" />
-            </View>
-            <Text style={styles.statNumber}>
-              {companion.interaction_stats.relationship_insight_score}
-            </Text>
-            <Text style={styles.statLabel}>洞察分數</Text>
-          </View>
-        </View>
-      </View>
     </View>
   )
 }
@@ -173,7 +137,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   actionsGrid: {
-    marginBottom: 24,
+    marginBottom: 0,
   },
   actionItem: {
     flexDirection: 'row',
@@ -217,50 +181,5 @@ const styles = StyleSheet.create({
   },
   disabledSubtitle: {
     color: '#cbd5e1',
-  },
-  quickStatsContainer: {
-    borderTopWidth: 1,
-    borderTopColor: '#f1f5f9',
-    paddingTop: 20,
-  },
-  quickStatsTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 12,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  statCard: {
-    flex: 1,
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#f8fafc',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  statIconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  statNumber: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1a202c',
-    marginBottom: 2,
-  },
-  statLabel: {
-    fontSize: 11,
-    color: '#64748b',
-    textAlign: 'center',
-    lineHeight: 14,
   },
 })

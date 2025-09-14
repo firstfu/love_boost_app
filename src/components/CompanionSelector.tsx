@@ -170,10 +170,6 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({ onSelectCo
                     <View style={styles.leftSection}>
                       <View style={styles.avatarWrapperHorizontal}>
                         <DefaultAvatar gender={companion.gender} size={80} realAvatar={companion.realAvatar} />
-                        {/* AI標識 - 右上角 */}
-                        <View style={styles.aiLabelHorizontal}>
-                          <Text style={styles.aiLabelHorizontalText}>AI</Text>
-                        </View>
                       </View>
                     </View>
 
@@ -411,28 +407,6 @@ const styles = StyleSheet.create({
   },
   avatarWrapperHorizontal: {
     position: "relative",
-  },
-  aiLabelHorizontal: {
-    position: "absolute",
-    top: -4,
-    right: -4,
-    backgroundColor: "#FF6B9D",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 10,
-    borderWidth: 1.5,
-    borderColor: "#ffffff",
-    shadowColor: "#FF6B9D",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  aiLabelHorizontalText: {
-    fontSize: 9,
-    fontWeight: "700",
-    color: "#ffffff",
-    letterSpacing: 0.3,
   },
   rightSection: {
     flex: 1,
