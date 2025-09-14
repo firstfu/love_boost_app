@@ -27,6 +27,7 @@ interface CompanionProfileProps {
   onAddData?: (companion: AICompanion) => void
   onEditProfile?: (companion: AICompanion) => void
   onViewHistory?: (companion: AICompanion) => void
+  onQuickAnalysis?: (companion: AICompanion) => void
 }
 
 export const CompanionProfile: React.FC<CompanionProfileProps> = ({
@@ -35,7 +36,8 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
   onStartChat,
   onAddData,
   onEditProfile,
-  onViewHistory
+  onViewHistory,
+  onQuickAnalysis
 }) => {
   const [isHeaderVisible, setIsHeaderVisible] = useState(true)
 
@@ -124,6 +126,7 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
           onAddData={onAddData}
           onEditProfile={onEditProfile}
           onViewHistory={onViewHistory}
+          onQuickAnalysis={onQuickAnalysis}
         />
 
         {/* 內容區域 */}

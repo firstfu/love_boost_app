@@ -297,6 +297,65 @@ export interface RelationshipInsight {
   trend: 'improving' | 'stable' | 'declining'
 }
 
+// 單次快速分析介面
+export interface QuickAnalysis {
+  id: string
+  companion_id: string
+  input_type: 'image' | 'text'
+  input_data: string // 圖片URL或文字內容
+  analysis_result: QuickAnalysisResult
+  created_at: string
+}
+
+// 快速分析結果
+export interface QuickAnalysisResult {
+  conversation_context: {
+    relationship_stage: 'initial' | 'getting_to_know' | 'developing' | 'established'
+    her_mood: string
+    engagement_level: number // 0-100
+    conversation_topic: string
+  }
+
+  insights: {
+    interest_indicators: string[]
+    warning_signs: string[]
+    emotional_state: string
+    communication_style: string
+  }
+
+  recommendations: {
+    reply_suggestions: QuickReplyRecommendation[]
+    conversation_strategies: string[]
+    timing_advice: string
+    topics_to_explore: string[]
+    things_to_avoid: string[]
+  }
+
+  confidence_score: number // 0-100
+}
+
+// 快速回覆建議
+export interface QuickReplyRecommendation {
+  id: string
+  type: 'question' | 'compliment' | 'humorous' | 'caring' | 'topic_change' | 'emoji'
+  content: string
+  reasoning: string
+  confidence_score: number
+  expected_response_rate: number // 0-100
+  tone: 'casual' | 'romantic' | 'playful' | 'supportive' | 'curious'
+}
+
+// 快速分析請求
+export interface QuickAnalysisRequest {
+  companion_id: string
+  input_type: 'image' | 'text'
+  input_data: string // base64 image or text content
+  context?: {
+    relationship_stage?: string
+    recent_conversation_context?: string
+  }
+}
+
 // API 回應介面
 export interface APIResponse<T> {
   success: boolean

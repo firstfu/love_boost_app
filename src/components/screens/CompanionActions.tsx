@@ -14,6 +14,7 @@ interface CompanionActionsProps {
   onAddData?: (companion: AICompanion) => void
   onEditProfile?: (companion: AICompanion) => void
   onViewHistory?: (companion: AICompanion) => void
+  onQuickAnalysis?: (companion: AICompanion) => void
 }
 
 export const CompanionActions: React.FC<CompanionActionsProps> = ({
@@ -21,7 +22,8 @@ export const CompanionActions: React.FC<CompanionActionsProps> = ({
   onStartChat,
   onAddData,
   onEditProfile,
-  onViewHistory
+  onViewHistory,
+  onQuickAnalysis
 }) => {
 
   const handleHistoryPress = () => {
@@ -52,6 +54,19 @@ export const CompanionActions: React.FC<CompanionActionsProps> = ({
     }
   }
 
+  // 快速分析處理函數
+  const handleQuickAnalysis = () => {
+    if (onQuickAnalysis) {
+      onQuickAnalysis(companion)
+    } else {
+      Alert.alert(
+        '快速分析',
+        '快速分析功能開發中，敬請期待！',
+        [{ text: '了解', style: 'default' }]
+      )
+    }
+  }
+
   // 所有功能按鈕配置
   const allActions = [
     {
@@ -60,6 +75,14 @@ export const CompanionActions: React.FC<CompanionActionsProps> = ({
       title: '開始對話練習',
       type: 'primary',
       onPress: () => onStartChat(companion),
+      available: true
+    },
+    {
+      id: 'quickAnalysis',
+      icon: 'analytics' as const,
+      title: '快速分析',
+      type: 'secondary',
+      onPress: handleQuickAnalysis,
       available: true
     },
     {
@@ -85,27 +108,35 @@ export const CompanionActions: React.FC<CompanionActionsProps> = ({
     <View style={styles.container}>
       {/* 主要功能按鈕組 */}
       <View style={styles.mainActions}>
-        {allActions.filter(action => action.type === 'primary' || action.type === 'secondary').map((action) => (
-          action.available && (
-            <TouchableOpacity
-              key={action.id}
-              style={[
-                styles.actionButton,
-                action.type === 'primary' ? styles.primaryButton : styles.secondaryButton
-              ]}
-              onPress={action.onPress}
-            >
-              <Ionicons
-                name={action.icon}
-                size={20}
-                color={action.type === 'primary' ? "#fff" : "#FF6B9D"}
-              />
-              <Text style={action.type === 'primary' ? styles.primaryButtonText : styles.secondaryButtonText}>
-                {action.title}
-              </Text>
-            </TouchableOpacity>
-          )
-        ))}
+        <View style={styles.primaryActionContainer}>
+          {allActions.filter(action => action.type === 'primary').map((action) => (
+            action.available && (
+              <TouchableOpacity
+                key={action.id}
+                style={[styles.actionButton, styles.primaryButton]}
+                onPress={action.onPress}
+              >
+                <Ionicons name={action.icon} size={20} color="#fff" />
+                <Text style={styles.primaryButtonText}>{action.title}</Text>
+              </TouchableOpacity>
+            )
+          ))}
+        </View>
+
+        <View style={styles.secondaryActionsRow}>
+          {allActions.filter(action => action.type === 'secondary').map((action) => (
+            action.available && (
+              <TouchableOpacity
+                key={action.id}
+                style={[styles.actionButton, styles.secondaryButton]}
+                onPress={action.onPress}
+              >
+                <Ionicons name={action.icon} size={18} color="#FF6B9D" />
+                <Text style={styles.secondaryButtonText}>{action.title}</Text>
+              </TouchableOpacity>
+            )
+          ))}
+        </View>
       </View>
 
       {/* 次要功能按鈕組 */}
@@ -169,9 +200,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   mainActions: {
+    marginBottom: 20,
+  },
+  primaryActionContainer: {
+    marginBottom: 12,
+  },
+  secondaryActionsRow: {
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 20,
   },
   actionButton: {
     flex: 1,
