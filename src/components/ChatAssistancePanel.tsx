@@ -199,7 +199,7 @@ export const ChatAssistancePanel: React.FC<ChatAssistancePanelProps> = ({
       <View style={styles.container}>
         {/* 頂部標題區 */}
         <LinearGradient
-          colors={['#FF6B6B', '#FF8E8E']}
+          colors={['#9F7AEA', '#FF8E8E']}
           style={styles.header}
         >
           <View style={styles.headerContent}>
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   tabButtonActive: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#9F7AEA',
   },
   tabIcon: {
     fontSize: 20,

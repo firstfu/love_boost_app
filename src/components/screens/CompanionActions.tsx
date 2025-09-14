@@ -51,7 +51,7 @@ export const CompanionActions: React.FC<CompanionActionsProps> = ({
             <Ionicons
               name={companion.user_added_data ? "refresh-circle" : "add-circle"}
               size={20}
-              color="#FF6B6B"
+              color="#9F7AEA"
             />
             <Text style={styles.secondaryButtonText}>
               {companion.user_added_data ? '繼續新增' : '新增資料'}
@@ -74,7 +74,7 @@ export const CompanionActions: React.FC<CompanionActionsProps> = ({
           <Ionicons
             name="analytics"
             size={18}
-            color={isAnalysisReady ? "#FF6B6B" : "#94a3b8"}
+            color={isAnalysisReady ? "#9F7AEA" : "#94a3b8"}
           />
           <Text style={[
             styles.featureButtonText,
@@ -117,17 +117,17 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   primaryButton: {
-    backgroundColor: '#FF6B6B',
-    shadowColor: '#FF6B6B',
+    backgroundColor: '#9F7AEA',
+    shadowColor: '#9F7AEA',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
   },
   secondaryButton: {
-    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+    backgroundColor: 'rgba(159, 122, 234, 0.1)',
     borderWidth: 1,
-    borderColor: '#FF6B6B',
+    borderColor: '#9F7AEA',
   },
   primaryButtonText: {
     color: '#fff',
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   secondaryButtonText: {
-    color: '#FF6B6B',
+    color: '#9F7AEA',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -152,9 +152,9 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 20,
     borderRadius: 16,
-    backgroundColor: 'rgba(255, 107, 107, 0.05)',
+    backgroundColor: 'rgba(159, 122, 234, 0.05)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 107, 107, 0.15)',
+    borderColor: 'rgba(159, 122, 234, 0.15)',
     position: 'relative',
     minHeight: 70,
   },
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(148, 163, 184, 0.15)',
   },
   featureButtonText: {
-    color: '#FF6B6B',
+    color: '#9F7AEA',
     fontSize: 13,
     fontWeight: '600',
     marginTop: 8,

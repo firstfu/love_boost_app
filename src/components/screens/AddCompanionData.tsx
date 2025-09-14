@@ -112,7 +112,7 @@ export const AddCompanionData: React.FC<AddCompanionDataProps> = ({
               size={20}
               color={
                 currentStep === step.key ? '#fff' :
-                steps.findIndex(s => s.key === currentStep) > index ? '#FF6B6B' : '#ccc'
+                steps.findIndex(s => s.key === currentStep) > index ? '#9F7AEA' : '#ccc'
               }
             />
           </View>
@@ -140,7 +140,7 @@ export const AddCompanionData: React.FC<AddCompanionDataProps> = ({
           <Text style={styles.photoTypeDescription}>清楚的臉部照片，用於外貌特徵分析</Text>
 
           <TouchableOpacity style={styles.uploadButton} onPress={handlePhotoUpload}>
-            <Ionicons name="camera-outline" size={24} color="#FF6B6B" />
+            <Ionicons name="camera-outline" size={24} color="#9F7AEA" />
             <Text style={styles.uploadButtonText}>選擇大頭照</Text>
           </TouchableOpacity>
         </View>
@@ -150,7 +150,7 @@ export const AddCompanionData: React.FC<AddCompanionDataProps> = ({
           <Text style={styles.photoTypeDescription}>日常生活照片，了解興趣愛好和生活方式</Text>
 
           <TouchableOpacity style={styles.uploadButton} onPress={handlePhotoUpload}>
-            <Ionicons name="images-outline" size={24} color="#FF6B6B" />
+            <Ionicons name="images-outline" size={24} color="#9F7AEA" />
             <Text style={styles.uploadButtonText}>選擇生活照</Text>
           </TouchableOpacity>
         </View>
@@ -193,7 +193,7 @@ export const AddCompanionData: React.FC<AddCompanionDataProps> = ({
         />
 
         <TouchableOpacity style={styles.screenshotButton}>
-          <Ionicons name="image-outline" size={20} color="#FF6B6B" />
+          <Ionicons name="image-outline" size={20} color="#9F7AEA" />
           <Text style={styles.screenshotButtonText}>上傳聊天截圖</Text>
         </TouchableOpacity>
 
@@ -241,7 +241,7 @@ export const AddCompanionData: React.FC<AddCompanionDataProps> = ({
                 onPress={() => removeInterest(interest)}
               >
                 <Text style={styles.interestTagText}>{interest}</Text>
-                <Ionicons name="close-circle" size={16} color="#FF6B6B" />
+                <Ionicons name="close-circle" size={16} color="#9F7AEA" />
               </TouchableOpacity>
             ))}
           </View>
@@ -263,7 +263,7 @@ export const AddCompanionData: React.FC<AddCompanionDataProps> = ({
                 <Ionicons
                   name={option.icon as any}
                   size={20}
-                  color={relationshipStatus === option.value ? '#fff' : '#FF6B6B'}
+                  color={relationshipStatus === option.value ? '#fff' : '#9F7AEA'}
                 />
                 <Text style={[
                   styles.relationshipOptionText,
@@ -311,7 +311,7 @@ export const AddCompanionData: React.FC<AddCompanionDataProps> = ({
     <View style={styles.container}>
       {/* 漸層背景 Header */}
       <LinearGradient
-        colors={['#FF6B6B', '#FF8E8E', '#FFB3B3']}
+        colors={['#9F7AEA', '#FF8E8E', '#FFB3B3']}
         locations={[0, 0.5, 1]}
         style={styles.backgroundGradient}
       >
@@ -435,10 +435,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   stepCircleActive: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#9F7AEA',
   },
   stepCircleCompleted: {
-    backgroundColor: 'rgba(255, 107, 107, 0.2)',
+    backgroundColor: 'rgba(159, 122, 234, 0.2)',
   },
   stepLine: {
     width: 60,
@@ -447,7 +447,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   stepLineCompleted: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#9F7AEA',
   },
   scrollView: {
     flex: 1,
@@ -472,11 +472,11 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   photoTypeSection: {
-    backgroundColor: 'rgba(255, 107, 107, 0.05)',
+    backgroundColor: 'rgba(159, 122, 234, 0.05)',
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 107, 107, 0.1)',
+    borderColor: 'rgba(159, 122, 234, 0.1)',
   },
   photoTypeTitle: {
     fontSize: 18,
@@ -493,16 +493,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+    backgroundColor: 'rgba(159, 122, 234, 0.1)',
     borderWidth: 2,
-    borderColor: '#FF6B6B',
+    borderColor: '#9F7AEA',
     borderStyle: 'dashed',
     borderRadius: 12,
     paddingVertical: 16,
     gap: 8,
   },
   uploadButtonText: {
-    color: '#FF6B6B',
+    color: '#9F7AEA',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -545,19 +545,19 @@ const styles = StyleSheet.create({
     color: '#1a202c',
     textAlignVertical: 'top',
     borderWidth: 1,
-    borderColor: 'rgba(255, 107, 107, 0.2)',
+    borderColor: 'rgba(159, 122, 234, 0.2)',
   },
   screenshotButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+    backgroundColor: 'rgba(159, 122, 234, 0.1)',
     borderRadius: 12,
     paddingVertical: 12,
     gap: 8,
   },
   screenshotButtonText: {
-    color: '#FF6B6B',
+    color: '#9F7AEA',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -587,10 +587,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 107, 107, 0.2)',
+    borderColor: 'rgba(159, 122, 234, 0.2)',
   },
   addInterestButton: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#9F7AEA',
     borderRadius: 12,
     width: 44,
     height: 44,
@@ -606,14 +606,14 @@ const styles = StyleSheet.create({
   interestTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+    backgroundColor: 'rgba(159, 122, 234, 0.1)',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
     gap: 6,
   },
   interestTagText: {
-    color: '#FF6B6B',
+    color: '#9F7AEA',
     fontSize: 14,
     fontWeight: '500',
   },
@@ -625,20 +625,20 @@ const styles = StyleSheet.create({
   relationshipOption: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+    backgroundColor: 'rgba(159, 122, 234, 0.1)',
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 12,
     gap: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255, 107, 107, 0.3)',
+    borderColor: 'rgba(159, 122, 234, 0.3)',
   },
   relationshipOptionActive: {
-    backgroundColor: '#FF6B6B',
-    borderColor: '#FF6B6B',
+    backgroundColor: '#9F7AEA',
+    borderColor: '#9F7AEA',
   },
   relationshipOptionText: {
-    color: '#FF6B6B',
+    color: '#9F7AEA',
     fontSize: 14,
     fontWeight: '600',
   },
@@ -653,7 +653,7 @@ const styles = StyleSheet.create({
     color: '#1a202c',
     textAlignVertical: 'top',
     borderWidth: 1,
-    borderColor: 'rgba(255, 107, 107, 0.2)',
+    borderColor: 'rgba(159, 122, 234, 0.2)',
   },
   bottomActions: {
     flexDirection: 'row',
@@ -662,8 +662,8 @@ const styles = StyleSheet.create({
     gap: 12,
     backgroundColor: 'rgba(255,255,255,0.95)',
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 107, 107, 0.1)',
-    shadowColor: '#FF6B6B',
+    borderTopColor: 'rgba(159, 122, 234, 0.1)',
+    shadowColor: '#9F7AEA',
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -677,17 +677,17 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   primaryButton: {
-    backgroundColor: '#FF6B6B',
-    shadowColor: '#FF6B6B',
+    backgroundColor: '#9F7AEA',
+    shadowColor: '#9F7AEA',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
   },
   secondaryButton: {
-    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+    backgroundColor: 'rgba(159, 122, 234, 0.1)',
     borderWidth: 1,
-    borderColor: '#FF6B6B',
+    borderColor: '#9F7AEA',
   },
   primaryButtonText: {
     color: '#fff',
@@ -695,7 +695,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   secondaryButtonText: {
-    color: '#FF6B6B',
+    color: '#9F7AEA',
     fontSize: 16,
     fontWeight: '600',
   },

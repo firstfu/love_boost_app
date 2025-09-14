@@ -151,7 +151,7 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
       <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         {/* 個人資料標題區 */}
         <LinearGradient
-          colors={['#FF6B6B', '#FF8E8E', '#FFB3B3']}
+          colors={['#9F7AEA', '#FF8E8E', '#FFB3B3']}
           locations={[0, 0.5, 1]}
           style={styles.profileHeader}
         >
@@ -162,7 +162,7 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
               realAvatar={editedCompanion.realAvatar}
             />
             <TouchableOpacity style={styles.changeAvatarButton}>
-              <Ionicons name="camera" size={20} color="#FF6B6B" />
+              <Ionicons name="camera" size={20} color="#9F7AEA" />
             </TouchableOpacity>
           </View>
         </LinearGradient>
@@ -317,7 +317,7 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
                     onPress={() => removeInterest(index)}
                     style={styles.removeInterestButton}
                   >
-                    <Ionicons name="close" size={14} color="#FF6B6B" />
+                    <Ionicons name="close" size={14} color="#9F7AEA" />
                   </TouchableOpacity>
                 </View>
               ))}
@@ -340,7 +340,7 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
                 )
               }}
             >
-              <Ionicons name="add" size={20} color="#FF6B6B" />
+              <Ionicons name="add" size={20} color="#9F7AEA" />
               <Text style={styles.addInterestText}>新增興趣</Text>
             </TouchableOpacity>
           </View>
@@ -389,7 +389,7 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
                     Alert.alert('新增照片', '照片上傳功能開發中！')
                   }}
                 >
-                  <Ionicons name="add" size={24} color="#FF6B6B" />
+                  <Ionicons name="add" size={24} color="#9F7AEA" />
                   <Text style={styles.addPhotoText}>新增</Text>
                 </TouchableOpacity>
               </View>
@@ -399,7 +399,7 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
                   <Text style={styles.viewAllText}>
                     查看全部 {editedCompanion.learning_status.photo_samples} 張照片
                   </Text>
-                  <Ionicons name="chevron-forward" size={16} color="#FF6B6B" />
+                  <Ionicons name="chevron-forward" size={16} color="#9F7AEA" />
                 </TouchableOpacity>
               )}
             </View>
@@ -452,7 +452,7 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
                   Alert.alert('新增對話記錄', '對話記錄上傳功能開發中！')
                 }}
               >
-                <Ionicons name="add" size={20} color="#FF6B6B" />
+                <Ionicons name="add" size={20} color="#9F7AEA" />
                 <Text style={styles.addDataText}>新增對話記錄</Text>
               </TouchableOpacity>
 
@@ -461,7 +461,7 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
                   <Text style={styles.viewAllText}>
                     查看全部 {editedCompanion.learning_status.conversation_samples} 則對話
                   </Text>
-                  <Ionicons name="chevron-forward" size={16} color="#FF6B6B" />
+                  <Ionicons name="chevron-forward" size={16} color="#9F7AEA" />
                 </TouchableOpacity>
               )}
             </View>
@@ -506,7 +506,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingTop: 44,
-    backgroundColor: 'rgba(255, 107, 107, 0.95)',
+    backgroundColor: 'rgba(159, 122, 234, 0.95)',
     zIndex: 1000,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.2)',
@@ -537,7 +537,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   saveButtonTextActive: {
-    color: '#FF6B6B',
+    color: '#9F7AEA',
   },
   scrollContainer: {
     flex: 1,
@@ -576,7 +576,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     borderRadius: 20,
     padding: 20,
-    shadowColor: '#FF6B6B',
+    shadowColor: '#9F7AEA',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
@@ -643,8 +643,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   genderOptionActive: {
-    backgroundColor: '#FF6B6B',
-    borderColor: '#FF6B6B',
+    backgroundColor: '#9F7AEA',
+    borderColor: '#9F7AEA',
   },
   genderOptionText: {
     fontSize: 14,
@@ -668,8 +668,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   traitTagActive: {
-    backgroundColor: '#FF6B6B',
-    borderColor: '#FF6B6B',
+    backgroundColor: '#9F7AEA',
+    borderColor: '#9F7AEA',
   },
   traitText: {
     fontSize: 12,
@@ -693,8 +693,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   styleOptionActive: {
-    backgroundColor: '#FF6B6B',
-    borderColor: '#FF6B6B',
+    backgroundColor: '#9F7AEA',
+    borderColor: '#9F7AEA',
   },
   styleOptionText: {
     fontSize: 14,
@@ -713,7 +713,7 @@ const styles = StyleSheet.create({
   interestTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+    backgroundColor: 'rgba(159, 122, 234, 0.1)',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
@@ -721,7 +721,7 @@ const styles = StyleSheet.create({
   },
   interestText: {
     fontSize: 12,
-    color: '#FF6B6B',
+    color: '#9F7AEA',
     fontWeight: '600',
   },
   removeInterestButton: {
@@ -734,14 +734,14 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: '#FF6B6B',
+    borderColor: '#9F7AEA',
     borderStyle: 'dashed',
     borderRadius: 12,
     gap: 8,
   },
   addInterestText: {
     fontSize: 14,
-    color: '#FF6B6B',
+    color: '#9F7AEA',
     fontWeight: '600',
   },
   dataCategory: {
@@ -785,7 +785,7 @@ const styles = StyleSheet.create({
   },
   addPhotoItem: {
     borderStyle: 'dashed',
-    borderColor: '#FF6B6B',
+    borderColor: '#9F7AEA',
   },
   photoLabel: {
     fontSize: 10,
@@ -794,7 +794,7 @@ const styles = StyleSheet.create({
   },
   addPhotoText: {
     fontSize: 10,
-    color: '#FF6B6B',
+    color: '#9F7AEA',
     marginTop: 4,
     fontWeight: '600',
   },
@@ -832,7 +832,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: '#FF6B6B',
+    borderColor: '#9F7AEA',
     borderStyle: 'dashed',
     borderRadius: 8,
     gap: 8,
@@ -840,7 +840,7 @@ const styles = StyleSheet.create({
   },
   addDataText: {
     fontSize: 14,
-    color: '#FF6B6B',
+    color: '#9F7AEA',
     fontWeight: '600',
   },
   viewAllButton: {
@@ -852,7 +852,7 @@ const styles = StyleSheet.create({
   },
   viewAllText: {
     fontSize: 12,
-    color: '#FF6B6B',
+    color: '#9F7AEA',
     fontWeight: '600',
   },
   dataStats: {
