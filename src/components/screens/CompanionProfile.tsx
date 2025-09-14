@@ -16,6 +16,8 @@ import {
 import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
 import { DefaultAvatar } from '../DefaultAvatar'
+import { CompanionActions } from './CompanionActions'
+import { CompanionSecondaryActions } from './CompanionSecondaryActions'
 import { AICompanion } from '../../types/assistant'
 
 
@@ -24,13 +26,25 @@ interface CompanionProfileProps {
   onBack: () => void
   onStartChat: (companion: AICompanion) => void
   onAddData?: (companion: AICompanion) => void
+  onViewAnalysis?: (companion: AICompanion) => void
+  onVoiceCall?: (companion: AICompanion) => void
+  onEditProfile?: (companion: AICompanion) => void
+  onViewHistory?: (companion: AICompanion) => void
+  onViewProgress?: (companion: AICompanion) => void
+  onSettings?: (companion: AICompanion) => void
 }
 
 export const CompanionProfile: React.FC<CompanionProfileProps> = ({
   companion,
   onBack,
   onStartChat,
-  onAddData
+  onAddData,
+  onViewAnalysis,
+  onVoiceCall,
+  onEditProfile,
+  onViewHistory,
+  onViewProgress,
+  onSettings
 }) => {
   const [isHeaderVisible, setIsHeaderVisible] = useState(true)
 
@@ -129,32 +143,14 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
           </LinearGradient>
         )}
 
-        {/* Action Buttons */}
-        <View style={styles.actionButtons}>
-          <TouchableOpacity
-            style={[styles.actionButton, styles.primaryButton]}
-            onPress={() => onStartChat(companion)}
-          >
-            <Ionicons name="chatbubble-ellipses" size={20} color="#fff" />
-            <Text style={styles.primaryButtonText}>開始對話練習</Text>
-          </TouchableOpacity>
-
-          {onAddData && (
-            <TouchableOpacity
-              style={[styles.actionButton, styles.secondaryButton]}
-              onPress={() => onAddData(companion)}
-            >
-              <Ionicons
-                name={companion.user_added_data ? "refresh-circle" : "add-circle"}
-                size={20}
-                color="#FF6B6B"
-              />
-              <Text style={styles.secondaryButtonText}>
-                {companion.user_added_data ? '繼續新增' : '新增資料'}
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
+        {/* 主要功能按鈕 */}
+        <CompanionActions
+          companion={companion}
+          onStartChat={onStartChat}
+          onAddData={onAddData}
+          onViewAnalysis={onViewAnalysis}
+          onVoiceCall={onVoiceCall}
+        />
 
         {/* 內容區域 */}
         <View style={styles.contentContainer}>
@@ -287,6 +283,16 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
             </View>
           </View>
         </View>
+
+        {/* 次要功能區域 */}
+        <CompanionSecondaryActions
+          companion={companion}
+          onEditProfile={onEditProfile}
+          onViewHistory={onViewHistory}
+          onViewProgress={onViewProgress}
+          onSettings={onSettings}
+        />
+
         </View>
       </ScrollView>
     </View>
@@ -373,47 +379,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     paddingHorizontal: 16,
     fontWeight: '500',
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 20,
-    gap: 12,
-    backgroundColor: 'transparent',
-  },
-  actionButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    borderRadius: 16,
-    gap: 8,
-  },
-  primaryButton: {
-    backgroundColor: '#FF6B6B',
-    shadowColor: '#FF6B6B',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  secondaryButton: {
-    backgroundColor: 'rgba(255, 107, 107, 0.1)',
-    borderWidth: 1,
-    borderColor: '#FF6B6B',
-  },
-  primaryButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  secondaryButtonText: {
-    color: '#FF6B6B',
-    fontSize: 16,
-    fontWeight: '600',
   },
   section: {
     backgroundColor: 'rgba(255, 255, 255, 0.98)',

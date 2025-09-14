@@ -10,10 +10,14 @@ import { CompanionProfile } from './CompanionProfile'
 import { ConversationPractice } from './ConversationPractice'
 import { AddCompanionData } from './AddCompanionData'
 import { CreateCompanion } from './CreateCompanion'
+import { EditCompanion } from './EditCompanion'
+import { ConversationHistory } from './ConversationHistory'
+import { LearningProgress } from './LearningProgress'
+import { CompanionSettings } from './CompanionSettings'
 import { useCompanionStore } from '../../stores/assistantStore'
 import { AICompanion } from '../../types/assistant'
 
-type AppScreen = 'selector' | 'profile' | 'conversation' | 'addData' | 'create'
+type AppScreen = 'selector' | 'profile' | 'conversation' | 'addData' | 'create' | 'editCompanion' | 'conversationHistory' | 'learningProgress' | 'companionSettings'
 
 export const MainApp: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('selector')
@@ -93,6 +97,30 @@ export const MainApp: React.FC = () => {
               setSelectedCompanionState(companion)
               setCurrentScreen('addData')
             }}
+            onViewAnalysis={(companion) => {
+              // TODO: 實現分析報告功能
+              console.log('查看分析報告:', companion.name)
+            }}
+            onVoiceCall={(companion) => {
+              // TODO: 實現語音通話功能
+              console.log('語音通話:', companion.name)
+            }}
+            onEditProfile={(companion) => {
+              setSelectedCompanionState(companion)
+              setCurrentScreen('editCompanion')
+            }}
+            onViewHistory={(companion) => {
+              setSelectedCompanionState(companion)
+              setCurrentScreen('conversationHistory')
+            }}
+            onViewProgress={(companion) => {
+              setSelectedCompanionState(companion)
+              setCurrentScreen('learningProgress')
+            }}
+            onSettings={(companion) => {
+              setSelectedCompanionState(companion)
+              setCurrentScreen('companionSettings')
+            }}
           />
         ) : (
           <CompanionSelector
@@ -143,6 +171,79 @@ export const MainApp: React.FC = () => {
                 // 現有助手的資料新增完成後返回詳情頁面
                 setCurrentScreen('profile')
               }
+            }}
+          />
+        ) : (
+          <CompanionSelector
+            onSelectCompanion={handleSelectCompanion}
+            onViewProfile={handleViewCompanionProfile}
+            onCreateCompanion={handleCreateCompanion}
+          />
+        )
+
+      case 'editCompanion':
+        return selectedCompanion ? (
+          <EditCompanion
+            companion={selectedCompanion}
+            onBack={() => setCurrentScreen('profile')}
+            onSave={(updatedCompanion) => {
+              // 更新助手資料
+              updateCompanion(updatedCompanion.id, updatedCompanion)
+              setSelectedCompanionState(updatedCompanion)
+            }}
+          />
+        ) : (
+          <CompanionSelector
+            onSelectCompanion={handleSelectCompanion}
+            onViewProfile={handleViewCompanionProfile}
+            onCreateCompanion={handleCreateCompanion}
+          />
+        )
+
+      case 'conversationHistory':
+        return selectedCompanion ? (
+          <ConversationHistory
+            companion={selectedCompanion}
+            onBack={() => setCurrentScreen('profile')}
+            onViewConversation={(conversationId) => {
+              console.log('查看對話詳情:', conversationId)
+            }}
+          />
+        ) : (
+          <CompanionSelector
+            onSelectCompanion={handleSelectCompanion}
+            onViewProfile={handleViewCompanionProfile}
+            onCreateCompanion={handleCreateCompanion}
+          />
+        )
+
+      case 'learningProgress':
+        return selectedCompanion ? (
+          <LearningProgress
+            companion={selectedCompanion}
+            onBack={() => setCurrentScreen('profile')}
+          />
+        ) : (
+          <CompanionSelector
+            onSelectCompanion={handleSelectCompanion}
+            onViewProfile={handleViewCompanionProfile}
+            onCreateCompanion={handleCreateCompanion}
+          />
+        )
+
+      case 'companionSettings':
+        return selectedCompanion ? (
+          <CompanionSettings
+            companion={selectedCompanion}
+            onBack={() => setCurrentScreen('profile')}
+            onUpdateSettings={(updatedCompanion) => {
+              updateCompanion(updatedCompanion.id, updatedCompanion)
+              setSelectedCompanionState(updatedCompanion)
+            }}
+            onDeleteCompanion={(companionId) => {
+              removeCompanion(companionId)
+              setSelectedCompanionState(null)
+              setCurrentScreen('selector')
             }}
           />
         ) : (
