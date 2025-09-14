@@ -9,8 +9,8 @@ export const DEFAULT_COMPANIONS: AICompanion[] = [
   {
     id: 'companion-001',
     name: '小雨',
-    avatar: '', // 將使用默認頭像
-    realAvatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b213?w=400&h=400&fit=crop&crop=face',
+    avatar: 'https://xsgames.co/randomusers/assets/avatars/female/1.jpg',
+    realAvatar: 'https://xsgames.co/randomusers/assets/avatars/female/1.jpg',
     age: 24,
     gender: 'female',
     bio: '喜歡咖啡和看書的文藝女孩，平時喜歡去獨立書店找尋有趣的故事',
