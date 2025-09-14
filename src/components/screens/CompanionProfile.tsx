@@ -71,12 +71,6 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
     ))
   }
 
-  const renderProgressBar = (value: number, color: string = '#FF6B9D') => (
-    <View style={styles.progressBarContainer}>
-      <View style={[styles.progressBar, { width: `${value}%` }]} />
-    </View>
-  )
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString('zh-TW', {
@@ -84,17 +78,6 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
       month: 'short',
       day: 'numeric'
     })
-  }
-
-  const getTrendIcon = (trend: string) => {
-    switch (trend) {
-      case 'improving':
-        return { name: 'trending-up' as const, color: '#4CAF50' }
-      case 'declining':
-        return { name: 'trending-down' as const, color: '#f44336' }
-      default:
-        return { name: 'remove' as const, color: '#FF9800' }
-    }
   }
 
   return (
@@ -180,31 +163,23 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
           )}
         </View>
 
-        {/* Learning Status */}
+        {/* 互動統計（整合學習狀態） */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>學習狀態</Text>
+          <Text style={styles.sectionTitle}>互動統計</Text>
 
-          <View style={styles.statusRow}>
-            <Text style={styles.statusLabel}>資料完整度</Text>
-            <View style={styles.statusValue}>
-              <Text style={styles.statusPercentage}>
-                {companion.learning_status.data_completeness}%
+          <View style={styles.statsGrid}>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>
+                {companion.interaction_stats.chat_assistance_sessions}
               </Text>
-              {renderProgressBar(companion.learning_status.data_completeness)}
+              <Text style={styles.statLabel}>聊天輔助次數</Text>
             </View>
-          </View>
 
-          <View style={styles.statusRow}>
-            <Text style={styles.statusLabel}>分析可信度</Text>
-            <View style={styles.statusValue}>
-              <Text style={styles.statusPercentage}>
-                {companion.learning_status.analysis_confidence}%
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>
+                {companion.interaction_stats.total_messages_analyzed}
               </Text>
-              {renderProgressBar(
-                companion.learning_status.analysis_confidence,
-                companion.learning_status.analysis_confidence >= 80 ? '#4CAF50' :
-                companion.learning_status.analysis_confidence >= 60 ? '#FF9800' : '#f44336'
-              )}
+              <Text style={styles.statLabel}>分析訊息數</Text>
             </View>
           </View>
 
@@ -226,55 +201,6 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
           <Text style={styles.lastTraining}>
             最後更新：{formatDate(companion.learning_status.last_training)}
           </Text>
-        </View>
-
-        {/* Interaction Stats */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>互動統計</Text>
-
-          <View style={styles.statsGrid}>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>
-                {companion.interaction_stats.chat_assistance_sessions}
-              </Text>
-              <Text style={styles.statLabel}>聊天輔助次數</Text>
-            </View>
-
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>
-                {companion.interaction_stats.total_messages_analyzed}
-              </Text>
-              <Text style={styles.statLabel}>分析訊息數</Text>
-            </View>
-          </View>
-
-          <View style={styles.scoreRow}>
-            <Text style={styles.scoreLabel}>關係洞察分數</Text>
-            <View style={styles.scoreValue}>
-              <Text style={styles.scoreNumber}>
-                {companion.interaction_stats.relationship_insight_score}
-              </Text>
-              <Text style={styles.scoreOutOf}>/100</Text>
-            </View>
-          </View>
-
-          <View style={styles.trendRow}>
-            <Text style={styles.trendLabel}>表現趨勢</Text>
-            <View style={styles.trendValue}>
-              <Ionicons
-                name={getTrendIcon(companion.interaction_stats.trend).name}
-                size={16}
-                color={getTrendIcon(companion.interaction_stats.trend).color}
-              />
-              <Text style={[
-                styles.trendText,
-                { color: getTrendIcon(companion.interaction_stats.trend).color }
-              ]}>
-                {companion.interaction_stats.trend === 'improving' ? '持續改善' :
-                 companion.interaction_stats.trend === 'declining' ? '需要關注' : '保持穩定'}
-              </Text>
-            </View>
-          </View>
         </View>
 
         {/* 次要功能區域 */}
@@ -427,39 +353,6 @@ const styles = StyleSheet.create({
     color: '#64748b',
     lineHeight: 20,
   },
-  statusRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  statusLabel: {
-    fontSize: 14,
-    color: '#374151',
-    fontWeight: '500',
-    flex: 1,
-  },
-  statusValue: {
-    flex: 1,
-    alignItems: 'flex-end',
-  },
-  statusPercentage: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1a202c',
-    marginBottom: 4,
-  },
-  progressBarContainer: {
-    width: 100,
-    height: 4,
-    backgroundColor: '#e2e8f0',
-    borderRadius: 2,
-  },
-  progressBar: {
-    height: '100%',
-    borderRadius: 2,
-    backgroundColor: '#FF6B9D',
-  },
   dataRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -506,52 +399,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#64748b',
     textAlign: 'center',
-  },
-  scoreRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-    marginBottom: 12,
-  },
-  scoreLabel: {
-    fontSize: 14,
-    color: '#374151',
-    fontWeight: '500',
-  },
-  scoreValue: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-  },
-  scoreNumber: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#FF6B9D',
-  },
-  scoreOutOf: {
-    fontSize: 14,
-    color: '#9ca3af',
-    marginLeft: 2,
-  },
-  trendRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  trendLabel: {
-    fontSize: 14,
-    color: '#374151',
-    fontWeight: '500',
-  },
-  trendValue: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  trendText: {
-    fontSize: 14,
-    fontWeight: '600',
   },
 })
