@@ -23,12 +23,20 @@ interface QuickAnalysisProps {
   onBack: () => void
 }
 
+interface FileData {
+  name: string
+  content: string
+  type: string
+  size: number
+}
+
 export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
   companion,
   onBack
 }) => {
   const [selectedImages, setSelectedImages] = useState<string[]>([])
   const [textInputs, setTextInputs] = useState<string[]>([''])
+  const [uploadedFiles, setUploadedFiles] = useState<FileData[]>([])
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisResult, setAnalysisResult] = useState<QuickAnalysisResult | null>(null)
 
@@ -123,15 +131,80 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
   }
 
   /**
+   * 選擇並上傳文字檔案
+   */
+  const handlePickTextFiles = async () => {
+    try {
+      const result = await AnalysisService.pickTextFiles()
+
+      if (!result.canceled && result.assets) {
+        const newFiles: FileData[] = []
+
+        for (const asset of result.assets) {
+          if (asset.uri && asset.name && asset.mimeType) {
+            // 驗證檔案大小
+            if (asset.size && !AnalysisService.validateFileSize(asset.size)) {
+              Alert.alert('檔案太大', `檔案 ${asset.name} 超過5MB限制，請選擇較小的檔案`)
+              continue
+            }
+
+            // 驗證檔案類型
+            if (!AnalysisService.validateFileType(asset.mimeType)) {
+              Alert.alert('檔案格式不支援', `檔案 ${asset.name} 的格式不支援，請選擇 .txt, .csv, .json 等文字檔案`)
+              continue
+            }
+
+            try {
+              // 讀取檔案內容
+              const content = await AnalysisService.readTextFile(asset.uri, asset.mimeType)
+
+              newFiles.push({
+                name: asset.name,
+                content: content,
+                type: asset.mimeType,
+                size: asset.size || 0
+              })
+            } catch (error) {
+              Alert.alert('檔案讀取失敗', `無法讀取檔案 ${asset.name}，請重試`)
+              console.error('檔案讀取錯誤:', error)
+            }
+          }
+        }
+
+        if (newFiles.length > 0) {
+          setUploadedFiles([...uploadedFiles, ...newFiles])
+        }
+      }
+    } catch (error) {
+      Alert.alert('錯誤', '選擇檔案失敗，請重試')
+      console.error('選擇檔案錯誤:', error)
+    }
+  }
+
+  /**
+   * 移除已上傳的檔案
+   */
+  const handleRemoveFile = (index: number) => {
+    const newFiles = uploadedFiles.filter((_, i) => i !== index)
+    setUploadedFiles(newFiles)
+  }
+
+  /**
    * 執行分析
    */
   const handleAnalyze = async () => {
     // 過濾非空文字
     const validTexts = textInputs.filter(text => text.trim().length > 0)
 
+    // 從檔案中提取文字內容
+    const fileTexts = uploadedFiles.map(file => file.content)
+
+    // 合併所有文字內容
+    const allTexts = [...validTexts, ...fileTexts]
+
     // 檢查是否有輸入內容
-    if (selectedImages.length === 0 && validTexts.length === 0) {
-      Alert.alert('請輸入內容', '請上傳圖片或輸入文字內容進行分析')
+    if (selectedImages.length === 0 && allTexts.length === 0) {
+      Alert.alert('請輸入內容', '請上傳圖片、輸入文字內容或上傳文字檔案進行分析')
       return
     }
 
@@ -143,7 +216,7 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
         input_type: 'mixed' as const,
         input_data: '',
         images: selectedImages,
-        texts: validTexts
+        texts: allTexts
       }
 
       const response = await AnalysisService.performQuickAnalysis(request)
@@ -167,6 +240,7 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
   const handleReset = () => {
     setSelectedImages([])
     setTextInputs([''])
+    setUploadedFiles([])
     setAnalysisResult(null)
   }
 
@@ -277,7 +351,7 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
           <View style={styles.uploadSection}>
             <Text style={styles.sectionTitle}>📤 上傳內容</Text>
 
-          {/* 圖片上傳按鈕 */}
+          {/* 上傳按鈕 */}
           <View style={styles.buttonRow}>
             <TouchableOpacity style={styles.uploadButton} onPress={handlePickImages}>
               <Ionicons name="image" size={24} color="#FF6B9D" />
@@ -289,6 +363,12 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
               <Text style={styles.uploadButtonText}>拍攝照片</Text>
             </TouchableOpacity>
           </View>
+
+          {/* 文字檔案上傳按鈕 */}
+          <TouchableOpacity style={[styles.uploadButton, styles.fullWidthButton]} onPress={handlePickTextFiles}>
+            <Ionicons name="document-text" size={24} color="#FF6B9D" />
+            <Text style={styles.uploadButtonText}>上傳文字檔案 (.txt, .csv, .json)</Text>
+          </TouchableOpacity>
 
           {/* 圖片預覽 */}
           {selectedImages.length > 0 && (
@@ -307,6 +387,35 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
                   </View>
                 ))}
               </ScrollView>
+            </View>
+          )}
+
+          {/* 檔案清單 */}
+          {uploadedFiles.length > 0 && (
+            <View style={styles.filesContainer}>
+              <Text style={styles.subTitle}>已上傳檔案 ({uploadedFiles.length})</Text>
+              {uploadedFiles.map((file, index) => (
+                <View key={index} style={styles.fileItem}>
+                  <View style={styles.fileInfo}>
+                    <Ionicons name="document-text" size={20} color="#FF6B9D" />
+                    <View style={styles.fileDetails}>
+                      <Text style={styles.fileName}>{file.name}</Text>
+                      <Text style={styles.fileSize}>
+                        {(file.size / 1024).toFixed(1)} KB • {file.type.split('/')[1].toUpperCase()}
+                      </Text>
+                      <Text style={styles.filePreview} numberOfLines={2}>
+                        {file.content.substring(0, 100)}...
+                      </Text>
+                    </View>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.removeFileButton}
+                    onPress={() => handleRemoveFile(index)}
+                  >
+                    <Ionicons name="close-circle" size={20} color="#FF3B30" />
+                  </TouchableOpacity>
+                </View>
+              ))}
             </View>
           )}
 
@@ -629,5 +738,51 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     color: '#0284c7',
+  },
+  fullWidthButton: {
+    width: '100%',
+    marginTop: 8,
+  },
+  filesContainer: {
+    marginTop: 16,
+  },
+  fileItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    backgroundColor: '#f8fafc',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 8,
+    borderLeftWidth: 3,
+    borderLeftColor: '#FF6B9D',
+  },
+  fileInfo: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    flex: 1,
+    gap: 8,
+  },
+  fileDetails: {
+    flex: 1,
+  },
+  fileName: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#1e293b',
+    marginBottom: 2,
+  },
+  fileSize: {
+    fontSize: 12,
+    color: '#64748b',
+    marginBottom: 4,
+  },
+  filePreview: {
+    fontSize: 12,
+    color: '#94a3b8',
+    fontStyle: 'italic',
+  },
+  removeFileButton: {
+    padding: 4,
   },
 })

@@ -4,6 +4,7 @@
  */
 
 import * as ImagePicker from 'expo-image-picker'
+import * as DocumentPicker from 'expo-document-picker'
 import {
   QuickAnalysisRequest,
   QuickAnalysisResult,
@@ -291,6 +292,192 @@ ${request.input_type === 'mixed' || Array.isArray(request.input_data)
     } catch {
       throw new Error('圖片轉換失敗')
     }
+  }
+
+  /**
+   * 選擇文字檔案
+   */
+  static async pickTextFiles(): Promise<DocumentPicker.DocumentPickerResult> {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: [
+          'text/plain',          // .txt
+          'text/csv',           // .csv
+          'application/json',   // .json
+          'text/tab-separated-values', // .tsv
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+        ],
+        multiple: true,
+        copyToCacheDirectory: true
+      })
+
+      return result
+    } catch (error) {
+      console.error('選擇檔案錯誤:', error)
+      throw new Error('選擇檔案失敗，請重試')
+    }
+  }
+
+  /**
+   * 讀取文字檔案內容
+   */
+  static async readTextFile(fileUri: string, mimeType?: string): Promise<string> {
+    try {
+      const response = await fetch(fileUri)
+
+      if (!response.ok) {
+        throw new Error('無法讀取檔案')
+      }
+
+      let content = await response.text()
+
+      // 根據檔案類型進行特殊處理
+      if (mimeType) {
+        content = this.processFileContent(content, mimeType)
+      }
+
+      return content
+    } catch (error) {
+      console.error('讀取檔案錯誤:', error)
+      throw new Error('檔案讀取失敗')
+    }
+  }
+
+  /**
+   * 處理不同格式的檔案內容
+   */
+  private static processFileContent(content: string, mimeType: string): string {
+    switch (mimeType) {
+      case 'text/csv':
+        // 將CSV格式轉換為可讀的對話格式
+        return this.processCsvContent(content)
+
+      case 'application/json':
+        // 處理JSON格式的聊天記錄
+        return this.processJsonContent(content)
+
+      case 'text/tab-separated-values':
+        // 處理TSV格式
+        return this.processTsvContent(content)
+
+      default:
+        // 純文字檔案直接返回
+        return content
+    }
+  }
+
+  /**
+   * 處理CSV格式的聊天記錄
+   */
+  private static processCsvContent(content: string): string {
+    try {
+      const lines = content.split('\n').filter(line => line.trim().length > 0)
+      const processedLines: string[] = []
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim()
+        if (line && !line.startsWith('時間,') && !line.startsWith('Time,')) {
+          // 假設CSV格式為: 時間,發送者,訊息內容
+          const parts = line.split(',')
+          if (parts.length >= 3) {
+            const sender = parts[1].replace(/"/g, '').trim()
+            const message = parts.slice(2).join(',').replace(/"/g, '').trim()
+            processedLines.push(`${sender}: ${message}`)
+          }
+        }
+      }
+
+      return processedLines.join('\n')
+    } catch (error) {
+      console.error('CSV處理錯誤:', error)
+      return content // 如果處理失敗，返回原始內容
+    }
+  }
+
+  /**
+   * 處理JSON格式的聊天記錄
+   */
+  private static processJsonContent(content: string): string {
+    try {
+      const data = JSON.parse(content)
+      const processedLines: string[] = []
+
+      // 支援常見的JSON聊天記錄格式
+      if (Array.isArray(data)) {
+        // 陣列格式的聊天記錄
+        data.forEach((item: any) => {
+          if (item.sender && item.message) {
+            processedLines.push(`${item.sender}: ${item.message}`)
+          } else if (item.name && item.text) {
+            processedLines.push(`${item.name}: ${item.text}`)
+          } else if (item.user && item.content) {
+            processedLines.push(`${item.user}: ${item.content}`)
+          }
+        })
+      } else if (data.messages && Array.isArray(data.messages)) {
+        // 包含messages陣列的格式
+        data.messages.forEach((msg: any) => {
+          if (msg.sender && msg.content) {
+            processedLines.push(`${msg.sender}: ${msg.content}`)
+          }
+        })
+      }
+
+      return processedLines.length > 0 ? processedLines.join('\n') : content
+    } catch (error) {
+      console.error('JSON處理錯誤:', error)
+      return content // 如果處理失敗，返回原始內容
+    }
+  }
+
+  /**
+   * 處理TSV格式的聊天記錄
+   */
+  private static processTsvContent(content: string): string {
+    try {
+      const lines = content.split('\n').filter(line => line.trim().length > 0)
+      const processedLines: string[] = []
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim()
+        if (line) {
+          // TSV格式使用tab分隔
+          const parts = line.split('\t')
+          if (parts.length >= 3) {
+            const sender = parts[1].trim()
+            const message = parts.slice(2).join('\t').trim()
+            processedLines.push(`${sender}: ${message}`)
+          }
+        }
+      }
+
+      return processedLines.join('\n')
+    } catch (error) {
+      console.error('TSV處理錯誤:', error)
+      return content
+    }
+  }
+
+  /**
+   * 驗證檔案大小（限制為5MB）
+   */
+  static validateFileSize(size: number): boolean {
+    const maxSize = 5 * 1024 * 1024 // 5MB
+    return size <= maxSize
+  }
+
+  /**
+   * 驗證檔案類型
+   */
+  static validateFileType(mimeType: string): boolean {
+    const allowedTypes = [
+      'text/plain',
+      'text/csv',
+      'application/json',
+      'text/tab-separated-values',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ]
+    return allowedTypes.includes(mimeType)
   }
 
   /**
