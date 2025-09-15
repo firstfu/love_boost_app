@@ -1,6 +1,6 @@
 /**
  * 我的頁面
- * 提供用戶個人資料、設定、使用統計等功能
+ * 提供用戶個人資料、設定等功能
  */
 
 import React, { useState } from 'react'
@@ -41,7 +41,7 @@ const MenuItem = ({ icon, title, subtitle, value, showArrow = true, onPress, col
 )
 
 export default function ProfileScreen() {
-  const { user, usageStats, logout } = useUserStore()
+  const { user, logout } = useUserStore()
   const [notificationsEnabled, setNotificationsEnabled] = useState(user?.preferences.notifications || false)
 
   // 模擬用戶數據（實際應該從store或API獲取）
@@ -60,18 +60,6 @@ export default function ProfileScreen() {
         allowPersonalization: true
       }
     }
-  }
-
-  const mockStats = usageStats || {
-    totalConversations: 45,
-    totalAPIUsage: 1250,
-    totalCost: 15.67,
-    monthlyUsage: {
-      conversations: 12,
-      apiCalls: 380,
-      cost: 4.50
-    },
-    remainingQuota: 500
   }
 
   const getMembershipBadge = (plan: MembershipPlan) => {
@@ -111,13 +99,18 @@ export default function ProfileScreen() {
 
   return (
     <View style={styles.container}>
-      {/* 漸層背景頭部 */}
+      {/* 漸層背景頭部 - 使用與其他頁面一致的粉色漸層 */}
       <LinearGradient
-        colors={['#667eea', '#764ba2']}
-        locations={[0, 1]}
+        colors={['#FF7BA7', '#FF87B2', '#FF96C0']}
+        locations={[0, 0.4, 1]}
         style={styles.backgroundGradient}
       >
         <View style={styles.header}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>我的</Text>
+            <Text style={styles.subtitle}>個人設定與帳戶管理</Text>
+          </View>
+
           <View style={styles.profileSection}>
             <Image
               source={{ uri: mockUser.avatar || 'https://i.pravatar.cc/150?img=1' }}
@@ -133,57 +126,11 @@ export default function ProfileScreen() {
               </View>
             </View>
           </View>
-
-          {/* 使用統計卡片 */}
-          <View style={styles.statsCard}>
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>{mockStats.totalConversations}</Text>
-              <Text style={styles.statLabel}>總對話</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>{mockStats.monthlyUsage.conversations}</Text>
-              <Text style={styles.statLabel}>本月對話</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>${mockStats.monthlyUsage.cost.toFixed(2)}</Text>
-              <Text style={styles.statLabel}>本月花費</Text>
-            </View>
-          </View>
         </View>
       </LinearGradient>
 
       <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         {/* 功能菜單 */}
-        <ThemedView style={styles.section}>
-          <MenuItem
-            icon="chatbubbles"
-            title="對話歷史記錄"
-            subtitle="查看所有AI分身的對話紀錄"
-            onPress={() => Alert.alert('功能開發中', '對話歷史功能即將推出')}
-            color="#FF6B9D"
-          />
-
-          <MenuItem
-            icon="people"
-            title="我的AI分身"
-            subtitle="管理已創建的AI分身列表"
-            value={`${mockStats.totalConversations}個`}
-            onPress={() => Alert.alert('功能開發中', 'AI分身管理功能即將推出')}
-            color="#FF9A8B"
-          />
-
-          <MenuItem
-            icon="bar-chart"
-            title="使用統計"
-            subtitle="查看API使用量和成本統計"
-            value={`${mockStats.totalAPIUsage}次`}
-            onPress={() => Alert.alert('使用統計', `總API調用: ${mockStats.totalAPIUsage}次\n總花費: $${mockStats.totalCost.toFixed(2)}\n剩餘額度: ${mockStats.remainingQuota || '無限制'}`)}
-            color="#A78BFA"
-          />
-        </ThemedView>
-
         <ThemedView style={styles.section}>
           <MenuItem
             icon="diamond"
@@ -276,15 +223,38 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 30,
   },
-  profileSection: {
-    flexDirection: 'row',
+  titleContainer: {
     alignItems: 'center',
     marginBottom: 24,
   },
+  title: {
+    fontSize: 32,
+    fontWeight: '900',
+    color: '#ffffff',
+    marginBottom: 8,
+    textAlign: 'center',
+    fontFamily: Fonts.rounded,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: 'rgba(255,255,255,0.9)',
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  profileSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderRadius: 16,
+    padding: 20,
+    backdropFilter: 'blur(10px)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+  },
   avatar: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     marginRight: 16,
     borderWidth: 3,
     borderColor: 'rgba(255,255,255,0.3)',
@@ -293,7 +263,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   username: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
     color: '#ffffff',
     marginBottom: 4,
@@ -313,35 +283,6 @@ const styles = StyleSheet.create({
   membershipText: {
     fontSize: 12,
     fontWeight: '600',
-  },
-  statsCard: {
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: 16,
-    flexDirection: 'row',
-    padding: 20,
-    backdropFilter: 'blur(10px)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
-  },
-  statItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#ffffff',
-    marginBottom: 4,
-    fontFamily: Fonts.rounded,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.8)',
-  },
-  statDivider: {
-    width: 1,
-    backgroundColor: 'rgba(255,255,255,0.3)',
-    marginHorizontal: 16,
   },
   scrollContainer: {
     flex: 1,
