@@ -5,11 +5,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 - `npm start` or `npx expo start` - Start Expo development server
-- `npm run android` - Start on Android emulator/device  
-- `npm run ios` - Start on iOS simulator/device
-- `npm run web` - Start web version
-- `npm run lint` - Run ESLint for code quality checks
+- `npm run android` or `expo start --android` - Start on Android emulator/device
+- `npm run ios` or `expo start --ios` - Start on iOS simulator/device
+- `npm run web` or `expo start --web` - Start web version
+- `npm run lint` or `expo lint` - Run ESLint for code quality checks
 - `npm run reset-project` - Reset to blank app (moves current code to app-example/)
+
+### Additional Development Tools
+- No specific test command configured - tests need to be set up if required
+- Uses standard Expo CLI commands for development and building
 
 ## Project Architecture
 
@@ -22,6 +26,8 @@ This is an Expo React Native app using:
 - **Expo SDK 54** with new architecture enabled
 - **Zustand** for state management
 - **React 19.1.0** with React Native 0.81.4
+- **Expo Image Picker** and **Document Picker** for media handling
+- **Expo Linear Gradient** for visual effects
 
 ### Key Directory Structure
 
@@ -68,11 +74,21 @@ Based on the screen components in `src/components/screens/`, this appears to be 
 - Conversation practice with AI assistants
 - Conversation history tracking
 - Companion profile customization
+- Quick analysis functionality for relationship content
+- Multi-media support for images and text analysis
+
+### API Integration
+
+- **OpenAI API**: Primary AI service provider (not Azure.Microsoft.com)
+- **Cost monitoring**: Strict API usage cost control for profitability
+- **Revenue model**: MVP version starts with paid features to avoid API cost losses
 ## 專案管理指引
 
 ### 文檔管理
 - **產品需求文件**: `docs/prd.md` - 完整的產品規劃和需求定義
 - **開發任務清單**: `docs/todo.md` - 詳細的功能開發TODO清單
+- **技術架構文檔**: `docs/technical-architecture.md` - 系統架構設計
+- **成本分析**: `docs/cost-analysis.md` - API使用成本與收益分析
 
 ### 任務完成追蹤規則
 每完成一個 `docs/todo.md` 中的功能項目後：

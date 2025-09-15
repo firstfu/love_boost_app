@@ -400,9 +400,11 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
           onPress={handleSave}
           style={[styles.saveButton, hasUnsavedChanges && styles.saveButtonActive]}
         >
-          <Text style={[styles.saveButtonText, hasUnsavedChanges && styles.saveButtonTextActive]}>
-            儲存
-          </Text>
+          <Ionicons
+            name="checkmark"
+            size={20}
+            color={hasUnsavedChanges ? '#FF6B9D' : 'rgba(255,255,255,0.8)'}
+          />
         </TouchableOpacity>
       </View>
 
