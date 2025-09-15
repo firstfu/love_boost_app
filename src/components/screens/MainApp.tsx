@@ -12,11 +12,10 @@ import { AddCompanionData } from './AddCompanionData'
 import { EditCompanion } from './EditCompanion'
 import { ConversationHistory } from './ConversationHistory'
 import { QuickAnalysis } from './QuickAnalysis'
-import ChatAnalysisScreen from '../../../app/(tabs)/explore'
 import { useCompanionStore } from '../../stores/assistantStore'
 import { AICompanion } from '../../types/assistant'
 
-type AppScreen = 'selector' | 'profile' | 'conversation' | 'addData' | 'editCompanion' | 'conversationHistory' | 'chatAnalysis' | 'quickAnalysis'
+type AppScreen = 'selector' | 'profile' | 'conversation' | 'addData' | 'editCompanion' | 'conversationHistory' | 'quickAnalysis'
 
 export const MainApp: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('selector')
@@ -194,10 +193,6 @@ export const MainApp: React.FC = () => {
         )
 
 
-      case 'chatAnalysis':
-        return (
-          <ChatAnalysisScreen />
-        )
 
       case 'quickAnalysis':
         return selectedCompanion ? (
