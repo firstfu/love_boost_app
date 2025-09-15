@@ -12,7 +12,9 @@ import {
   ScrollView,
   Alert,
   TextInput,
-  Image
+  Image,
+  KeyboardAvoidingView,
+  Platform
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { AICompanion, QuickAnalysisResult, ChatMessage, FileData } from '../../types/assistant'
@@ -440,7 +442,11 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={0}
+    >
       {/* 導航欄 */}
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
@@ -451,64 +457,70 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
       </View>
 
       {/* 聊天區域 */}
-      <ScrollView
-        ref={scrollViewRef}
-        style={styles.chatContainer}
-        contentContainerStyle={styles.chatContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {messages.map(renderMessage)}
+      <View style={styles.chatWrapper}>
+        <ScrollView
+          ref={scrollViewRef}
+          style={styles.chatContainer}
+          contentContainerStyle={styles.chatContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {messages.map(renderMessage)}
 
-        {/* 打字指示器 */}
-        {isTyping && (
-          <View style={styles.typingContainer}>
-            <View style={styles.typingBubble}>
-              <Text style={styles.typingText}>正在分析中...</Text>
+          {/* 打字指示器 */}
+          {isTyping && (
+            <View style={styles.typingContainer}>
+              <View style={styles.typingBubble}>
+                <Text style={styles.typingText}>正在分析中...</Text>
+              </View>
             </View>
+          )}
+        </ScrollView>
+      </View>
+
+      {/* 輸入區域容器 */}
+      <View style={styles.inputWrapper}>
+        {/* 附件預覽 */}
+        {renderInputAttachments()}
+
+        {/* 輸入區域 */}
+        <View style={styles.inputContainer}>
+          <View style={styles.inputRow}>
+            {/* 附件按鈕 */}
+            <TouchableOpacity style={styles.attachButton} onPress={handlePickImages}>
+              <Ionicons name="image" size={20} color="#FF6B9D" />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.attachButton} onPress={handleTakePhoto}>
+              <Ionicons name="camera" size={20} color="#FF6B9D" />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.attachButton} onPress={handlePickTextFiles}>
+              <Ionicons name="document-text" size={20} color="#FF6B9D" />
+            </TouchableOpacity>
+
+            {/* 文字輸入框 */}
+            <TextInput
+              style={styles.textInput}
+              value={inputText}
+              onChangeText={setInputText}
+              placeholder="輸入訊息或上傳內容進行分析..."
+              multiline
+              maxLength={500}
+            />
+
+            {/* 發送按鈕 */}
+            <TouchableOpacity
+              style={[styles.sendButton, (inputText.trim() || selectedImages.length > 0 || uploadedFiles.length > 0) && styles.sendButtonActive]}
+              onPress={handleSendMessage}
+              disabled={!inputText.trim() && selectedImages.length === 0 && uploadedFiles.length === 0}
+            >
+              <Ionicons name="send" size={20} color={(inputText.trim() || selectedImages.length > 0 || uploadedFiles.length > 0) ? "white" : "#ccc"} />
+            </TouchableOpacity>
           </View>
-        )}
-      </ScrollView>
-
-      {/* 附件預覽 */}
-      {renderInputAttachments()}
-
-      {/* 輸入區域 */}
-      <View style={styles.inputContainer}>
-        <View style={styles.inputRow}>
-          {/* 附件按鈕 */}
-          <TouchableOpacity style={styles.attachButton} onPress={handlePickImages}>
-            <Ionicons name="image" size={20} color="#FF6B9D" />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.attachButton} onPress={handleTakePhoto}>
-            <Ionicons name="camera" size={20} color="#FF6B9D" />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.attachButton} onPress={handlePickTextFiles}>
-            <Ionicons name="document-text" size={20} color="#FF6B9D" />
-          </TouchableOpacity>
-
-          {/* 文字輸入框 */}
-          <TextInput
-            style={styles.textInput}
-            value={inputText}
-            onChangeText={setInputText}
-            placeholder="輸入訊息或上傳內容進行分析..."
-            multiline
-            maxLength={500}
-          />
-
-          {/* 發送按鈕 */}
-          <TouchableOpacity
-            style={[styles.sendButton, (inputText.trim() || selectedImages.length > 0 || uploadedFiles.length > 0) && styles.sendButtonActive]}
-            onPress={handleSendMessage}
-            disabled={!inputText.trim() && selectedImages.length === 0 && uploadedFiles.length === 0}
-          >
-            <Ionicons name="send" size={20} color={(inputText.trim() || selectedImages.length > 0 || uploadedFiles.length > 0) ? "white" : "#ccc"} />
-          </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   )
 }
 
@@ -542,13 +554,17 @@ const styles = StyleSheet.create({
   headerRight: {
     width: 40,
   },
-  chatContainer: {
+  chatWrapper: {
     flex: 1,
     backgroundColor: '#f8fafc',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
   },
+  chatContainer: {
+    flex: 1,
+  },
   chatContent: {
+    flexGrow: 1,
     padding: 16,
     paddingBottom: 20,
   },
@@ -604,13 +620,14 @@ const styles = StyleSheet.create({
   },
   attachmentsContainer: {
     marginBottom: 8,
+    maxHeight: 150,
   },
   imagesScroll: {
     flexDirection: 'row',
   },
   messageImage: {
-    width: 120,
-    height: 120,
+    width: 100,
+    height: 100,
     borderRadius: 8,
     marginRight: 8,
   },
@@ -684,8 +701,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     paddingHorizontal: 16,
     paddingTop: 8,
+    paddingBottom: 4,
     borderTopWidth: 1,
     borderTopColor: '#e2e8f0',
+    maxHeight: 120,
   },
   inputImagesContainer: {
     marginBottom: 8,
@@ -726,10 +745,14 @@ const styles = StyleSheet.create({
   removeFileTagButton: {
     padding: 2,
   },
+  inputWrapper: {
+    backgroundColor: 'white',
+  },
   inputContainer: {
     backgroundColor: 'white',
     paddingHorizontal: 16,
     paddingVertical: 12,
+    paddingBottom: 16,
     borderTopWidth: 1,
     borderTopColor: '#e2e8f0',
   },
