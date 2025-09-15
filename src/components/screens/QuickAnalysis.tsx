@@ -12,8 +12,7 @@ import {
   ScrollView,
   Alert,
   TextInput,
-  Image,
-  SafeAreaView
+  Image
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { AICompanion, QuickAnalysisResult } from '../../types/assistant'
@@ -257,7 +256,7 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       {/* 固定導航欄 */}
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
@@ -272,6 +271,7 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
       <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
       >
           {/* 上傳區域 */}
           <View style={styles.uploadSection}>
@@ -362,27 +362,35 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
           {/* 分析結果 */}
           {renderAnalysisResult()}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#FF6B9D',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingTop: 60,
+    paddingBottom: 16,
     backgroundColor: '#FF6B9D',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.2)',
   },
   content: {
     flex: 1,
+  },
+  scrollContent: {
+    backgroundColor: '#f8fafc',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingTop: 20,
+    minHeight: '100%',
   },
   backButton: {
     padding: 8,
