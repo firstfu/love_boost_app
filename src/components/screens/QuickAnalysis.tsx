@@ -12,10 +12,10 @@ import {
   ScrollView,
   Alert,
   TextInput,
-  Image
+  Image,
+  SafeAreaView
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { AICompanion, QuickAnalysisResult } from '../../types/assistant'
 import { AnalysisService } from '../../services/analysisService'
 
@@ -210,7 +210,7 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
         {/* 回覆建議 */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>💬 建議回覆</Text>
-          {analysisResult.recommendations.reply_suggestions.map((suggestion, index) => (
+          {analysisResult.recommendations.reply_suggestions.map((suggestion) => (
             <View key={suggestion.id} style={styles.suggestionCard}>
               <Text style={styles.suggestionContent}>{suggestion.content}</Text>
               <Text style={styles.suggestionReason}>{suggestion.reasoning}</Text>
@@ -258,31 +258,34 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* 標題欄 */}
+      {/* 固定導航欄 */}
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#333" />
+          <Ionicons name="arrow-back" size={24} color="#1e293b" />
         </TouchableOpacity>
         <Text style={styles.title}>快速分析</Text>
         <TouchableOpacity onPress={handleReset} style={styles.resetButton}>
-          <Ionicons name="refresh" size={24} color="#666" />
+          <Ionicons name="refresh" size={24} color="#1e293b" />
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* 上傳區域 */}
-        <View style={styles.uploadSection}>
-          <Text style={styles.sectionTitle}>📤 上傳內容</Text>
+      <ScrollView
+        style={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+          {/* 上傳區域 */}
+          <View style={styles.uploadSection}>
+            <Text style={styles.sectionTitle}>📤 上傳內容</Text>
 
           {/* 圖片上傳按鈕 */}
           <View style={styles.buttonRow}>
             <TouchableOpacity style={styles.uploadButton} onPress={handlePickImages}>
-              <Ionicons name="image" size={24} color="#007AFF" />
+              <Ionicons name="image" size={24} color="#FF6B9D" />
               <Text style={styles.uploadButtonText}>選擇圖片</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.uploadButton} onPress={handleTakePhoto}>
-              <Ionicons name="camera" size={24} color="#007AFF" />
+              <Ionicons name="camera" size={24} color="#FF6B9D" />
               <Text style={styles.uploadButtonText}>拍攝照片</Text>
             </TouchableOpacity>
           </View>
@@ -341,23 +344,23 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
         </View>
 
         {/* 分析按鈕 */}
-        <TouchableOpacity
-          style={[styles.analyzeButton, isAnalyzing && styles.analyzeButtonDisabled]}
-          onPress={handleAnalyze}
-          disabled={isAnalyzing}
-        >
-          {isAnalyzing ? (
-            <Text style={styles.analyzeButtonText}>分析中...</Text>
-          ) : (
-            <>
-              <Ionicons name="analytics" size={20} color="white" />
-              <Text style={styles.analyzeButtonText}>開始分析</Text>
-            </>
-          )}
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.analyzeButton, isAnalyzing && styles.analyzeButtonDisabled]}
+            onPress={handleAnalyze}
+            disabled={isAnalyzing}
+          >
+            {isAnalyzing ? (
+              <Text style={styles.analyzeButtonText}>分析中...</Text>
+            ) : (
+              <>
+                <Ionicons name="analytics" size={20} color="white" />
+                <Text style={styles.analyzeButtonText}>開始分析</Text>
+              </>
+            )}
+          </TouchableOpacity>
 
-        {/* 分析結果 */}
-        {renderAnalysisResult()}
+          {/* 分析結果 */}
+          {renderAnalysisResult()}
       </ScrollView>
     </SafeAreaView>
   )
@@ -378,6 +381,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e2e8f0',
   },
+  content: {
+    flex: 1,
+  },
   backButton: {
     padding: 4,
   },
@@ -389,19 +395,24 @@ const styles = StyleSheet.create({
   resetButton: {
     padding: 4,
   },
-  content: {
-    flex: 1,
-  },
   uploadSection: {
-    backgroundColor: 'white',
-    margin: 16,
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    marginBottom: 16,
+    marginHorizontal: 20,
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: '#FF6B9D',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.8)',
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1e293b',
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1a202c',
     marginBottom: 16,
   },
   buttonRow: {
@@ -414,18 +425,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f0f9ff',
+    backgroundColor: 'rgba(255, 107, 157, 0.1)',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#bae6fd',
+    borderColor: 'rgba(255, 107, 157, 0.2)',
     gap: 8,
   },
   uploadButtonText: {
-    color: '#007AFF',
+    color: '#FF6B9D',
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   imagesContainer: {
     marginBottom: 16,
@@ -506,15 +517,20 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   analyzeButton: {
-    backgroundColor: '#007AFF',
-    marginHorizontal: 16,
+    backgroundColor: '#FF6B9D',
+    marginHorizontal: 20,
     marginVertical: 16,
     paddingVertical: 16,
-    borderRadius: 12,
+    borderRadius: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
+    shadowColor: '#FF6B9D',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   analyzeButtonDisabled: {
     backgroundColor: '#94a3b8',
@@ -522,14 +538,21 @@ const styles = StyleSheet.create({
   analyzeButtonText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   resultContainer: {
-    backgroundColor: 'white',
-    margin: 16,
-    marginTop: 0,
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    marginBottom: 16,
+    marginHorizontal: 20,
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: '#FF6B9D',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.8)',
   },
   resultTitle: {
     fontSize: 18,
