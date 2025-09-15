@@ -9,7 +9,6 @@ import { CompanionSelector } from '../CompanionSelector'
 import { CompanionProfile } from './CompanionProfile'
 import { ConversationPractice } from './ConversationPractice'
 import { AddCompanionData } from './AddCompanionData'
-import { CreateCompanion } from './CreateCompanion'
 import { EditCompanion } from './EditCompanion'
 import { ConversationHistory } from './ConversationHistory'
 import { QuickAnalysis } from './QuickAnalysis'
@@ -17,7 +16,7 @@ import ChatAnalysisScreen from '../../../app/(tabs)/explore'
 import { useCompanionStore } from '../../stores/assistantStore'
 import { AICompanion } from '../../types/assistant'
 
-type AppScreen = 'selector' | 'profile' | 'conversation' | 'addData' | 'create' | 'editCompanion' | 'conversationHistory' | 'chatAnalysis' | 'quickAnalysis'
+type AppScreen = 'selector' | 'profile' | 'conversation' | 'addData' | 'editCompanion' | 'conversationHistory' | 'chatAnalysis' | 'quickAnalysis'
 
 export const MainApp: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('selector')
@@ -46,8 +45,10 @@ export const MainApp: React.FC = () => {
   /**
    * 處理創建新AI助手
    */
-  const handleCreateCompanion = () => {
-    setCurrentScreen('create')
+  const handleCreateCompanion = (companion: AICompanion) => {
+    createCompanion(companion)
+    setSelectedCompanionState(companion)
+    setCurrentScreen('addData') // 創建完成後直接進入資料新增頁面
   }
 
   /**
@@ -58,14 +59,6 @@ export const MainApp: React.FC = () => {
     setSelectedCompanionState(null)
   }
 
-  /**
-   * 處理保存新建立的AI助手
-   */
-  const handleSaveNewCompanion = (companion: AICompanion) => {
-    createCompanion(companion)
-    setSelectedCompanionState(companion)
-    setCurrentScreen('addData') // 創建完成後直接進入資料新增頁面
-  }
 
   // 根據當前螢幕狀態渲染對應頁面
   const renderCurrentScreen = () => {
@@ -79,13 +72,6 @@ export const MainApp: React.FC = () => {
           />
         )
 
-      case 'create':
-        return (
-          <CreateCompanion
-            onBack={handleBackToSelector}
-            onSave={handleSaveNewCompanion}
-          />
-        )
 
       case 'profile':
         return selectedCompanion ? (

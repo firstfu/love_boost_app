@@ -13,6 +13,7 @@ import { DEFAULT_COMPANIONS } from "../data/defaultCompanions";
 import { useCompanionStore } from "../stores/assistantStore";
 import { AICompanion, PersonalityTrait } from "../types/assistant";
 import { DefaultAvatar } from "./DefaultAvatar";
+import { CreateCompanionModal } from "./CreateCompanionModal";
 
 // 篩選類型
 type FilterType = "all" | "gentle" | "cheerful" | "intellectual";
@@ -20,7 +21,7 @@ type FilterType = "all" | "gentle" | "cheerful" | "intellectual";
 interface CompanionSelectorProps {
   onSelectCompanion: (companion: AICompanion) => void;
   onViewProfile: (companion: AICompanion) => void;
-  onCreateCompanion: () => void;
+  onCreateCompanion: (companion: AICompanion) => void;
 }
 
 export const CompanionSelector: React.FC<CompanionSelectorProps> = ({ onSelectCompanion, onViewProfile, onCreateCompanion }) => {
@@ -30,6 +31,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({ onSelectCo
   const [fadeAnim] = useState(new Animated.Value(0));
   const [slideAnim] = useState(new Animated.Value(50));
   const [longPressAnimations, setLongPressAnimations] = useState<Animated.Value[]>([]);
+  const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
 
   const { setCompanions: setStoreCompanions } = useCompanionStore();
 
@@ -127,7 +129,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({ onSelectCo
             <Text style={styles.subtitle}>上傳她的資料，讓AI幫你更了解她</Text>
 
             {/* 顯眼的新增按鈕 */}
-            <TouchableOpacity style={styles.createButtonTop} onPress={onCreateCompanion}>
+            <TouchableOpacity style={styles.createButtonTop} onPress={() => setIsCreateModalVisible(true)}>
               <Ionicons name="add" size={20} color="#fff" />
               <Text style={styles.createButtonTopText}>建立新助手</Text>
             </TouchableOpacity>
@@ -276,7 +278,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({ onSelectCo
 
           {/* 強化的新增分身按鈕 */}
           <View style={styles.addCompanionCardEnhanced}>
-            <TouchableOpacity style={styles.addButtonEnhanced} onPress={onCreateCompanion}>
+            <TouchableOpacity style={styles.addButtonEnhanced} onPress={() => setIsCreateModalVisible(true)}>
               <View style={styles.addIconContainer}>
                 <Ionicons name="add-circle" size={48} color="#FF6B9D" />
               </View>
@@ -294,6 +296,16 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({ onSelectCo
       <View style={styles.bottomTip}>
         <Text style={styles.tipText}>💝 AI分析她的個性，提供最佳聊天建議</Text>
       </View>
+
+      {/* 創建助手彈窗 */}
+      <CreateCompanionModal
+        isVisible={isCreateModalVisible}
+        onClose={() => setIsCreateModalVisible(false)}
+        onSave={(companion) => {
+          setIsCreateModalVisible(false);
+          onCreateCompanion(companion);
+        }}
+      />
     </View>
   );
 };
