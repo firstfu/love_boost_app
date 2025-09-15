@@ -261,11 +261,11 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
       {/* 固定導航欄 */}
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#1e293b" />
+          <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.title}>快速分析</Text>
         <TouchableOpacity onPress={handleReset} style={styles.resetButton}>
-          <Ionicons name="refresh" size={24} color="#1e293b" />
+          <Ionicons name="refresh" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
 
@@ -377,23 +377,29 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    backgroundColor: 'white',
+    backgroundColor: '#FF6B9D',
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+    borderBottomColor: 'rgba(255, 255, 255, 0.2)',
   },
   content: {
     flex: 1,
   },
   backButton: {
-    padding: 4,
+    padding: 8,
+    marginLeft: -8,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 20,
   },
   title: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#1e293b',
+    fontWeight: '700',
+    color: '#ffffff',
   },
   resetButton: {
-    padding: 4,
+    padding: 8,
+    marginRight: -8,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 20,
   },
   uploadSection: {
     backgroundColor: 'rgba(255, 255, 255, 0.98)',
