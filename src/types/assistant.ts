@@ -358,6 +358,35 @@ export interface QuickAnalysisRequest {
   }
 }
 
+// 聊天訊息介面（用於快速分析聊天）
+export interface ChatMessage {
+  id: string
+  type: 'user' | 'ai'
+  content: string
+  timestamp: string
+  attachments?: {
+    images?: string[]
+    files?: FileData[]
+  }
+  analysisResult?: QuickAnalysisResult
+  isLoading?: boolean
+}
+
+// 檔案資料介面
+export interface FileData {
+  name: string
+  content: string
+  type: string
+  size: number
+}
+
+// 快速追問選項
+export interface QuickQuestionOption {
+  id: string
+  text: string
+  category: 'clarification' | 'deeper_analysis' | 'suggestion' | 'alternative'
+}
+
 // API 回應介面
 export interface APIResponse<T> {
   success: boolean
