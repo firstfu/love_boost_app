@@ -17,12 +17,54 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-        <Stack.Screen name="settings" options={{ title: '應用設定', headerShown: true }} />
-        <Stack.Screen name="guide" options={{ title: '使用指南', headerShown: true }} />
-        <Stack.Screen name="support" options={{ title: '聯絡支援', headerShown: true }} />
-        <Stack.Screen name="about" options={{ title: '關於我們', headerShown: true }} />
-        <Stack.Screen name="privacy" options={{ title: '隱私權政策', headerShown: true }} />
-        <Stack.Screen name="terms" options={{ title: '使用條款', headerShown: true }} />
+        <Stack.Screen
+          name="settings"
+          options={{
+            title: '應用設定',
+            headerShown: true,
+            headerBackTitle: '我的'
+          }}
+        />
+        <Stack.Screen
+          name="guide"
+          options={{
+            title: '使用指南',
+            headerShown: true,
+            headerBackTitle: '我的'
+          }}
+        />
+        <Stack.Screen
+          name="support"
+          options={{
+            title: '聯絡支援',
+            headerShown: true,
+            headerBackTitle: '我的'
+          }}
+        />
+        <Stack.Screen
+          name="about"
+          options={{
+            title: '關於我們',
+            headerShown: true,
+            headerBackTitle: '我的'
+          }}
+        />
+        <Stack.Screen
+          name="privacy"
+          options={{
+            title: '隱私權政策',
+            headerShown: true,
+            headerBackTitle: '關於我們'
+          }}
+        />
+        <Stack.Screen
+          name="terms"
+          options={{
+            title: '使用條款',
+            headerShown: true,
+            headerBackTitle: '關於我們'
+          }}
+        />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

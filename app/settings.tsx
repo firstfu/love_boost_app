@@ -6,7 +6,6 @@
 import React, { useState } from 'react'
 import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Switch, Alert } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { Stack } from 'expo-router'
 import { useUserStore } from '@/src/stores/userStore'
 import { Fonts } from '@/constants/theme'
 
@@ -138,13 +137,6 @@ export default function SettingsScreen() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen
-        options={{
-          title: '應用設定',
-          headerShown: true
-        }}
-      />
-
       <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         {/* 通知設定 */}
         <View style={styles.section}>
