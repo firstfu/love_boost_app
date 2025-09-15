@@ -11,6 +11,7 @@ import { ThemedText } from '@/components/themed-text'
 import { ThemedView } from '@/components/themed-view'
 import { Fonts } from '@/constants/theme'
 import { useUserStore, MembershipPlan } from '@/src/stores/userStore'
+import { router } from 'expo-router'
 
 interface MenuItemProps {
   icon: keyof typeof Ionicons.glyphMap
@@ -144,7 +145,7 @@ export default function ProfileScreen() {
             icon="settings"
             title="應用設定"
             subtitle="通知、隱私、語言等設定"
-            onPress={() => Alert.alert('功能開發中', '設定功能即將推出')}
+            onPress={() => router.push('/settings')}
             color="#64748B"
           />
 
@@ -152,7 +153,7 @@ export default function ProfileScreen() {
             icon="book"
             title="使用指南"
             subtitle="查看使用教學和常見問題"
-            onPress={() => Alert.alert('功能開發中', '使用指南即將推出')}
+            onPress={() => router.push('/guide')}
             color="#059669"
           />
         </ThemedView>
@@ -162,7 +163,7 @@ export default function ProfileScreen() {
             icon="headset"
             title="聯絡支援"
             subtitle="獲取技術支援和意見反饋"
-            onPress={() => Alert.alert('聯絡支援', '請發送郵件至 support@loveBoost.com')}
+            onPress={() => router.push('/support')}
             color="#0EA5E9"
           />
 
@@ -171,7 +172,7 @@ export default function ProfileScreen() {
             title="關於我們"
             subtitle="版本資訊和服務條款"
             value="v1.0.0"
-            onPress={() => Alert.alert('關於我們', 'Love Boost v1.0.0\n\n© 2024 Love Boost Team')}
+            onPress={() => router.push('/about')}
             color="#6B7280"
           />
 
