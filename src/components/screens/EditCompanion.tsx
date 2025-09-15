@@ -168,12 +168,14 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
   // 照片上傳功能
   const pickImage = async () => {
     try {
+      // 檢查權限
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync()
       if (permissionResult.granted === false) {
         Alert.alert('需要權限', '需要相簿權限才能選擇照片')
         return
       }
 
+      // 啟動圖片選擇器
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
@@ -181,32 +183,50 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
         quality: 0.8,
       })
 
-      if (!result.canceled && result.assets?.[0]) {
+      // 檢查結果
+      if (!result.canceled && result.assets?.[0]?.uri) {
         const newPhoto = result.assets[0].uri
+
+        // 更新照片列表
         setUploadedPhotos(prev => [...prev, newPhoto])
         setHasUnsavedChanges(true)
 
-        // 更新 companion 數據
-        setEditedCompanion(prev => ({
-          ...prev,
-          learning_status: {
-            ...prev.learning_status,
-            photo_samples: prev.learning_status.photo_samples + 1
-          },
-          user_added_data: {
-            photos: [...(prev.user_added_data?.photos || []), newPhoto],
-            conversation_records: prev.user_added_data?.conversation_records || [],
-            interests: prev.user_added_data?.interests || [],
-            personality_notes: prev.user_added_data?.personality_notes || '',
-            relationship_status: prev.user_added_data?.relationship_status || 'stranger',
-            special_memories: prev.user_added_data?.special_memories || '',
+        // 安全地更新 companion 數據
+        setEditedCompanion(prev => {
+          const currentLearningStatus = prev.learning_status || {
+            conversation_count: 0,
+            photo_samples: 0,
+            interaction_level: 1,
+            learning_progress: 0.1
+          }
+
+          const currentUserData = prev.user_added_data || {
+            photos: [],
+            conversation_records: [],
+            interests: [],
+            personality_notes: '',
+            relationship_status: 'stranger',
+            special_memories: '',
             last_updated: new Date().toISOString()
           }
-        }))
+
+          return {
+            ...prev,
+            learning_status: {
+              ...currentLearningStatus,
+              photo_samples: currentLearningStatus.photo_samples + 1
+            },
+            user_added_data: {
+              ...currentUserData,
+              photos: [...currentUserData.photos, newPhoto],
+              last_updated: new Date().toISOString()
+            }
+          }
+        })
       }
     } catch (error) {
       console.error('選擇照片失敗:', error)
-      Alert.alert('錯誤', '選擇照片失敗，請稍後再試')
+      Alert.alert('錯誤', `選擇照片失敗: ${error instanceof Error ? error.message : '未知錯誤'}`)
     }
   }
 
