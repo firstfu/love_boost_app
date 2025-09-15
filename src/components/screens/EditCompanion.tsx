@@ -11,10 +11,13 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert
+  Alert,
+  Image
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
+import * as ImagePicker from 'expo-image-picker'
+import * as DocumentPicker from 'expo-document-picker'
 import { DefaultAvatar } from '../DefaultAvatar'
 import { AICompanion, PersonalityTrait, SpeakingStyle } from '../../types/assistant'
 
@@ -33,6 +36,16 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
     ...companion
   })
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [uploadedPhotos, setUploadedPhotos] = useState<string[]>(
+    companion.user_added_data?.photos || []
+  )
+  const [conversationRecords, setConversationRecords] = useState<string[]>(
+    companion.user_added_data?.conversation_records || []
+  )
+  const [showAddConversation, setShowAddConversation] = useState(false)
+  const [newConversationText, setNewConversationText] = useState('')
+  const [editingConversationIndex, setEditingConversationIndex] = useState<number | null>(null)
+  const [editingConversationText, setEditingConversationText] = useState('')
 
   const updateField = <K extends keyof AICompanion>(field: K, value: AICompanion[K]) => {
     setEditedCompanion(prev => ({ ...prev, [field]: value }))
@@ -79,7 +92,30 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
       return
     }
 
-    onSave(editedCompanion)
+    // 更新最終的 companion 數據
+    const updatedCompanion = {
+      ...editedCompanion,
+      learning_status: {
+        ...editedCompanion.learning_status,
+        data_completeness: calculateDataCompleteness(),
+        analysis_confidence: calculateAnalysisConfidence(),
+        photo_samples: uploadedPhotos.length,
+        conversation_samples: conversationRecords.length,
+        last_training: new Date().toISOString()
+      },
+      user_added_data: {
+        photos: uploadedPhotos,
+        conversation_records: conversationRecords,
+        interests: editedCompanion.user_added_data?.interests || [],
+        personality_notes: editedCompanion.user_added_data?.personality_notes || '',
+        relationship_status: editedCompanion.user_added_data?.relationship_status || 'stranger',
+        special_memories: editedCompanion.user_added_data?.special_memories || '',
+        last_updated: new Date().toISOString()
+      },
+      updated_at: new Date().toISOString()
+    }
+
+    onSave(updatedCompanion)
     setHasUnsavedChanges(false)
     Alert.alert('成功', '助手資料已更新！', [
       { text: '確定', onPress: onBack }
@@ -127,6 +163,209 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
   const removeInterest = (indexToRemove: number) => {
     const updatedInterests = editedCompanion.personality_analysis.interests.filter((_, index) => index !== indexToRemove)
     updatePersonalityField('interests', updatedInterests)
+  }
+
+  // 照片上傳功能
+  const pickImage = async () => {
+    try {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync()
+      if (permissionResult.granted === false) {
+        Alert.alert('需要權限', '需要相簿權限才能選擇照片')
+        return
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      })
+
+      if (!result.canceled && result.assets?.[0]) {
+        const newPhoto = result.assets[0].uri
+        setUploadedPhotos(prev => [...prev, newPhoto])
+        setHasUnsavedChanges(true)
+
+        // 更新 companion 數據
+        setEditedCompanion(prev => ({
+          ...prev,
+          learning_status: {
+            ...prev.learning_status,
+            photo_samples: prev.learning_status.photo_samples + 1
+          },
+          user_added_data: {
+            photos: [...(prev.user_added_data?.photos || []), newPhoto],
+            conversation_records: prev.user_added_data?.conversation_records || [],
+            interests: prev.user_added_data?.interests || [],
+            personality_notes: prev.user_added_data?.personality_notes || '',
+            relationship_status: prev.user_added_data?.relationship_status || 'stranger',
+            special_memories: prev.user_added_data?.special_memories || '',
+            last_updated: new Date().toISOString()
+          }
+        }))
+      }
+    } catch (error) {
+      console.error('選擇照片失敗:', error)
+      Alert.alert('錯誤', '選擇照片失敗，請稍後再試')
+    }
+  }
+
+  // 刪除照片
+  const removePhoto = (photoIndex: number) => {
+    const updatedPhotos = uploadedPhotos.filter((_, index) => index !== photoIndex)
+    setUploadedPhotos(updatedPhotos)
+    setHasUnsavedChanges(true)
+
+    setEditedCompanion(prev => ({
+      ...prev,
+      learning_status: {
+        ...prev.learning_status,
+        photo_samples: Math.max(0, prev.learning_status.photo_samples - 1)
+      },
+      user_added_data: {
+        photos: updatedPhotos,
+        conversation_records: prev.user_added_data?.conversation_records || [],
+        interests: prev.user_added_data?.interests || [],
+        personality_notes: prev.user_added_data?.personality_notes || '',
+        relationship_status: prev.user_added_data?.relationship_status || 'stranger',
+        special_memories: prev.user_added_data?.special_memories || '',
+        last_updated: new Date().toISOString()
+      }
+    }))
+  }
+
+  // 新增對話記錄
+  const addConversationRecord = () => {
+    setShowAddConversation(true)
+    setNewConversationText('')
+  }
+
+  // 確認新增對話記錄
+  const confirmAddConversation = () => {
+    if (newConversationText.trim()) {
+      const newRecord = newConversationText.trim()
+      setConversationRecords(prev => [...prev, newRecord])
+      setHasUnsavedChanges(true)
+
+      setEditedCompanion(prev => ({
+        ...prev,
+        learning_status: {
+          ...prev.learning_status,
+          conversation_samples: prev.learning_status.conversation_samples + 1
+        },
+        user_added_data: {
+          photos: prev.user_added_data?.photos || [],
+          conversation_records: [...(prev.user_added_data?.conversation_records || []), newRecord],
+          interests: prev.user_added_data?.interests || [],
+          personality_notes: prev.user_added_data?.personality_notes || '',
+          relationship_status: prev.user_added_data?.relationship_status || 'stranger',
+          special_memories: prev.user_added_data?.special_memories || '',
+          last_updated: new Date().toISOString()
+        }
+      }))
+
+      setShowAddConversation(false)
+      setNewConversationText('')
+    }
+  }
+
+  // 取消新增對話記錄
+  const cancelAddConversation = () => {
+    setShowAddConversation(false)
+    setNewConversationText('')
+  }
+
+  // 編輯對話記錄
+  const editConversationRecord = (index: number) => {
+    setEditingConversationIndex(index)
+    setEditingConversationText(conversationRecords[index])
+  }
+
+  // 確認編輯對話記錄
+  const confirmEditConversation = () => {
+    if (editingConversationText.trim() && editingConversationIndex !== null) {
+      const updatedRecords = [...conversationRecords]
+      updatedRecords[editingConversationIndex] = editingConversationText.trim()
+      setConversationRecords(updatedRecords)
+      setHasUnsavedChanges(true)
+
+      setEditedCompanion(prev => ({
+        ...prev,
+        user_added_data: {
+          photos: prev.user_added_data?.photos || [],
+          conversation_records: updatedRecords,
+          interests: prev.user_added_data?.interests || [],
+          personality_notes: prev.user_added_data?.personality_notes || '',
+          relationship_status: prev.user_added_data?.relationship_status || 'stranger',
+          special_memories: prev.user_added_data?.special_memories || '',
+          last_updated: new Date().toISOString()
+        }
+      }))
+
+      setEditingConversationIndex(null)
+      setEditingConversationText('')
+    }
+  }
+
+  // 取消編輯對話記錄
+  const cancelEditConversation = () => {
+    setEditingConversationIndex(null)
+    setEditingConversationText('')
+  }
+
+  // 刪除對話記錄
+  const removeConversationRecord = (recordIndex: number) => {
+    const updatedRecords = conversationRecords.filter((_, index) => index !== recordIndex)
+    setConversationRecords(updatedRecords)
+    setHasUnsavedChanges(true)
+
+    setEditedCompanion(prev => ({
+      ...prev,
+      learning_status: {
+        ...prev.learning_status,
+        conversation_samples: Math.max(0, prev.learning_status.conversation_samples - 1)
+      },
+      user_added_data: {
+        photos: prev.user_added_data?.photos || [],
+        conversation_records: updatedRecords,
+        interests: prev.user_added_data?.interests || [],
+        personality_notes: prev.user_added_data?.personality_notes || '',
+        relationship_status: prev.user_added_data?.relationship_status || 'stranger',
+        special_memories: prev.user_added_data?.special_memories || '',
+        last_updated: new Date().toISOString()
+      }
+    }))
+  }
+
+  // 顯示全部照片模態框
+  const showAllPhotos = () => {
+    Alert.alert('查看全部照片', '照片瀏覽功能開發中！')
+  }
+
+  // 顯示全部對話記錄模態框
+  const showAllConversations = () => {
+    Alert.alert('查看全部對話記錄', '對話記錄瀏覽功能開發中！')
+  }
+
+  // 計算資料完整度
+  const calculateDataCompleteness = () => {
+    let completeness = 0
+    if (editedCompanion.name.trim()) completeness += 15
+    if (editedCompanion.bio.trim()) completeness += 20
+    if (editedCompanion.personality_analysis.dominant_traits.length > 0) completeness += 15
+    if (editedCompanion.personality_analysis.interests.length > 0) completeness += 10
+    if (uploadedPhotos.length > 0) completeness += 20
+    if (conversationRecords.length > 0) completeness += 20
+    return Math.min(100, completeness)
+  }
+
+  // 計算分析可信度
+  const calculateAnalysisConfidence = () => {
+    let confidence = 40 // 基礎分數
+    if (uploadedPhotos.length >= 3) confidence += 20
+    if (conversationRecords.length >= 5) confidence += 25
+    if (editedCompanion.personality_analysis.dominant_traits.length >= 3) confidence += 15
+    return Math.min(100, confidence)
   }
 
   return (
@@ -355,13 +594,13 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
                 <Ionicons name="image" size={20} color="#3b82f6" />
                 <Text style={styles.dataCategoryTitle}>照片集合</Text>
                 <Text style={styles.dataCount}>
-                  {editedCompanion.learning_status.photo_samples}張
+                  {uploadedPhotos.length}張
                 </Text>
               </View>
 
               <View style={styles.photoGrid}>
-                {/* 模擬已上傳的照片 */}
-                {Array.from({ length: Math.min(6, editedCompanion.learning_status.photo_samples) }, (_, index) => (
+                {/* 顯示已上傳的照片 */}
+                {uploadedPhotos.slice(0, 6).map((photoUri, index) => (
                   <TouchableOpacity
                     key={index}
                     style={styles.photoItem}
@@ -371,33 +610,36 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
                         '選擇操作',
                         [
                           { text: '查看', onPress: () => console.log('查看照片', index) },
-                          { text: '刪除', style: 'destructive', onPress: () => console.log('刪除照片', index) },
+                          { text: '刪除', style: 'destructive', onPress: () => removePhoto(index) },
                           { text: '取消', style: 'cancel' }
                         ]
                       )
                     }}
                   >
-                    <Ionicons name="image" size={24} color="#94a3b8" />
-                    <Text style={styles.photoLabel}>照片 {index + 1}</Text>
+                    <Image
+                      source={{ uri: photoUri }}
+                      style={styles.photoImage}
+                      resizeMode="cover"
+                    />
                   </TouchableOpacity>
                 ))}
 
                 {/* 新增照片按鈕 */}
-                <TouchableOpacity
-                  style={[styles.photoItem, styles.addPhotoItem]}
-                  onPress={() => {
-                    Alert.alert('新增照片', '照片上傳功能開發中！')
-                  }}
-                >
-                  <Ionicons name="add" size={24} color="#FF6B9D" />
-                  <Text style={styles.addPhotoText}>新增</Text>
-                </TouchableOpacity>
+                {uploadedPhotos.length < 12 && (
+                  <TouchableOpacity
+                    style={[styles.photoItem, styles.addPhotoItem]}
+                    onPress={pickImage}
+                  >
+                    <Ionicons name="add" size={24} color="#FF6B9D" />
+                    <Text style={styles.addPhotoText}>新增</Text>
+                  </TouchableOpacity>
+                )}
               </View>
 
-              {editedCompanion.learning_status.photo_samples > 6 && (
-                <TouchableOpacity style={styles.viewAllButton}>
+              {uploadedPhotos.length > 6 && (
+                <TouchableOpacity style={styles.viewAllButton} onPress={showAllPhotos}>
                   <Text style={styles.viewAllText}>
-                    查看全部 {editedCompanion.learning_status.photo_samples} 張照片
+                    查看全部 {uploadedPhotos.length} 張照片
                   </Text>
                   <Ionicons name="chevron-forward" size={16} color="#FF6B9D" />
                 </TouchableOpacity>
@@ -410,13 +652,13 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
                 <Ionicons name="chatbubble" size={20} color="#10b981" />
                 <Text style={styles.dataCategoryTitle}>對話記錄</Text>
                 <Text style={styles.dataCount}>
-                  {editedCompanion.learning_status.conversation_samples}則
+                  {conversationRecords.length}則
                 </Text>
               </View>
 
               <View style={styles.conversationList}>
-                {/* 模擬對話記錄 */}
-                {Array.from({ length: Math.min(3, editedCompanion.learning_status.conversation_samples) }, (_, index) => (
+                {/* 顯示實際對話記錄 */}
+                {conversationRecords.slice(0, 3).map((record, index) => (
                   <TouchableOpacity
                     key={index}
                     style={styles.conversationItem}
@@ -425,8 +667,8 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
                         '對話記錄選項',
                         '選擇操作',
                         [
-                          { text: '編輯', onPress: () => console.log('編輯對話', index) },
-                          { text: '刪除', style: 'destructive', onPress: () => console.log('刪除對話', index) },
+                          { text: '編輯', onPress: () => editConversationRecord(index) },
+                          { text: '刪除', style: 'destructive', onPress: () => removeConversationRecord(index) },
                           { text: '取消', style: 'cancel' }
                         ]
                       )
@@ -436,9 +678,7 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
                     <View style={styles.conversationContent}>
                       <Text style={styles.conversationTitle}>對話記錄 {index + 1}</Text>
                       <Text style={styles.conversationPreview}>
-                        {index === 0 && '今天天氣真好，想去咖啡廳坐坐...'}
-                        {index === 1 && '最近工作怎麼樣？有什麼新的進展...'}
-                        {index === 2 && '謝謝你今天陪我聊天，感覺心情好多...'}
+                        {record.length > 30 ? record.substring(0, 30) + '...' : record}
                       </Text>
                     </View>
                     <Ionicons name="chevron-forward" size={14} color="#94a3b8" />
@@ -448,18 +688,16 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
 
               <TouchableOpacity
                 style={styles.addDataButton}
-                onPress={() => {
-                  Alert.alert('新增對話記錄', '對話記錄上傳功能開發中！')
-                }}
+                onPress={addConversationRecord}
               >
                 <Ionicons name="add" size={20} color="#FF6B9D" />
                 <Text style={styles.addDataText}>新增對話記錄</Text>
               </TouchableOpacity>
 
-              {editedCompanion.learning_status.conversation_samples > 3 && (
-                <TouchableOpacity style={styles.viewAllButton}>
+              {conversationRecords.length > 3 && (
+                <TouchableOpacity style={styles.viewAllButton} onPress={showAllConversations}>
                   <Text style={styles.viewAllText}>
-                    查看全部 {editedCompanion.learning_status.conversation_samples} 則對話
+                    查看全部 {conversationRecords.length} 則對話
                   </Text>
                   <Ionicons name="chevron-forward" size={16} color="#FF6B9D" />
                 </TouchableOpacity>
@@ -472,20 +710,123 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
                 <Ionicons name="analytics" size={16} color="#f59e0b" />
                 <Text style={styles.statLabel}>資料完整度</Text>
                 <Text style={styles.statValue}>
-                  {editedCompanion.learning_status.data_completeness}%
+                  {calculateDataCompleteness()}%
                 </Text>
               </View>
               <View style={styles.statItem}>
                 <Ionicons name="trending-up" size={16} color="#10b981" />
                 <Text style={styles.statLabel}>分析可信度</Text>
                 <Text style={styles.statValue}>
-                  {editedCompanion.learning_status.analysis_confidence}%
+                  {calculateAnalysisConfidence()}%
                 </Text>
               </View>
             </View>
           </View>
         </View>
+
       </ScrollView>
+
+      {/* 新增對話記錄模態框 */}
+      {showAddConversation && (
+        <View style={styles.conversationModal}>
+          <View style={styles.conversationModalContent}>
+            <Text style={styles.conversationModalTitle}>新增對話記錄</Text>
+            <Text style={styles.conversationModalSubtitle}>請輸入與她的對話內容：</Text>
+
+            <TextInput
+              style={styles.conversationTextArea}
+              value={newConversationText}
+              onChangeText={setNewConversationText}
+              placeholder="輸入對話內容..."
+              multiline={true}
+              numberOfLines={6}
+              textAlignVertical="top"
+              maxLength={500}
+            />
+
+            <Text style={styles.charCounter}>
+              {newConversationText.length}/500
+            </Text>
+
+            <View style={styles.conversationModalButtons}>
+              <TouchableOpacity
+                style={[styles.conversationModalButton, styles.cancelButton]}
+                onPress={cancelAddConversation}
+              >
+                <Text style={styles.cancelButtonText}>取消</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.conversationModalButton,
+                  styles.confirmButton,
+                  !newConversationText.trim() && styles.confirmButtonDisabled
+                ]}
+                onPress={confirmAddConversation}
+                disabled={!newConversationText.trim()}
+              >
+                <Text style={[
+                  styles.confirmButtonText,
+                  !newConversationText.trim() && styles.confirmButtonTextDisabled
+                ]}>
+                  新增
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {/* 編輯對話記錄模態框 */}
+      {editingConversationIndex !== null && (
+        <View style={styles.conversationModal}>
+          <View style={styles.conversationModalContent}>
+            <Text style={styles.conversationModalTitle}>編輯對話記錄</Text>
+            <Text style={styles.conversationModalSubtitle}>修改對話內容：</Text>
+
+            <TextInput
+              style={styles.conversationTextArea}
+              value={editingConversationText}
+              onChangeText={setEditingConversationText}
+              placeholder="輸入對話內容..."
+              multiline={true}
+              numberOfLines={6}
+              textAlignVertical="top"
+              maxLength={500}
+            />
+
+            <Text style={styles.charCounter}>
+              {editingConversationText.length}/500
+            </Text>
+
+            <View style={styles.conversationModalButtons}>
+              <TouchableOpacity
+                style={[styles.conversationModalButton, styles.cancelButton]}
+                onPress={cancelEditConversation}
+              >
+                <Text style={styles.cancelButtonText}>取消</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.conversationModalButton,
+                  styles.confirmButton,
+                  !editingConversationText.trim() && styles.confirmButtonDisabled
+                ]}
+                onPress={confirmEditConversation}
+                disabled={!editingConversationText.trim()}
+              >
+                <Text style={[
+                  styles.confirmButtonText,
+                  !editingConversationText.trim() && styles.confirmButtonTextDisabled
+                ]}>
+                  保存
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
     </View>
   )
 }
@@ -782,6 +1123,12 @@ const styles = StyleSheet.create({
     borderColor: '#e5e7eb',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  photoImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
   },
   addPhotoItem: {
     borderStyle: 'dashed',
@@ -875,5 +1222,94 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#374151',
+  },
+
+  // 對話記錄模態框樣式
+  conversationModal: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    zIndex: 2000,
+  },
+  conversationModalContent: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    paddingHorizontal: 24,
+    paddingVertical: 28,
+    width: '100%',
+    maxWidth: 400,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 25,
+    elevation: 25,
+  },
+  conversationModalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1a202c',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  conversationModalSubtitle: {
+    fontSize: 14,
+    color: '#64748b',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  conversationTextArea: {
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: '#1f2937',
+    backgroundColor: '#ffffff',
+    height: 120,
+    textAlignVertical: 'top',
+    marginBottom: 8,
+  },
+  conversationModalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 16,
+  },
+  conversationModalButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cancelButton: {
+    backgroundColor: '#f3f4f6',
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#6b7280',
+  },
+  confirmButton: {
+    backgroundColor: '#FF6B9D',
+  },
+  confirmButtonDisabled: {
+    backgroundColor: '#e5e7eb',
+  },
+  confirmButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  confirmButtonTextDisabled: {
+    color: '#9ca3af',
   },
 })
