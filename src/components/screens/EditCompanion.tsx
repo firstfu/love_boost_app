@@ -46,6 +46,7 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
   const [newConversationText, setNewConversationText] = useState('')
   const [editingConversationIndex, setEditingConversationIndex] = useState<number | null>(null)
   const [editingConversationText, setEditingConversationText] = useState('')
+  const [conversationInputMode, setConversationInputMode] = useState<'text' | 'file'>('text')
 
   const updateField = <K extends keyof AICompanion>(field: K, value: AICompanion[K]) => {
     setEditedCompanion(prev => ({ ...prev, [field]: value }))
@@ -247,6 +248,86 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
   const addConversationRecord = () => {
     setShowAddConversation(true)
     setNewConversationText('')
+    setConversationInputMode('text')
+  }
+
+  // 選擇對話記錄文件
+  const pickConversationFile = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ['text/plain', 'text/csv', 'application/json'],
+        copyToCacheDirectory: true,
+      })
+
+      if (!result.canceled && result.assets?.[0]) {
+        const file = result.assets[0]
+
+        // 讀取文件內容
+        const response = await fetch(file.uri)
+        const content = await response.text()
+
+        // 根據文件類型處理內容
+        let conversations: string[] = []
+
+        if (file.name?.endsWith('.json')) {
+          try {
+            const jsonData = JSON.parse(content)
+            if (Array.isArray(jsonData)) {
+              conversations = jsonData.map(item =>
+                typeof item === 'string' ? item : JSON.stringify(item)
+              )
+            } else if (typeof jsonData === 'object') {
+              conversations = [JSON.stringify(jsonData)]
+            }
+          } catch (error) {
+            Alert.alert('錯誤', 'JSON 文件格式不正確')
+            return
+          }
+        } else if (file.name?.endsWith('.csv')) {
+          // 簡單的CSV解析，每行作為一個對話記錄
+          conversations = content.split('\n').filter(line => line.trim() !== '')
+        } else {
+          // 純文本文件，按段落或換行符分割
+          conversations = content.split('\n\n').filter(paragraph => paragraph.trim() !== '')
+          if (conversations.length === 1) {
+            // 如果沒有段落分割，按單一換行符分割
+            conversations = content.split('\n').filter(line => line.trim() !== '')
+          }
+        }
+
+        // 添加對話記錄
+        if (conversations.length > 0) {
+          const newRecords = [...conversationRecords, ...conversations]
+          setConversationRecords(newRecords)
+          setHasUnsavedChanges(true)
+
+          setEditedCompanion(prev => ({
+            ...prev,
+            learning_status: {
+              ...prev.learning_status,
+              conversation_samples: prev.learning_status.conversation_samples + conversations.length
+            },
+            user_added_data: {
+              photos: prev.user_added_data?.photos || [],
+              conversation_records: newRecords,
+              interests: prev.user_added_data?.interests || [],
+              personality_notes: prev.user_added_data?.personality_notes || '',
+              relationship_status: prev.user_added_data?.relationship_status || 'stranger',
+              special_memories: prev.user_added_data?.special_memories || '',
+              last_updated: new Date().toISOString()
+            }
+          }))
+
+          setShowAddConversation(false)
+          Alert.alert('成功', `已導入 ${conversations.length} 則對話記錄`)
+        } else {
+          Alert.alert('錯誤', '文件中沒有找到有效的對話記錄')
+        }
+      }
+    } catch (error) {
+      console.error('選擇文件失敗:', error)
+      Alert.alert('錯誤', `選擇文件失敗: ${error instanceof Error ? error.message : '未知錯誤'}`)
+    }
   }
 
   // 確認新增對話記錄
@@ -282,6 +363,7 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
   const cancelAddConversation = () => {
     setShowAddConversation(false)
     setNewConversationText('')
+    setConversationInputMode('text')
   }
 
   // 編輯對話記錄
@@ -734,22 +816,82 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
         <View style={styles.conversationModal}>
           <View style={styles.conversationModalContent}>
             <Text style={styles.conversationModalTitle}>新增對話記錄</Text>
-            <Text style={styles.conversationModalSubtitle}>請輸入與她的對話內容：</Text>
 
-            <TextInput
-              style={styles.conversationTextArea}
-              value={newConversationText}
-              onChangeText={setNewConversationText}
-              placeholder="輸入對話內容..."
-              multiline={true}
-              numberOfLines={6}
-              textAlignVertical="top"
-              maxLength={500}
-            />
+            {/* 輸入方式選擇 */}
+            <View style={styles.inputModeSelector}>
+              <TouchableOpacity
+                style={[
+                  styles.inputModeOption,
+                  conversationInputMode === 'text' && styles.inputModeOptionActive
+                ]}
+                onPress={() => setConversationInputMode('text')}
+              >
+                <Ionicons
+                  name="create-outline"
+                  size={20}
+                  color={conversationInputMode === 'text' ? '#ffffff' : '#64748b'}
+                />
+                <Text style={[
+                  styles.inputModeText,
+                  conversationInputMode === 'text' && styles.inputModeTextActive
+                ]}>
+                  手動輸入
+                </Text>
+              </TouchableOpacity>
 
-            <Text style={styles.charCounter}>
-              {newConversationText.length}/500
-            </Text>
+              <TouchableOpacity
+                style={[
+                  styles.inputModeOption,
+                  conversationInputMode === 'file' && styles.inputModeOptionActive
+                ]}
+                onPress={() => setConversationInputMode('file')}
+              >
+                <Ionicons
+                  name="document-outline"
+                  size={20}
+                  color={conversationInputMode === 'file' ? '#ffffff' : '#64748b'}
+                />
+                <Text style={[
+                  styles.inputModeText,
+                  conversationInputMode === 'file' && styles.inputModeTextActive
+                ]}>
+                  上傳文件
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {conversationInputMode === 'text' ? (
+              <>
+                <Text style={styles.conversationModalSubtitle}>請輸入與她的對話內容：</Text>
+                <TextInput
+                  style={styles.conversationTextArea}
+                  value={newConversationText}
+                  onChangeText={setNewConversationText}
+                  placeholder="輸入對話內容..."
+                  multiline={true}
+                  numberOfLines={6}
+                  textAlignVertical="top"
+                  maxLength={500}
+                />
+                <Text style={styles.charCounter}>
+                  {newConversationText.length}/500
+                </Text>
+              </>
+            ) : (
+              <View style={styles.fileUploadSection}>
+                <Text style={styles.conversationModalSubtitle}>支援的文件格式：TXT、CSV、JSON</Text>
+                <TouchableOpacity
+                  style={styles.fileUploadButton}
+                  onPress={pickConversationFile}
+                >
+                  <Ionicons name="cloud-upload-outline" size={32} color="#FF6B9D" />
+                  <Text style={styles.fileUploadText}>點擊選擇文件</Text>
+                  <Text style={styles.fileUploadHint}>
+                    系統將自動解析文件中的對話記錄
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
 
             <View style={styles.conversationModalButtons}>
               <TouchableOpacity
@@ -759,22 +901,24 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
                 <Text style={styles.cancelButtonText}>取消</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                style={[
-                  styles.conversationModalButton,
-                  styles.confirmButton,
-                  !newConversationText.trim() && styles.confirmButtonDisabled
-                ]}
-                onPress={confirmAddConversation}
-                disabled={!newConversationText.trim()}
-              >
-                <Text style={[
-                  styles.confirmButtonText,
-                  !newConversationText.trim() && styles.confirmButtonTextDisabled
-                ]}>
-                  新增
-                </Text>
-              </TouchableOpacity>
+              {conversationInputMode === 'text' && (
+                <TouchableOpacity
+                  style={[
+                    styles.conversationModalButton,
+                    styles.confirmButton,
+                    !newConversationText.trim() && styles.confirmButtonDisabled
+                  ]}
+                  onPress={confirmAddConversation}
+                  disabled={!newConversationText.trim()}
+                >
+                  <Text style={[
+                    styles.confirmButtonText,
+                    !newConversationText.trim() && styles.confirmButtonTextDisabled
+                  ]}>
+                    新增
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         </View>
@@ -1349,5 +1493,66 @@ const styles = StyleSheet.create({
   },
   confirmButtonTextDisabled: {
     color: '#9ca3af',
+  },
+
+  // 輸入方式選擇器樣式
+  inputModeSelector: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    backgroundColor: '#f8fafc',
+    borderRadius: 12,
+    padding: 4,
+    gap: 4,
+  },
+  inputModeOption: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    gap: 8,
+  },
+  inputModeOptionActive: {
+    backgroundColor: '#FF6B9D',
+  },
+  inputModeText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#64748b',
+  },
+  inputModeTextActive: {
+    color: '#ffffff',
+  },
+
+  // 文件上傳區域樣式
+  fileUploadSection: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  fileUploadButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 32,
+    paddingHorizontal: 24,
+    borderWidth: 2,
+    borderColor: '#FF6B9D',
+    borderStyle: 'dashed',
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 107, 157, 0.05)',
+    width: '100%',
+    gap: 8,
+  },
+  fileUploadText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FF6B9D',
+  },
+  fileUploadHint: {
+    fontSize: 12,
+    color: '#64748b',
+    textAlign: 'center',
+    marginTop: 4,
   },
 })
