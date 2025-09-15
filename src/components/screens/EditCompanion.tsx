@@ -155,9 +155,16 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
     updatePersonalityField('interests', updatedInterests)
   }
 
-  // 照片上傳功能
+  // 照片上傳功能 - 支援多選
   const pickImage = async () => {
     try {
+      // 檢查當前照片數量
+      const remainingSlots = 20 - uploadedPhotos.length
+      if (remainingSlots <= 0) {
+        Alert.alert('達到上限', '最多只能上傳20張照片')
+        return
+      }
+
       // 檢查權限
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync()
       if (permissionResult.granted === false) {
@@ -165,20 +172,21 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
         return
       }
 
-      // 啟動圖片選擇器
+      // 啟動圖片選擇器 - 支援多選
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
+        allowsMultipleSelection: true, // 啟用多選
+        selectionLimit: Math.min(remainingSlots, 10), // 最多選擇10張或剩餘容量
+        allowsEditing: false, // 禁用編輯/裁剪
         quality: 0.8,
       })
 
       // 檢查結果
-      if (!result.canceled && result.assets?.[0]?.uri) {
-        const newPhoto = result.assets[0].uri
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const newPhotos = result.assets.map(asset => asset.uri)
 
         // 更新照片列表
-        setUploadedPhotos(prev => [...prev, newPhoto])
+        setUploadedPhotos(prev => [...prev, ...newPhotos])
         setHasUnsavedChanges(true)
 
         // 安全地更新 companion 數據
@@ -204,15 +212,18 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
             ...prev,
             learning_status: {
               ...currentLearningStatus,
-              photo_samples: currentLearningStatus.photo_samples + 1
+              photo_samples: currentLearningStatus.photo_samples + newPhotos.length
             },
             user_added_data: {
               ...currentUserData,
-              photos: [...currentUserData.photos, newPhoto],
+              photos: [...currentUserData.photos, ...newPhotos],
               last_updated: new Date().toISOString()
             }
           }
         })
+
+        // 顯示成功訊息
+        Alert.alert('成功', `已上傳 ${newPhotos.length} 張照片`)
       }
     } catch (error) {
       console.error('選擇照片失敗:', error)
@@ -727,7 +738,7 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
                 ))}
 
                 {/* 新增照片按鈕 */}
-                {uploadedPhotos.length < 12 && (
+                {uploadedPhotos.length < 20 && (
                   <TouchableOpacity
                     style={[styles.photoItem, styles.addPhotoItem]}
                     onPress={pickImage}
