@@ -5,8 +5,8 @@
 
 import React, { useState } from 'react'
 import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Switch, Alert } from 'react-native'
-import { LinearGradient } from 'expo-linear-gradient'
 import { Ionicons } from '@expo/vector-icons'
+import { Stack } from 'expo-router'
 import { useUserStore } from '@/src/stores/userStore'
 import { Fonts } from '@/constants/theme'
 
@@ -138,17 +138,12 @@ export default function SettingsScreen() {
 
   return (
     <View style={styles.container}>
-      {/* 漸層背景頭部 */}
-      <LinearGradient
-        colors={['#FF7BA7', '#FF87B2', '#FF96C0']}
-        locations={[0, 0.4, 1]}
-        style={styles.backgroundGradient}
-      >
-        <View style={styles.header}>
-          <Text style={styles.title}>應用設定</Text>
-          <Text style={styles.subtitle}>個人化您的使用體驗</Text>
-        </View>
-      </LinearGradient>
+      <Stack.Screen
+        options={{
+          title: '應用設定',
+          headerShown: true
+        }}
+      />
 
       <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         {/* 通知設定 */}
@@ -333,41 +328,15 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
-  },
-  backgroundGradient: {
-    paddingBottom: 20,
-  },
-  header: {
-    paddingTop: 60,
-    paddingHorizontal: 24,
-    paddingBottom: 30,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '900',
-    color: '#ffffff',
-    marginBottom: 8,
-    textAlign: 'center',
-    fontFamily: Fonts.rounded,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.9)',
-    textAlign: 'center',
-    fontWeight: '500',
+    backgroundColor: '#f8f9fa',
   },
   scrollContainer: {
     flex: 1,
-    marginTop: -10,
-    backgroundColor: 'rgba(255,255,255,0.95)',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    backgroundColor: '#f8f9fa',
   },
   section: {
     backgroundColor: '#fff',
-    marginTop: 12,
+    marginTop: 16,
     marginHorizontal: 16,
     borderRadius: 16,
     paddingVertical: 8,
