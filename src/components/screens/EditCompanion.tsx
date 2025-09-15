@@ -47,6 +47,8 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
   const [editingConversationIndex, setEditingConversationIndex] = useState<number | null>(null)
   const [editingConversationText, setEditingConversationText] = useState('')
   const [conversationInputMode, setConversationInputMode] = useState<'text' | 'file'>('text')
+  const [showAllPhotosModal, setShowAllPhotosModal] = useState(false)
+  const [showAllConversationsModal, setShowAllConversationsModal] = useState(false)
 
   const updateField = <K extends keyof AICompanion>(field: K, value: AICompanion[K]) => {
     setEditedCompanion(prev => ({ ...prev, [field]: value }))
@@ -474,12 +476,12 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
 
   // 顯示全部照片模態框
   const showAllPhotos = () => {
-    Alert.alert('查看全部照片', '照片瀏覽功能開發中！')
+    setShowAllPhotosModal(true)
   }
 
   // 顯示全部對話記錄模態框
   const showAllConversations = () => {
-    Alert.alert('查看全部對話記錄', '對話記錄瀏覽功能開發中！')
+    setShowAllConversationsModal(true)
   }
 
 
@@ -1018,6 +1020,115 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
                 </Text>
               </TouchableOpacity>
             </View>
+          </View>
+        </View>
+      )}
+
+      {/* 查看全部照片模態框 */}
+      {showAllPhotosModal && (
+        <View style={styles.fullScreenModal}>
+          <View style={styles.fullScreenModalContent}>
+            <View style={styles.fullScreenModalHeader}>
+              <Text style={styles.fullScreenModalTitle}>全部照片</Text>
+              <TouchableOpacity
+                onPress={() => setShowAllPhotosModal(false)}
+                style={styles.fullScreenModalCloseButton}
+              >
+                <Ionicons name="close" size={24} color="#333" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.fullScreenModalBody}>
+              <View style={styles.fullPhotoGrid}>
+                {uploadedPhotos.map((photoUri, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.fullPhotoItem}
+                    onPress={() => {
+                      Alert.alert(
+                        '照片選項',
+                        '選擇操作',
+                        [
+                          { text: '查看', onPress: () => console.log('查看照片', index) },
+                          { text: '刪除', style: 'destructive', onPress: () => removePhoto(index) },
+                          { text: '取消', style: 'cancel' }
+                        ]
+                      )
+                    }}
+                  >
+                    <Image
+                      source={{ uri: photoUri }}
+                      style={styles.fullPhotoImage}
+                      resizeMode="cover"
+                    />
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {uploadedPhotos.length === 0 && (
+                <View style={styles.emptyState}>
+                  <Ionicons name="image-outline" size={48} color="#ccc" />
+                  <Text style={styles.emptyStateText}>還沒有上傳任何照片</Text>
+                </View>
+              )}
+            </ScrollView>
+          </View>
+        </View>
+      )}
+
+      {/* 查看全部對話記錄模態框 */}
+      {showAllConversationsModal && (
+        <View style={styles.fullScreenModal}>
+          <View style={styles.fullScreenModalContent}>
+            <View style={styles.fullScreenModalHeader}>
+              <Text style={styles.fullScreenModalTitle}>全部對話記錄</Text>
+              <TouchableOpacity
+                onPress={() => setShowAllConversationsModal(false)}
+                style={styles.fullScreenModalCloseButton}
+              >
+                <Ionicons name="close" size={24} color="#333" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.fullScreenModalBody}>
+              <View style={styles.fullConversationList}>
+                {conversationRecords.map((record, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.fullConversationItem}
+                    onPress={() => {
+                      Alert.alert(
+                        '對話記錄選項',
+                        '選擇操作',
+                        [
+                          { text: '編輯', onPress: () => {
+                            setShowAllConversationsModal(false)
+                            editConversationRecord(index)
+                          }},
+                          { text: '刪除', style: 'destructive', onPress: () => removeConversationRecord(index) },
+                          { text: '取消', style: 'cancel' }
+                        ]
+                      )
+                    }}
+                  >
+                    <View style={styles.fullConversationHeader}>
+                      <Text style={styles.fullConversationTitle}>對話記錄 {index + 1}</Text>
+                      <Text style={styles.fullConversationDate}>
+                        {new Date().toLocaleDateString()}
+                      </Text>
+                    </View>
+                    <Text style={styles.fullConversationText}>{record}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {conversationRecords.length === 0 && (
+                <View style={styles.emptyState}>
+                  <Ionicons name="chatbubble-outline" size={48} color="#ccc" />
+                  <Text style={styles.emptyStateText}>還沒有任何對話記錄</Text>
+                </View>
+              )}
+            </ScrollView>
           </View>
         </View>
       )}
@@ -1601,5 +1712,110 @@ const styles = StyleSheet.create({
     color: '#64748b',
     textAlign: 'center',
     marginTop: 4,
+  },
+
+  // 全屏模態框樣式
+  fullScreenModal: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 3000,
+  },
+  fullScreenModalContent: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    marginTop: 60,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  fullScreenModalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  fullScreenModalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1a202c',
+  },
+  fullScreenModalCloseButton: {
+    padding: 8,
+    backgroundColor: '#f8fafc',
+    borderRadius: 20,
+  },
+  fullScreenModalBody: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+
+  // 全屏照片網格樣式
+  fullPhotoGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    paddingVertical: 20,
+  },
+  fullPhotoItem: {
+    width: '31%',
+    aspectRatio: 1,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: '#f8fafc',
+  },
+  fullPhotoImage: {
+    width: '100%',
+    height: '100%',
+  },
+
+  // 全屏對話列表樣式
+  fullConversationList: {
+    paddingVertical: 20,
+    gap: 16,
+  },
+  fullConversationItem: {
+    backgroundColor: '#f8fafc',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  fullConversationHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  fullConversationTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#374151',
+  },
+  fullConversationDate: {
+    fontSize: 12,
+    color: '#64748b',
+  },
+  fullConversationText: {
+    fontSize: 14,
+    color: '#4b5563',
+    lineHeight: 20,
+  },
+
+  // 空狀態樣式
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 60,
+  },
+  emptyStateText: {
+    fontSize: 16,
+    color: '#9ca3af',
+    marginTop: 12,
   },
 })

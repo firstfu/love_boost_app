@@ -168,22 +168,6 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>互動統計</Text>
 
-          <View style={styles.statsGrid}>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>
-                {companion.interaction_stats.chat_assistance_sessions}
-              </Text>
-              <Text style={styles.statLabel}>聊天輔助次數</Text>
-            </View>
-
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>
-                {companion.interaction_stats.total_messages_analyzed}
-              </Text>
-              <Text style={styles.statLabel}>分析訊息數</Text>
-            </View>
-          </View>
-
           <View style={styles.dataRow}>
             <View style={styles.dataItem}>
               <Text style={styles.dataNumber}>
