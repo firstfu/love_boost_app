@@ -155,6 +155,39 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
     updatePersonalityField('interests', updatedInterests)
   }
 
+  // 選擇頭像功能
+  const pickAvatar = async () => {
+    try {
+      // 檢查權限
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync()
+      if (permissionResult.granted === false) {
+        Alert.alert('需要權限', '需要相簿權限才能選擇頭像')
+        return
+      }
+
+      // 啟動圖片選擇器
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsMultipleSelection: false, // 只選一張
+        allowsEditing: true, // 允許裁剪頭像
+        aspect: [1, 1], // 正方形頭像
+        quality: 0.8,
+      })
+
+      // 檢查結果
+      if (!result.canceled && result.assets?.[0]?.uri) {
+        const newAvatarUri = result.assets[0].uri
+
+        // 更新頭像
+        updateField('realAvatar', newAvatarUri)
+        Alert.alert('成功', '頭像已更新！')
+      }
+    } catch (error) {
+      console.error('選擇頭像失敗:', error)
+      Alert.alert('錯誤', `選擇頭像失敗: ${error instanceof Error ? error.message : '未知錯誤'}`)
+    }
+  }
+
   // 照片上傳功能 - 支援多選
   const pickImage = async () => {
     try {
@@ -484,7 +517,10 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
               size={80}
               realAvatar={editedCompanion.realAvatar}
             />
-            <TouchableOpacity style={styles.changeAvatarButton}>
+            <TouchableOpacity
+              style={styles.changeAvatarButton}
+              onPress={pickAvatar}
+            >
               <Ionicons name="camera" size={20} color="#FF6B9D" />
             </TouchableOpacity>
           </View>
