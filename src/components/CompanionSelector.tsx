@@ -22,9 +22,10 @@ interface CompanionSelectorProps {
   onSelectCompanion: (companion: AICompanion) => void;
   onViewProfile: (companion: AICompanion) => void;
   onCreateCompanion: (companion: AICompanion) => void;
+  onQuickAnalysis?: (companion: AICompanion) => void;
 }
 
-export const CompanionSelector: React.FC<CompanionSelectorProps> = ({ onSelectCompanion, onViewProfile, onCreateCompanion }) => {
+export const CompanionSelector: React.FC<CompanionSelectorProps> = ({ onSelectCompanion, onViewProfile, onCreateCompanion, onQuickAnalysis }) => {
   const [companions, setCompanions] = useState<AICompanion[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<FilterType>("all");
   const [cardAnimations, setCardAnimations] = useState<Animated.Value[]>([]);
@@ -259,6 +260,18 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({ onSelectCo
 
                       {/* 簡化的操作區 */}
                       <View style={styles.simpleActions}>
+                        {onQuickAnalysis && (
+                          <TouchableOpacity
+                            style={styles.quickAnalysisBtn}
+                            onPress={e => {
+                              e.stopPropagation();
+                              onQuickAnalysis(companion);
+                            }}
+                          >
+                            <Ionicons name="flash" size={14} color="#FFFFFF" />
+                            <Text style={styles.quickAnalysisBtnText}>快速分析</Text>
+                          </TouchableOpacity>
+                        )}
                         <TouchableOpacity
                           style={styles.viewProfileBtn}
                           onPress={e => {
@@ -473,6 +486,26 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
     marginTop: 4,
+    gap: 8,
+  },
+  quickAnalysisBtn: {
+    backgroundColor: "#9333EA",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    shadowColor: "#9333EA",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  quickAnalysisBtnText: {
+    fontSize: 11,
+    color: "#FFFFFF",
+    fontWeight: "600",
   },
   viewProfileBtn: {
     backgroundColor: "#FF6B9D",

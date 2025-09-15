@@ -58,6 +58,14 @@ export const MainApp: React.FC = () => {
     setSelectedCompanionState(null)
   }
 
+  /**
+   * 處理快速分析
+   */
+  const handleQuickAnalysis = (companion: AICompanion) => {
+    setSelectedCompanionState(companion)
+    setCurrentScreen('quickAnalysis')
+  }
+
 
   // 根據當前螢幕狀態渲染對應頁面
   const renderCurrentScreen = () => {
@@ -68,6 +76,7 @@ export const MainApp: React.FC = () => {
             onSelectCompanion={handleSelectCompanion}
             onViewProfile={handleViewCompanionProfile}
             onCreateCompanion={handleCreateCompanion}
+            onQuickAnalysis={handleQuickAnalysis}
           />
         )
 
@@ -100,6 +109,7 @@ export const MainApp: React.FC = () => {
             onSelectCompanion={handleSelectCompanion}
             onViewProfile={handleViewCompanionProfile}
             onCreateCompanion={handleCreateCompanion}
+            onQuickAnalysis={handleQuickAnalysis}
           />
         )
 
@@ -114,6 +124,7 @@ export const MainApp: React.FC = () => {
             onSelectCompanion={handleSelectCompanion}
             onViewProfile={handleViewCompanionProfile}
             onCreateCompanion={handleCreateCompanion}
+            onQuickAnalysis={handleQuickAnalysis}
           />
         )
 
@@ -153,6 +164,7 @@ export const MainApp: React.FC = () => {
             onSelectCompanion={handleSelectCompanion}
             onViewProfile={handleViewCompanionProfile}
             onCreateCompanion={handleCreateCompanion}
+            onQuickAnalysis={handleQuickAnalysis}
           />
         )
 
@@ -172,6 +184,7 @@ export const MainApp: React.FC = () => {
             onSelectCompanion={handleSelectCompanion}
             onViewProfile={handleViewCompanionProfile}
             onCreateCompanion={handleCreateCompanion}
+            onQuickAnalysis={handleQuickAnalysis}
           />
         )
 
@@ -189,6 +202,7 @@ export const MainApp: React.FC = () => {
             onSelectCompanion={handleSelectCompanion}
             onViewProfile={handleViewCompanionProfile}
             onCreateCompanion={handleCreateCompanion}
+            onQuickAnalysis={handleQuickAnalysis}
           />
         )
 
@@ -205,6 +219,7 @@ export const MainApp: React.FC = () => {
             onSelectCompanion={handleSelectCompanion}
             onViewProfile={handleViewCompanionProfile}
             onCreateCompanion={handleCreateCompanion}
+            onQuickAnalysis={handleQuickAnalysis}
           />
         )
 
@@ -214,6 +229,7 @@ export const MainApp: React.FC = () => {
             onSelectCompanion={handleSelectCompanion}
             onViewProfile={handleViewCompanionProfile}
             onCreateCompanion={handleCreateCompanion}
+            onQuickAnalysis={handleQuickAnalysis}
           />
         )
     }
