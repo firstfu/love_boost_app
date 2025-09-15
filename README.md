@@ -1,50 +1,195 @@
-# Welcome to your Expo app 👋
+# 戀愛助手 AI (Love Boost AI) 📱
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+一款基於 AI 技術的個人化戀愛模擬助手應用，用戶可以為特定對象建立專屬的 AI 助手，透過多模態資料分析提供模擬對話、語音通話、以及實時戀愛建議的完全自動化服務。
 
-## Get started
+## ✨ 產品特色
 
-1. Install dependencies
+- 🤖 **個人化 AI 助手**：針對特定對象建立專屬 AI 模擬助手
+- 💬 **智能對話模擬**：基於真實資料學習個性與回應模式
+- 🎯 **實時建議系統**：提供話術優化、話題推薦、回應時機建議
+- 🗣️ **語音通話模擬**：文字轉語音與語音識別整合
+- 📸 **多模態分析**：支援照片、對話記錄、語音資料整合分析
+- 🔒 **隱私保護**：端到端加密，資料完全隔離存儲
 
+## 🏗️ 技術架構
+
+### 前端技術棧
+- **React Native 0.81.4** - 跨平台移動應用框架
+- **Expo SDK 54** - 開發工具鏈與部署平台
+- **React 19.1.0** - 最新 React 版本支援
+- **TypeScript** - 型別安全開發
+- **Expo Router v6** - 檔案式路由系統
+- **React Navigation 7** - 導航管理
+- **Reanimated v4** - 高效能動畫引擎
+- **Zustand** - 輕量化狀態管理
+
+### AI 技術棧
+- **OpenAI GPT-4o** - 深度個性分析與複雜對話
+- **OpenAI GPT-4o-mini** - 日常對話與建議生成
+- **OpenAI Whisper** - 語音識別
+- **OpenAI TTS** - 文字轉語音
+- **OpenAI Vision API** - 圖片內容分析
+
+## 🚀 快速開始
+
+### 環境需求
+- Node.js 18+
+- npm 或 yarn
+- Expo CLI
+- iOS Simulator (macOS) 或 Android Studio
+
+### 安裝步驟
+
+1. **安裝依賴**
    ```bash
    npm install
    ```
 
-2. Start the app
-
+2. **啟動開發伺服器**
    ```bash
+   npm start
+   # 或使用
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+3. **選擇平台運行**
+   - 按 `i` 開啟 iOS 模擬器
+   - 按 `a` 開啟 Android 模擬器
+   - 按 `w` 開啟 Web 版本
+   - 掃描 QR Code 在實體設備運行
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## 📱 開發指令
 
 ```bash
-npm run reset-project
+# 開發伺服器
+npm start                    # 啟動 Expo 開發伺服器
+npm run android             # 在 Android 設備/模擬器運行
+npm run ios                 # 在 iOS 設備/模擬器運行
+npm run web                 # 在瀏覽器運行
+
+# 程式碼品質
+npm run lint                # ESLint 程式碼檢查
+
+# 專案管理
+npm run reset-project       # 重置為空白專案
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 📁 專案結構
 
-## Learn more
+```
+love_boost_app/
+├── app/                    # Expo Router 檔案式路由
+│   ├── (tabs)/            # 分頁導航畫面
+│   ├── _layout.tsx        # 根布局組件
+│   └── modal.tsx          # 模態畫面
+├── src/                   # 主要應用邏輯
+│   ├── components/        # React 組件
+│   │   └── screens/       # 畫面組件
+│   ├── stores/            # Zustand 狀態管理
+│   ├── types/             # TypeScript 型別定義
+│   └── data/              # 資料檔案
+├── components/            # 可重複使用組件
+│   ├── ui/               # UI 基礎組件
+│   └── themed-*          # 主題感知組件
+├── hooks/                 # 自定義 React Hooks
+├── constants/             # 應用常數
+├── assets/               # 靜態資源
+└── docs/                 # 專案文檔
+    ├── prd.md            # 產品需求文件
+    └── todo.md           # 開發任務清單
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## 🎯 核心功能模組
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### 1. 用戶管理系統
+- Apple Sign-In 身份驗證
+- 個人資料管理
+- 隱私設定控制
 
-## Join the community
+### 2. AI 助手管理
+- 多助手建立與管理
+- 資料上傳與整合（照片、對話、語音）
+- 個性檔案自動生成
 
-Join our community of developers creating universal apps.
+### 3. 智能對話模擬
+- 文字對話練習
+- 語音通話模擬
+- 即時建議提供
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### 4. 分析與建議引擎
+- 個性特徵分析
+- 溝通模式識別
+- 對話效果評估
+
+## 🔧 開發規範
+
+### 程式碼風格
+- 使用 TypeScript 嚴格模式
+- 遵循 ESLint Expo 配置
+- 採用檔案式路由架構
+- 組件放置於 `src/components/` 目錄
+
+### 狀態管理
+```typescript
+// 使用 Zustand 進行狀態管理
+// 範例：src/stores/assistantStore.ts
+import { create } from 'zustand';
+
+interface AssistantStore {
+  assistants: Assistant[];
+  currentAssistant: Assistant | null;
+  setCurrentAssistant: (assistant: Assistant) => void;
+}
+```
+
+### 路由結構
+```typescript
+// 使用 Expo Router 檔案式路由
+// app/(tabs)/index.tsx - 主頁
+// app/(tabs)/explore.tsx - 探索頁
+// app/modal.tsx - 模態頁面
+```
+
+## 🔒 安全與隱私
+
+- **資料加密**：所有用戶資料採用端到端加密存儲
+- **隱私保護**：用戶可隨時刪除任何助手資料
+- **資料隔離**：每個助手資料完全獨立存儲
+- **透明政策**：明確的資料使用與隱私政策
+
+## 📈 開發階段
+
+### MVP 階段（當前）
+- ✅ 基礎架構搭建
+- ✅ 用戶註冊系統
+- 🔄 AI 助手管理功能
+- 🔄 對話模擬核心功能
+
+### 增強版（規劃中）
+- 語音通話模擬
+- 實際對話分析
+- 進階建議系統
+- 用戶體驗優化
+
+## 🤝 開發團隊
+
+本專案採用 MVP 敏捷開發模式，重視：
+- 快速迭代與用戶回饋
+- 程式碼品質與型別安全
+- 用戶隱私與資料安全
+- 成本效益與獲利能力
+
+## 📚 相關文檔
+
+- [產品需求文件 (PRD)](./docs/prd.md) - 完整產品規劃與功能規格
+- [開發任務清單](./docs/todo.md) - 詳細功能開發進度
+- [Expo 官方文檔](https://docs.expo.dev/) - Expo 框架指南
+- [React Native 文檔](https://reactnative.dev/) - React Native 開發指南
+
+## 📝 授權條款
+
+此專案為私有專案，僅供授權開發團隊使用。
+
+---
+
+**戀愛助手 AI** - 讓 AI 成為你的戀愛導師 💕
