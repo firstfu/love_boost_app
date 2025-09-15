@@ -97,8 +97,6 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
       ...editedCompanion,
       learning_status: {
         ...editedCompanion.learning_status,
-        data_completeness: calculateDataCompleteness(),
-        analysis_confidence: calculateAnalysisConfidence(),
         photo_samples: uploadedPhotos.length,
         conversation_samples: conversationRecords.length,
         last_training: new Date().toISOString()
@@ -122,35 +120,26 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
     ])
   }
 
-  const personalityTraits = [
-    { key: 'gentle', label: '溫柔' },
-    { key: 'cheerful', label: '開朗' },
-    { key: 'intellectual', label: '知性' },
-    { key: 'humorous', label: '幽默' },
-    { key: 'calm', label: '沉穩' },
-    { key: 'passionate', label: '熱情' },
-    { key: 'mysterious', label: '神秘' },
-    { key: 'caring', label: '體貼' },
-    { key: 'playful', label: '俏皮' },
-    { key: 'romantic', label: '浪漫' }
-  ]
+  const addPersonalityTrait = (trait: string) => {
+    if (trait.trim() && !editedCompanion.personality_analysis.dominant_traits.includes(trait.trim() as PersonalityTrait)) {
+      const updatedTraits = [...editedCompanion.personality_analysis.dominant_traits, trait.trim() as PersonalityTrait]
+      updatePersonalityField('dominant_traits', updatedTraits)
+    }
+  }
 
-  const speakingStyles = [
-    { key: 'casual', label: '隨性' },
-    { key: 'formal', label: '正式' },
-    { key: 'cute', label: '可愛' },
-    { key: 'mature', label: '成熟' },
-    { key: 'direct', label: '直接' },
-    { key: 'subtle', label: '委婉' }
-  ]
-
-  const togglePersonalityTrait = (trait: string) => {
-    const currentTraits = editedCompanion.personality_analysis.dominant_traits
-    const updatedTraits = currentTraits.includes(trait as PersonalityTrait)
-      ? currentTraits.filter(t => t !== trait)
-      : [...currentTraits, trait as PersonalityTrait]
-
+  const removePersonalityTrait = (indexToRemove: number) => {
+    const updatedTraits = editedCompanion.personality_analysis.dominant_traits.filter((_, index) => index !== indexToRemove)
     updatePersonalityField('dominant_traits', updatedTraits)
+  }
+
+  const addSpeakingStyle = (style: string) => {
+    if (style.trim()) {
+      updatePersonalityField('speaking_style', style.trim() as SpeakingStyle)
+    }
+  }
+
+  const removeSpeakingStyle = () => {
+    updatePersonalityField('speaking_style', '' as SpeakingStyle)
   }
 
   const addInterest = (interest: string) => {
@@ -367,26 +356,6 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
     Alert.alert('查看全部對話記錄', '對話記錄瀏覽功能開發中！')
   }
 
-  // 計算資料完整度
-  const calculateDataCompleteness = () => {
-    let completeness = 0
-    if (editedCompanion.name.trim()) completeness += 15
-    if (editedCompanion.bio.trim()) completeness += 20
-    if (editedCompanion.personality_analysis.dominant_traits.length > 0) completeness += 15
-    if (editedCompanion.personality_analysis.interests.length > 0) completeness += 10
-    if (uploadedPhotos.length > 0) completeness += 20
-    if (conversationRecords.length > 0) completeness += 20
-    return Math.min(100, completeness)
-  }
-
-  // 計算分析可信度
-  const calculateAnalysisConfidence = () => {
-    let confidence = 40 // 基礎分數
-    if (uploadedPhotos.length >= 3) confidence += 20
-    if (conversationRecords.length >= 5) confidence += 25
-    if (editedCompanion.personality_analysis.dominant_traits.length >= 3) confidence += 15
-    return Math.min(100, confidence)
-  }
 
   return (
     <View style={styles.container}>
@@ -514,31 +483,41 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
           {/* 個性特質區域 */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>個性特質</Text>
-            <Text style={styles.sectionSubtitle}>選擇最符合的特質（最多選擇5個）</Text>
 
             <View style={styles.traitsContainer}>
-              {personalityTraits.map((trait) => (
-                <TouchableOpacity
-                  key={trait.key}
-                  style={[
-                    styles.traitTag,
-                    editedCompanion.personality_analysis.dominant_traits.includes(trait.key as PersonalityTrait) && styles.traitTagActive
-                  ]}
-                  onPress={() => togglePersonalityTrait(trait.key)}
-                  disabled={
-                    !editedCompanion.personality_analysis.dominant_traits.includes(trait.key as PersonalityTrait) &&
-                    editedCompanion.personality_analysis.dominant_traits.length >= 5
-                  }
-                >
-                  <Text style={[
-                    styles.traitText,
-                    editedCompanion.personality_analysis.dominant_traits.includes(trait.key as PersonalityTrait) && styles.traitTextActive
-                  ]}>
-                    {trait.label}
-                  </Text>
-                </TouchableOpacity>
+              {editedCompanion.personality_analysis.dominant_traits.map((trait, index) => (
+                <View key={index} style={styles.traitTag}>
+                  <Text style={styles.traitText}>{trait}</Text>
+                  <TouchableOpacity
+                    onPress={() => removePersonalityTrait(index)}
+                    style={styles.removeTraitButton}
+                  >
+                    <Ionicons name="close" size={14} color="#FF6B9D" />
+                  </TouchableOpacity>
+                </View>
               ))}
             </View>
+
+            <TouchableOpacity
+              style={styles.addTraitButton}
+              onPress={() => {
+                Alert.prompt(
+                  '新增個性特質',
+                  '請輸入個性特質',
+                  [
+                    { text: '取消', style: 'cancel' },
+                    {
+                      text: '新增',
+                      onPress: (text?: string) => text && addPersonalityTrait(text)
+                    }
+                  ],
+                  'plain-text'
+                )
+              }}
+            >
+              <Ionicons name="add" size={20} color="#FF6B9D" />
+              <Text style={styles.addTraitText}>新增特質</Text>
+            </TouchableOpacity>
           </View>
 
           {/* 說話風格區域 */}
@@ -546,24 +525,43 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
             <Text style={styles.sectionTitle}>說話風格</Text>
 
             <View style={styles.styleContainer}>
-              {speakingStyles.map((style) => (
-                <TouchableOpacity
-                  key={style.key}
-                  style={[
-                    styles.styleOption,
-                    editedCompanion.personality_analysis.speaking_style === style.key && styles.styleOptionActive
-                  ]}
-                  onPress={() => updatePersonalityField('speaking_style', style.key as SpeakingStyle)}
-                >
-                  <Text style={[
-                    styles.styleOptionText,
-                    editedCompanion.personality_analysis.speaking_style === style.key && styles.styleOptionTextActive
-                  ]}>
-                    {style.label}
+              {editedCompanion.personality_analysis.speaking_style && (
+                <View style={styles.styleTag}>
+                  <Text style={styles.styleText}>
+                    {editedCompanion.personality_analysis.speaking_style}
                   </Text>
-                </TouchableOpacity>
-              ))}
+                  <TouchableOpacity
+                    onPress={removeSpeakingStyle}
+                    style={styles.removeStyleButton}
+                  >
+                    <Ionicons name="close" size={14} color="#FF6B9D" />
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
+
+            {!editedCompanion.personality_analysis.speaking_style && (
+              <TouchableOpacity
+                style={styles.addStyleButton}
+                onPress={() => {
+                  Alert.prompt(
+                    '新增說話風格',
+                    '請輸入說話風格',
+                    [
+                      { text: '取消', style: 'cancel' },
+                      {
+                        text: '新增',
+                        onPress: (text?: string) => text && addSpeakingStyle(text)
+                      }
+                    ],
+                    'plain-text'
+                  )
+                }}
+              >
+                <Ionicons name="add" size={20} color="#FF6B9D" />
+                <Text style={styles.addStyleText}>新增風格</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* 興趣愛好區域 */}
@@ -726,23 +724,6 @@ export const EditCompanion: React.FC<EditCompanionProps> = ({
               )}
             </View>
 
-            {/* 資料統計 */}
-            <View style={styles.dataStats}>
-              <View style={styles.statItem}>
-                <Ionicons name="analytics" size={16} color="#f59e0b" />
-                <Text style={styles.statLabel}>資料完整度</Text>
-                <Text style={styles.statValue}>
-                  {calculateDataCompleteness()}%
-                </Text>
-              </View>
-              <View style={styles.statItem}>
-                <Ionicons name="trending-up" size={16} color="#10b981" />
-                <Text style={styles.statLabel}>分析可信度</Text>
-                <Text style={styles.statValue}>
-                  {calculateAnalysisConfidence()}%
-                </Text>
-              </View>
-            </View>
           </View>
         </View>
 
@@ -1023,12 +1004,13 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   traitTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 107, 157, 0.1)',
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingVertical: 6,
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    backgroundColor: '#ffffff',
+    gap: 6,
   },
   traitTagActive: {
     backgroundColor: '#FF6B9D',
@@ -1036,11 +1018,32 @@ const styles = StyleSheet.create({
   },
   traitText: {
     fontSize: 12,
-    color: '#6b7280',
+    color: '#FF6B9D',
     fontWeight: '600',
   },
   traitTextActive: {
     color: '#ffffff',
+  },
+  removeTraitButton: {
+    padding: 2,
+  },
+  addTraitButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#FF6B9D',
+    borderStyle: 'dashed',
+    borderRadius: 12,
+    gap: 8,
+    marginTop: 16,
+  },
+  addTraitText: {
+    fontSize: 14,
+    color: '#FF6B9D',
+    fontWeight: '600',
   },
   styleContainer: {
     flexDirection: 'row',
@@ -1066,6 +1069,40 @@ const styles = StyleSheet.create({
   },
   styleOptionTextActive: {
     color: '#ffffff',
+  },
+  styleTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 107, 157, 0.1)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    gap: 6,
+  },
+  styleText: {
+    fontSize: 12,
+    color: '#FF6B9D',
+    fontWeight: '600',
+  },
+  removeStyleButton: {
+    padding: 2,
+  },
+  addStyleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#FF6B9D',
+    borderStyle: 'dashed',
+    borderRadius: 12,
+    gap: 8,
+  },
+  addStyleText: {
+    fontSize: 14,
+    color: '#FF6B9D',
+    fontWeight: '600',
   },
   interestsContainer: {
     flexDirection: 'row',
@@ -1223,27 +1260,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#FF6B9D',
     fontWeight: '600',
-  },
-  dataStats: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#f1f5f9',
-  },
-  statItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: '#64748b',
-  },
-  statValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#374151',
   },
 
   // 對話記錄模態框樣式
