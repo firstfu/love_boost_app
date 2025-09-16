@@ -16,7 +16,6 @@ import {
   Alert,
   Animated,
   PanResponder,
-  Dimensions,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -37,14 +36,46 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
   const [isTyping, setIsTyping] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [suggestions, setSuggestions] = useState<ReplyRecommendation[]>([])
-  const [isSuggestionsExpanded, setIsSuggestionsExpanded] = useState(true)
   const scrollViewRef = useRef<ScrollView>(null)
 
+  // 簡化狀態：只有顯示和隱藏
+  const [isSuggestionsVisible, setIsSuggestionsVisible] = useState(true)
+
   // 動畫相關
-  const suggestionsHeight = useRef(new Animated.Value(200)).current // 預設建議區域高度
-  const suggestionsOpacity = useRef(new Animated.Value(1)).current
-  const translateY = useRef(new Animated.Value(0)).current
-  const rotateValue = useRef(new Animated.Value(0)).current
+  const slideAnimation = useRef(new Animated.Value(0)).current // 0=隱藏, 1=顯示
+
+  // 切換建議顯示/隱藏
+  const toggleSuggestions = () => {
+    const toValue = isSuggestionsVisible ? 0 : 1
+
+    Animated.spring(slideAnimation, {
+      toValue,
+      tension: 100,
+      friction: 8,
+      useNativeDriver: false,
+    }).start()
+
+    setIsSuggestionsVisible(!isSuggestionsVisible)
+  }
+
+  // 簡化手勢處理
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        return Math.abs(gestureState.dy) > 15 && Math.abs(gestureState.dy) > Math.abs(gestureState.dx)
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        // 向下滑動超過30px就隱藏，向上滑動就顯示
+        if (gestureState.dy > 30) {
+          // 向下滑動 - 隱藏
+          if (isSuggestionsVisible) toggleSuggestions()
+        } else if (gestureState.dy < -30) {
+          // 向上滑動 - 顯示
+          if (!isSuggestionsVisible) toggleSuggestions()
+        }
+      },
+    })
+  ).current
 
   useEffect(() => {
     // 初始化對話，AI助手發送歡迎訊息
@@ -322,26 +353,65 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
         )}
       </ScrollView>
 
-      {/* Suggestions */}
+      {/* 簡化建議區域 */}
       {showSuggestions && suggestions.length > 0 && (
-        <View style={styles.suggestionsContainer}>
+        <Animated.View
+          style={[
+            styles.suggestionsPanel,
+            {
+              height: slideAnimation.interpolate({
+                inputRange: [0, 1],
+                outputRange: [60, 220], // 隱藏時只顯示標題，顯示時完整高度
+              }),
+              opacity: slideAnimation.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.8, 1],
+              }),
+            }
+          ]}
+          {...panResponder.panHandlers}
+        >
+          {/* 簡潔標題區域 */}
           <TouchableOpacity
-            style={styles.suggestionsTitleContainer}
-            onPress={() => setIsSuggestionsExpanded(!isSuggestionsExpanded)}
+            style={styles.suggestionHeader}
+            onPress={toggleSuggestions}
             activeOpacity={0.7}
           >
-            <View style={styles.suggestionsTitleRow}>
-              <Text style={styles.suggestionsTitle}>💡 智能建議</Text>
-              <Ionicons
-                name={isSuggestionsExpanded ? 'chevron-up' : 'chevron-down'}
-                size={20}
-                color="#718096"
-                style={styles.suggestionToggleIcon}
-              />
-            </View>
+            <Text style={styles.suggestionTitle}>💡 智能建議</Text>
+            <Animated.View
+              style={{
+                transform: [
+                  {
+                    rotate: slideAnimation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: ['180deg', '0deg'],
+                    }),
+                  },
+                ],
+              }}
+            >
+              <Text style={styles.toggleIcon}>⌄</Text>
+            </Animated.View>
           </TouchableOpacity>
-          {isSuggestionsExpanded && (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+
+          {/* 建議卡片 */}
+          <Animated.View
+            style={[
+              styles.suggestionsContent,
+              {
+                opacity: slideAnimation,
+                transform: [
+                  {
+                    translateY: slideAnimation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [20, 0],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          >
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.suggestionScroll}>
               {suggestions.map((suggestion) => (
               <TouchableOpacity
                 key={suggestion.id}
@@ -353,8 +423,9 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
                   }
                 ]}
                 onPress={() => sendMessage(suggestion.content, true)}
+                activeOpacity={0.85}
               >
-                <View style={styles.suggestionHeader}>
+                <View style={styles.suggestionCardHeader}>
                   <Ionicons
                     name={getSuggestionIcon(suggestion.type)}
                     size={14}
@@ -371,7 +442,7 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
                   </Text>
                 </View>
 
-                <Text style={styles.suggestionContent} numberOfLines={2}>
+                <Text style={styles.suggestionCardText} numberOfLines={2}>
                   {suggestion.content}
                 </Text>
 
@@ -385,8 +456,8 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
               </TouchableOpacity>
             ))}
             </ScrollView>
-          )}
-        </View>
+          </Animated.View>
+        </Animated.View>
       )}
 
       {/* Input */}
@@ -588,55 +659,61 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     fontWeight: '500',
   },
-  suggestionsContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    paddingVertical: 24,
-    paddingLeft: 20,
-    borderTopWidth: 0,
-    shadowColor: '#FF6B9D',
-    shadowOffset: { width: 0, height: -6 },
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
-    elevation: 8,
-    backdropFilter: 'blur(20px)',
+  // 簡化建議面板樣式
+  suggestionsPanel: {
+    position: 'absolute',
+    bottom: 88,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 6,
+    overflow: 'hidden',
   },
-  suggestionsTitleContainer: {
-    marginBottom: 18,
-    paddingHorizontal: 4,
-  },
-  suggestionsTitleRow: {
+  suggestionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: 'rgba(255, 107, 157, 0.05)',
   },
-  suggestionsTitle: {
+  suggestionTitle: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '600',
     color: '#1a202c',
-    letterSpacing: 0.3,
-    flex: 1,
   },
-  suggestionToggleIcon: {
-    marginLeft: 8,
-    opacity: 0.7,
+  toggleIcon: {
+    fontSize: 18,
+    color: '#6b7280',
+    fontWeight: '600',
+  },
+  suggestionsContent: {
+    paddingBottom: 16,
+  },
+  suggestionScroll: {
+    paddingHorizontal: 16,
   },
   suggestionCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    padding: 18,
-    borderRadius: 20,
-    marginRight: 14,
-    width: 240,
-    borderLeftWidth: 0,
-    shadowColor: 'rgba(255, 107, 157, 0.3)',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 6,
+    backgroundColor: '#ffffff',
+    padding: 20,
+    borderRadius: 16,
+    marginHorizontal: 8,
+    width: 260,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 5,
     borderWidth: 1,
-    borderColor: 'rgba(255, 107, 157, 0.12)',
-    backdropFilter: 'blur(10px)',
+    borderColor: 'rgba(255, 107, 157, 0.1)',
   },
-  suggestionHeader: {
+  suggestionCardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
@@ -649,7 +726,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-  suggestionContent: {
+  suggestionCardText: {
     fontSize: 15,
     color: '#1a202c',
     lineHeight: 22,
