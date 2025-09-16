@@ -79,7 +79,7 @@ export const CompanionActions: React.FC<CompanionActionsProps> = ({
     },
     {
       id: 'quickAnalysis',
-      icon: 'analytics' as const,
+      icon: 'flash' as const,
       title: '快速分析',
       type: 'secondary',
       onPress: handleQuickAnalysis,
@@ -128,11 +128,20 @@ export const CompanionActions: React.FC<CompanionActionsProps> = ({
             action.available && (
               <TouchableOpacity
                 key={action.id}
-                style={[styles.actionButton, styles.secondaryButton]}
+                style={[
+                  styles.actionButton,
+                  action.id === 'quickAnalysis' ? styles.quickAnalysisButton : styles.secondaryButton
+                ]}
                 onPress={action.onPress}
               >
-                <Ionicons name={action.icon} size={18} color="#FF6B9D" />
-                <Text style={styles.secondaryButtonText}>{action.title}</Text>
+                <Ionicons
+                  name={action.icon}
+                  size={18}
+                  color={action.id === 'quickAnalysis' ? "#FFFFFF" : "#FF6B9D"}
+                />
+                <Text style={action.id === 'quickAnalysis' ? styles.primaryButtonText : styles.secondaryButtonText}>
+                  {action.title}
+                </Text>
               </TouchableOpacity>
             )
           ))}
@@ -231,6 +240,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 107, 157, 0.1)',
     borderWidth: 1,
     borderColor: '#FF6B9D',
+  },
+  quickAnalysisButton: {
+    backgroundColor: '#9333EA',
+    shadowColor: '#9333EA',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
   primaryButtonText: {
     color: '#fff',
