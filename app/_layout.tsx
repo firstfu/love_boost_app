@@ -41,25 +41,24 @@ const ConversationPracticeHeader = ({ navigation, route }: any) => {
         height: 32,
         marginTop: 8,
       }}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={{
-            width: 32,
-            height: 32,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Ionicons name="arrow-back" size={24} color="#fff" />
-        </TouchableOpacity>
-
         <View style={{
-          flex: 1,
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'center',
-          marginHorizontal: 16,
+          flex: 1,
         }}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{
+              width: 32,
+              height: 32,
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: 12,
+            }}
+          >
+            <Ionicons name="arrow-back" size={24} color="#fff" />
+          </TouchableOpacity>
+
           <DefaultAvatar gender={companionGender} size={32} realAvatar={companionAvatar} />
           <View style={{ marginLeft: 8 }}>
             <Text style={{
