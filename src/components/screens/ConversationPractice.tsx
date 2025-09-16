@@ -241,7 +241,7 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
     >
       {/* 漸層背景 Header */}
       <LinearGradient
@@ -667,7 +667,7 @@ const styles = StyleSheet.create({
   // 簡化建議面板樣式
   suggestionsPanel: {
     position: 'absolute',
-    bottom: 100,
+    bottom: 76,
     left: 0,
     right: 0,
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
@@ -779,7 +779,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingTop: 12,
+    paddingBottom: 12,
     backgroundColor: '#ffffff',
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 107, 157, 0.15)',
