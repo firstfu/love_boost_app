@@ -59,7 +59,7 @@ const ConversationPracticeHeader = ({ navigation, route }: any) => {
             <Ionicons name="arrow-back" size={24} color="#fff" />
           </TouchableOpacity>
 
-          <DefaultAvatar gender={companionGender} size={32} realAvatar={companionAvatar} />
+          <DefaultAvatar gender={companionGender} size={40} realAvatar={companionAvatar} />
           <View style={{ marginLeft: 8 }}>
             <Text style={{
               color: '#fff',
