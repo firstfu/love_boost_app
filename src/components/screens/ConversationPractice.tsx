@@ -126,6 +126,33 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({ comp
         estimated_response_rate: 82,
         tone: "romantic",
       },
+      {
+        id: `sug_${Date.now()}_4`,
+        type: "text",
+        content: "哈哈，你這樣說讓我想到一件有趣的事",
+        reasoning: "使用幽默增加話題趣味性，避免尷尬",
+        confidence_score: 80,
+        estimated_response_rate: 85,
+        tone: "humorous",
+      },
+      {
+        id: `sug_${Date.now()}_5`,
+        type: "topic_change",
+        content: "對了，你週末有什麼計劃嗎？",
+        reasoning: "轉換話題到未來規劃，創造約會機會",
+        confidence_score: 88,
+        estimated_response_rate: 90,
+        tone: "playful",
+      },
+      {
+        id: `sug_${Date.now()}_6`,
+        type: "emoji",
+        content: "真的嗎？😊 感覺你今天心情很不錯呢",
+        reasoning: "使用表情符號增加親和力，表達關心",
+        confidence_score: 82,
+        estimated_response_rate: 87,
+        tone: "caring",
+      },
     ];
 
     setSuggestions(mockSuggestions);
