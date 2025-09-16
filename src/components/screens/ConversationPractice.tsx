@@ -451,6 +451,7 @@ const styles = StyleSheet.create({
   },
   messagesContent: {
     padding: 20,
+    paddingTop: 10,
     paddingBottom: 12,
   },
   messageContainer: {
