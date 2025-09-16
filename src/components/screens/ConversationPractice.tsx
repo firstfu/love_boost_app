@@ -8,6 +8,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { Animated, Keyboard, KeyboardAvoidingView, PanResponder, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { AICompanion, ReplyRecommendation, SimulationMessage } from "../../types/assistant";
 import { DefaultAvatar } from "../DefaultAvatar";
+import { MessageAnalysisModal } from "../ui/MessageAnalysisModal";
+import { analyzeMessage } from "../../services/messageAnalysis";
 
 interface ConversationPracticeProps {
   companion: AICompanion;
@@ -21,6 +23,12 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({ comp
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<ReplyRecommendation[]>([]);
   const scrollViewRef = useRef<ScrollView>(null);
+
+  // 訊息分析相關狀態
+  const [showAnalysisModal, setShowAnalysisModal] = useState(false);
+  const [analysisMessage, setAnalysisMessage] = useState("");
+  const [analysisResult, setAnalysisResult] = useState<any>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // 簡化狀態：只有顯示和隱藏
   const [isSuggestionsVisible, setIsSuggestionsVisible] = useState(true);
@@ -246,6 +254,34 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({ comp
     }, 100);
   };
 
+  // 處理長按訊息分析
+  const handleLongPressMessage = async (message: SimulationMessage) => {
+    // 只分析AI助手的訊息
+    if (message.sender !== "ai_companion") return;
+
+    setAnalysisMessage(message.content);
+    setShowAnalysisModal(true);
+    setIsAnalyzing(true);
+    setAnalysisResult(null);
+
+    try {
+      const analysis = await analyzeMessage(message.content);
+      console.log("收到分析結果:", analysis);
+      setAnalysisResult(analysis);
+    } catch (error) {
+      console.error("訊息分析失敗:", error);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const closeAnalysisModal = () => {
+    setShowAnalysisModal(false);
+    setAnalysisMessage("");
+    setAnalysisResult(null);
+    setIsAnalyzing(false);
+  };
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -262,7 +298,12 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({ comp
               </View>
             )}
 
-            <View style={[styles.messageBubble, message.sender === "user" ? styles.userBubble : styles.aiBubble]}>
+            <TouchableOpacity
+              style={[styles.messageBubble, message.sender === "user" ? styles.userBubble : styles.aiBubble]}
+              onLongPress={() => handleLongPressMessage(message)}
+              activeOpacity={message.sender === "ai_companion" ? 0.7 : 1}
+              delayLongPress={500}
+            >
               <Text style={[styles.messageText, message.sender === "user" ? styles.userText : styles.aiText]}>{message.content}</Text>
 
               <View style={styles.messageFooter}>
@@ -270,7 +311,7 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({ comp
 
                 {message.response_quality && <Text style={styles.qualityScore}>品質: {Math.round(message.response_quality)}</Text>}
               </View>
-            </View>
+            </TouchableOpacity>
           </View>
         ))}
 
@@ -393,6 +434,15 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({ comp
           <Ionicons name="send" size={20} color={inputText.trim() ? "#fff" : "#9ca3af"} />
         </TouchableOpacity>
       </View>
+
+      {/* 訊息分析模態窗口 */}
+      <MessageAnalysisModal
+        visible={showAnalysisModal}
+        onClose={closeAnalysisModal}
+        message={analysisMessage}
+        analysis={analysisResult}
+        isLoading={isAnalyzing}
+      />
     </KeyboardAvoidingView>
   );
 };
