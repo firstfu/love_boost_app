@@ -390,7 +390,12 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
                 ],
               }}
             >
-              <Text style={styles.toggleIcon}>⌄</Text>
+              <Ionicons
+                name="chevron-down"
+                size={22}
+                color="#FF6B9D"
+                style={styles.toggleIcon}
+              />
             </Animated.View>
           </TouchableOpacity>
 
@@ -665,33 +670,45 @@ const styles = StyleSheet.create({
     bottom: 88,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.98)',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    shadowColor: '#FF6B9D',
+    shadowOffset: { width: 0, height: -6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
     overflow: 'hidden',
+    backdropFilter: 'blur(20px)',
   },
   suggestionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingVertical: 16,
-    backgroundColor: 'rgba(255, 107, 157, 0.05)',
+    paddingVertical: 18,
+    backgroundColor: 'rgba(255, 107, 157, 0.08)',
+    borderRadius: 16,
+    marginHorizontal: 12,
+    marginTop: 8,
+    marginBottom: 4,
+    shadowColor: '#FF6B9D',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   suggestionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '700',
     color: '#1a202c',
+    letterSpacing: 0.3,
   },
   toggleIcon: {
-    fontSize: 18,
-    color: '#6b7280',
-    fontWeight: '600',
+    padding: 4,
+    backgroundColor: 'rgba(255, 107, 157, 0.12)',
+    borderRadius: 12,
+    overflow: 'hidden',
   },
   suggestionsContent: {
     paddingBottom: 16,
