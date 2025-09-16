@@ -269,7 +269,7 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
             <Ionicons name="arrow-back" size={24} color="#fff" />
           </TouchableOpacity>
 
-          <View style={styles.headerInfo}>
+          <View style={styles.centerSection}>
             <DefaultAvatar
               name={companion.name}
               size={32}
@@ -277,9 +277,9 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
             />
             <View style={styles.headerText}>
               <Text style={styles.headerName}>{companion.name}</Text>
-              <Text style={styles.headerStatus}>
-                {isTyping ? '正在輸入...' : '線上'}
-              </Text>
+              {isTyping && (
+                <Text style={styles.headerStatus}>正在輸入...</Text>
+              )}
             </View>
           </View>
 
@@ -522,15 +522,17 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    position: 'relative',
     paddingHorizontal: 20,
     paddingTop: 50,
     paddingBottom: 16,
+    height: 100,
   },
   backButton: {
+    position: 'absolute',
+    left: 20,
+    top: 60,
     padding: 10,
-    marginLeft: -10,
     backgroundColor: 'rgba(255,255,255,0.25)',
     borderRadius: 24,
     shadowColor: '#000',
@@ -538,12 +540,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    zIndex: 1,
   },
-  headerInfo: {
-    flex: 1,
+  centerSection: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 60,
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 16,
+    justifyContent: 'center',
+    zIndex: 0,
   },
   headerText: {
     marginLeft: 12,
@@ -568,9 +575,13 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   helpButton: {
+    position: 'absolute',
+    right: 20,
+    top: 60,
     padding: 10,
     backgroundColor: 'rgba(255,255,255,0.15)',
     borderRadius: 20,
+    zIndex: 1,
   },
   messagesContainer: {
     flex: 1,
