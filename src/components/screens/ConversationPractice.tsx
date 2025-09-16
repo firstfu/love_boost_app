@@ -159,15 +159,15 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
   const getSuggestionIcon = (type: string) => {
     switch (type) {
       case 'question':
-        return 'help-circle'
+        return 'help-circle-outline'
       case 'compliment':
-        return 'heart'
+        return 'heart-outline'
       case 'emoji':
-        return 'happy'
+        return 'happy-outline'
       case 'topic_change':
-        return 'chatbubbles'
+        return 'chatbubbles-outline'
       default:
-        return 'chatbubble'
+        return 'chatbubble-outline'
     }
   }
 
@@ -176,13 +176,13 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
       case 'romantic':
         return '#FF6B9D'
       case 'humorous':
-        return '#FFB347'
+        return '#FF9F43'
       case 'caring':
-        return '#98D8C8'
+        return '#26D0CE'
       case 'playful':
-        return '#AED6F1'
+        return '#5B73F7'
       default:
-        return '#007AFF'
+        return '#6366F1'
     }
   }
 
@@ -315,14 +315,19 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
       {/* Suggestions */}
       {showSuggestions && suggestions.length > 0 && (
         <View style={styles.suggestionsContainer}>
-          <Text style={styles.suggestionsTitle}>💡 智能建議</Text>
+          <View style={styles.suggestionsTitleContainer}>
+            <Text style={styles.suggestionsTitle}>💡 智能建議</Text>
+          </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {suggestions.map((suggestion) => (
               <TouchableOpacity
                 key={suggestion.id}
                 style={[
                   styles.suggestionCard,
-                  { borderLeftColor: getSuggestionColor(suggestion.tone) }
+                  {
+                    borderColor: `${getSuggestionColor(suggestion.tone)}20`,
+                    shadowColor: getSuggestionColor(suggestion.tone),
+                  }
                 ]}
                 onPress={() => sendMessage(suggestion.content, true)}
               >
@@ -560,70 +565,83 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   suggestionsContainer: {
-    backgroundColor: '#ffffff',
-    paddingVertical: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    paddingVertical: 24,
     paddingLeft: 20,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 107, 157, 0.15)',
+    borderTopWidth: 0,
     shadowColor: '#FF6B9D',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    elevation: 6,
+    shadowOffset: { width: 0, height: -6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 8,
+    backdropFilter: 'blur(20px)',
+  },
+  suggestionsTitleContainer: {
+    marginBottom: 18,
   },
   suggestionsTitle: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '700',
-    color: '#2d3748',
-    marginBottom: 16,
+    color: '#1a202c',
+    letterSpacing: 0.3,
   },
   suggestionCard: {
-    backgroundColor: '#ffffff',
-    padding: 16,
-    borderRadius: 16,
-    marginRight: 16,
-    width: 220,
-    borderLeftWidth: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    padding: 18,
+    borderRadius: 20,
+    marginRight: 14,
+    width: 240,
+    borderLeftWidth: 0,
+    shadowColor: 'rgba(255, 107, 157, 0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
     borderWidth: 1,
-    borderColor: 'rgba(255, 107, 157, 0.08)',
+    borderColor: 'rgba(255, 107, 157, 0.12)',
+    backdropFilter: 'blur(10px)',
   },
   suggestionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
+    paddingHorizontal: 2,
   },
   suggestionTone: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
-    marginLeft: 6,
+    marginLeft: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   suggestionContent: {
-    fontSize: 14,
-    color: '#2d3748',
-    lineHeight: 20,
-    marginBottom: 8,
+    fontSize: 15,
+    color: '#1a202c',
+    lineHeight: 22,
+    marginBottom: 10,
     fontWeight: '500',
   },
   suggestionReason: {
     fontSize: 12,
-    color: '#718096',
-    marginBottom: 8,
-    lineHeight: 16,
+    color: '#64748b',
+    marginBottom: 12,
+    lineHeight: 18,
+    fontStyle: 'italic',
   },
   suggestionScore: {
-    fontSize: 11,
-    color: '#38a169',
+    fontSize: 12,
+    color: '#ffffff',
     fontWeight: '700',
-    backgroundColor: 'rgba(56, 161, 105, 0.1)',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 10,
+    backgroundColor: 'rgba(56, 161, 105, 0.9)',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 16,
     alignSelf: 'flex-start',
+    shadowColor: 'rgba(56, 161, 105, 0.4)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
   },
   inputContainer: {
     flexDirection: 'row',

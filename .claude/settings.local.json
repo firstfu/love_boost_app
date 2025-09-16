@@ -10,7 +10,8 @@
       "Bash(npx tsc:*)",
       "WebSearch",
       "WebFetch(domain:expo.dev)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "WebFetch(domain:dribbble.com)"
     ],
     "deny": [],
     "ask": []
