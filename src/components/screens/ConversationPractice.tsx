@@ -14,6 +14,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  Animated,
+  PanResponder,
+  Dimensions,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -34,7 +37,14 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
   const [isTyping, setIsTyping] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [suggestions, setSuggestions] = useState<ReplyRecommendation[]>([])
+  const [isSuggestionsExpanded, setIsSuggestionsExpanded] = useState(true)
   const scrollViewRef = useRef<ScrollView>(null)
+
+  // 動畫相關
+  const suggestionsHeight = useRef(new Animated.Value(200)).current // 預設建議區域高度
+  const suggestionsOpacity = useRef(new Animated.Value(1)).current
+  const translateY = useRef(new Animated.Value(0)).current
+  const rotateValue = useRef(new Animated.Value(0)).current
 
   useEffect(() => {
     // 初始化對話，AI助手發送歡迎訊息
@@ -315,11 +325,24 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
       {/* Suggestions */}
       {showSuggestions && suggestions.length > 0 && (
         <View style={styles.suggestionsContainer}>
-          <View style={styles.suggestionsTitleContainer}>
-            <Text style={styles.suggestionsTitle}>💡 智能建議</Text>
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {suggestions.map((suggestion) => (
+          <TouchableOpacity
+            style={styles.suggestionsTitleContainer}
+            onPress={() => setIsSuggestionsExpanded(!isSuggestionsExpanded)}
+            activeOpacity={0.7}
+          >
+            <View style={styles.suggestionsTitleRow}>
+              <Text style={styles.suggestionsTitle}>💡 智能建議</Text>
+              <Ionicons
+                name={isSuggestionsExpanded ? 'chevron-up' : 'chevron-down'}
+                size={20}
+                color="#718096"
+                style={styles.suggestionToggleIcon}
+              />
+            </View>
+          </TouchableOpacity>
+          {isSuggestionsExpanded && (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {suggestions.map((suggestion) => (
               <TouchableOpacity
                 key={suggestion.id}
                 style={[
@@ -361,7 +384,8 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
                 </Text>
               </TouchableOpacity>
             ))}
-          </ScrollView>
+            </ScrollView>
+          )}
         </View>
       )}
 
@@ -578,12 +602,23 @@ const styles = StyleSheet.create({
   },
   suggestionsTitleContainer: {
     marginBottom: 18,
+    paddingHorizontal: 4,
+  },
+  suggestionsTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   suggestionsTitle: {
     fontSize: 16,
     fontWeight: '700',
     color: '#1a202c',
     letterSpacing: 0.3,
+    flex: 1,
+  },
+  suggestionToggleIcon: {
+    marginLeft: 8,
+    opacity: 0.7,
   },
   suggestionCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
