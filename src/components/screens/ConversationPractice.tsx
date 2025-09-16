@@ -16,6 +16,7 @@ import {
   Alert,
   Animated,
   PanResponder,
+  Keyboard,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -40,6 +41,7 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
 
   // 簡化狀態：只有顯示和隱藏
   const [isSuggestionsVisible, setIsSuggestionsVisible] = useState(true)
+  const [keyboardVisible, setKeyboardVisible] = useState(false)
 
   // 動畫相關
   const slideAnimation = useRef(new Animated.Value(0)).current // 0=隱藏, 1=顯示
@@ -91,6 +93,19 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
 
     // 顯示初始建議
     generateSuggestions(welcomeMessage.content)
+
+    // 監聽鍵盤事件
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardVisible(true)
+    })
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardVisible(false)
+    })
+
+    return () => {
+      keyboardDidShowListener?.remove()
+      keyboardDidHideListener?.remove()
+    }
   }, [])
 
   const getWelcomeMessage = () => {
@@ -354,7 +369,7 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
       </ScrollView>
 
       {/* 簡化建議區域 */}
-      {showSuggestions && suggestions.length > 0 && (
+      {showSuggestions && suggestions.length > 0 && !keyboardVisible && (
         <Animated.View
           style={[
             styles.suggestionsPanel,
