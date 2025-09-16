@@ -28,10 +28,10 @@ const ConversationPracticeHeader = ({ navigation, route }: any) => {
       colors={["#FF7BA7", "#FF87B2", "#FF96C0"]}
       locations={[0, 0.4, 1]}
       style={{
-        paddingTop: 50,
+        paddingTop: 60,
         paddingHorizontal: 16,
-        paddingBottom: 16,
-        minHeight: 100,
+        paddingBottom: 20,
+        minHeight: 120,
       }}
     >
       <View style={{
