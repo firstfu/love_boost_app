@@ -5,9 +5,9 @@
 
 import React, { useState } from 'react'
 import { View, StyleSheet } from 'react-native'
+import { useRouter } from 'expo-router'
 import { CompanionSelector } from '../CompanionSelector'
 import { CompanionProfile } from './CompanionProfile'
-import { ConversationPractice } from './ConversationPractice'
 import { AddCompanionData } from './AddCompanionData'
 import { EditCompanion } from './EditCompanion'
 import { ConversationHistory } from './ConversationHistory'
@@ -15,9 +15,10 @@ import { QuickAnalysis } from './QuickAnalysis'
 import { useCompanionStore } from '../../stores/assistantStore'
 import { AICompanion } from '../../types/assistant'
 
-type AppScreen = 'selector' | 'profile' | 'conversation' | 'addData' | 'editCompanion' | 'conversationHistory' | 'quickAnalysis'
+type AppScreen = 'selector' | 'profile' | 'addData' | 'editCompanion' | 'conversationHistory' | 'quickAnalysis'
 
 export const MainApp: React.FC = () => {
+  const router = useRouter()
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('selector')
   const [selectedCompanion, setSelectedCompanionState] = useState<AICompanion | null>(null)
 
@@ -37,8 +38,20 @@ export const MainApp: React.FC = () => {
   const handleSelectCompanion = (companion: AICompanion) => {
     setSelectedCompanion(companion)
     setSelectedCompanionState(companion)
-    setCurrentScreen('conversation')
     console.log('開始使用', companion.name, '的AI分身輔助聊天')
+
+    // 使用路由導航到對話練習頁面
+    router.push({
+      pathname: '/conversation-practice',
+      params: {
+        id: companion.id,
+        name: companion.name,
+        avatar: companion.avatar,
+        gender: companion.gender,
+        age: companion.age.toString(),
+        bio: companion.bio
+      }
+    })
   }
 
   /**
@@ -113,20 +126,6 @@ export const MainApp: React.FC = () => {
           />
         )
 
-      case 'conversation':
-        return selectedCompanion ? (
-          <ConversationPractice
-            companion={selectedCompanion}
-            onBack={handleBackToSelector}
-          />
-        ) : (
-          <CompanionSelector
-            onSelectCompanion={handleSelectCompanion}
-            onViewProfile={handleViewCompanionProfile}
-            onCreateCompanion={handleCreateCompanion}
-            onQuickAnalysis={handleQuickAnalysis}
-          />
-        )
 
       case 'addData':
         return selectedCompanion ? (
