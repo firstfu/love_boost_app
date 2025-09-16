@@ -361,7 +361,7 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
             {
               height: slideAnimation.interpolate({
                 inputRange: [0, 1],
-                outputRange: [60, 220], // 隱藏時只顯示標題，顯示時完整高度
+                outputRange: [60, 280], // 增加高度以顯示完整的卡片內容
               }),
               opacity: slideAnimation.interpolate({
                 inputRange: [0, 1],
@@ -667,7 +667,7 @@ const styles = StyleSheet.create({
   // 簡化建議面板樣式
   suggestionsPanel: {
     position: 'absolute',
-    bottom: 88,
+    bottom: 100,
     left: 0,
     right: 0,
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
@@ -678,7 +678,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 16,
     elevation: 8,
-    overflow: 'hidden',
+    overflow: 'visible',
     backdropFilter: 'blur(20px)',
   },
   suggestionHeader: {
@@ -711,17 +711,19 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   suggestionsContent: {
-    paddingBottom: 16,
+    paddingBottom: 20,
+    minHeight: 180,
   },
   suggestionScroll: {
     paddingHorizontal: 16,
   },
   suggestionCard: {
     backgroundColor: '#ffffff',
-    padding: 20,
+    padding: 18,
     borderRadius: 16,
     marginHorizontal: 8,
     width: 260,
+    minHeight: 140,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.08,
