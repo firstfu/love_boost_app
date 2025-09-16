@@ -39,6 +39,7 @@ const ConversationPracticeHeader = ({ navigation, route }: any) => {
         alignItems: 'center',
         justifyContent: 'space-between',
         height: 32,
+        marginTop: 8,
       }}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
