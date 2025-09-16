@@ -361,7 +361,7 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({
             {
               height: slideAnimation.interpolate({
                 inputRange: [0, 1],
-                outputRange: [60, 280], // 增加高度以顯示完整的卡片內容
+                outputRange: [80, 280], // 增加收縮時的高度以顯示完整標題
               }),
               opacity: slideAnimation.interpolate({
                 inputRange: [0, 1],
@@ -686,17 +686,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingVertical: 18,
+    paddingVertical: 16,
     backgroundColor: 'rgba(255, 107, 157, 0.08)',
     borderRadius: 16,
     marginHorizontal: 12,
-    marginTop: 8,
-    marginBottom: 4,
+    marginTop: 12,
+    marginBottom: 8,
     shadowColor: '#FF6B9D',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+    minHeight: 56,
   },
   suggestionTitle: {
     fontSize: 17,
