@@ -10,6 +10,7 @@ import { AICompanion, ReplyRecommendation, SimulationMessage } from "../../types
 import { DefaultAvatar } from "../DefaultAvatar";
 import { MessageAnalysisModal } from "../ui/MessageAnalysisModal";
 import { analyzeMessage } from "../../services/messageAnalysis";
+import { Fonts } from "../../../constants/theme";
 
 interface ConversationPracticeProps {
   companion: AICompanion;
@@ -342,6 +343,25 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({ comp
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}>
       {/* Messages */}
       <ScrollView ref={scrollViewRef} style={styles.messagesContainer} contentContainerStyle={styles.messagesContent} showsVerticalScrollIndicator={false}>
+        {/* 空對話時的引導提示 */}
+        {messages.length === 0 && (
+          <View style={styles.emptyStateContainer}>
+            <View style={styles.emptyStateContent}>
+              <View style={styles.emptyStateAvatar}>
+                <DefaultAvatar gender={companion.gender} size={60} realAvatar={companion.avatar} />
+              </View>
+              <Text style={styles.emptyStateTitle}>開始與 {companion.name} 對話</Text>
+              <Text style={styles.emptyStateSubtitle}>
+                選擇下方的智能建議開始對話，{'\n'}或者直接輸入你想說的話
+              </Text>
+              <View style={styles.emptyStateHint}>
+                <Ionicons name="arrow-down" size={20} color="#FF6B9D" />
+                <Text style={styles.emptyStateHintText}>試試智能建議</Text>
+              </View>
+            </View>
+          </View>
+        )}
+
         {messages.map(message => (
           <View key={message.id} style={[styles.messageContainer, message.sender === "user" ? styles.userMessageContainer : styles.aiMessageContainer]}>
             {message.sender === "ai_companion" && (
@@ -843,5 +863,56 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 107, 157, 0.4)",
     shadowOpacity: 0.15,
     elevation: 2,
+  },
+  // 空對話引導樣式
+  emptyStateContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+    paddingVertical: 60,
+    minHeight: 400,
+  },
+  emptyStateContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyStateAvatar: {
+    marginBottom: 24,
+    shadowColor: '#FF6B9D',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  emptyStateTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#1a202c',
+    textAlign: 'center',
+    marginBottom: 12,
+    fontFamily: Fonts.rounded,
+  },
+  emptyStateSubtitle: {
+    fontSize: 16,
+    color: '#64748b',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 32,
+    fontWeight: '500',
+  },
+  emptyStateHint: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 107, 157, 0.1)',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+    gap: 8,
+  },
+  emptyStateHintText: {
+    fontSize: 14,
+    color: '#FF6B9D',
+    fontWeight: '600',
   },
 });
