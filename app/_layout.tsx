@@ -142,6 +142,14 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen
+          name="upgrade"
+          options={{
+            title: '升級方案',
+            headerShown: true,
+            headerBackTitle: '我的'
+          }}
+        />
+        <Stack.Screen
           name="privacy"
           options={{
             title: '隱私權政策',

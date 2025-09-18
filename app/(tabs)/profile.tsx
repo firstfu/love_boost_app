@@ -95,7 +95,7 @@ export default function ProfileScreen() {
   }
 
   const handleUpgrade = () => {
-    Alert.alert('升級方案', '升級功能即將推出，敬請期待！')
+    router.push('/upgrade')
   }
 
   return (
