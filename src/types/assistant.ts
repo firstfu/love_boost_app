@@ -253,7 +253,7 @@ export interface CompanionCreationStep {
 // 回覆建議
 export interface ReplyRecommendation {
   id: string
-  type: 'text' | 'emoji' | 'question' | 'compliment' | 'topic_change'
+  type: 'text' | 'emoji' | 'question' | 'compliment' | 'topic_change' | 'greeting'
   content: string
   reasoning: string           // 為什麼推薦這個回覆
   confidence_score: number   // 信心度 0-100

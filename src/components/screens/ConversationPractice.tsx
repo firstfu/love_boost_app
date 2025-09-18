@@ -71,19 +71,11 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({ comp
   ).current;
 
   useEffect(() => {
-    // 初始化對話，AI助手發送歡迎訊息
-    const welcomeMessage: SimulationMessage = {
-      id: `msg_${Date.now()}`,
-      sender: "ai_companion",
-      content: getWelcomeMessage(),
-      timestamp: new Date().toISOString(),
-      emotion_context: "friendly",
-      response_quality: 90,
-    };
-    setMessages([welcomeMessage]);
+    // 初始化對話，不發送歡迎訊息，讓用戶主動開始對話
+    setMessages([]);
 
-    // 顯示初始建議
-    generateSuggestions(welcomeMessage.content);
+    // 顯示初始建議（幫助用戶開始對話的通用建議）
+    generateInitialSuggestions();
 
     // 監聽鍵盤事件
     const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
@@ -99,9 +91,67 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({ comp
     };
   }, []);
 
-  const getWelcomeMessage = () => {
-    const greetings = ["嗨！今天過得怎麼樣？", "哈囉～有什麼有趣的事想分享嗎？", "嗨嗨～今天想聊什麼呢？", "你好啊！最近在忙什麼？"];
-    return greetings[Math.floor(Math.random() * greetings.length)];
+  const generateInitialSuggestions = () => {
+    // 生成幫助用戶開始對話的初始建議
+    const initialSuggestions: ReplyRecommendation[] = [
+      {
+        id: `sug_${Date.now()}_1`,
+        type: "greeting",
+        content: "嗨！今天過得怎麼樣？",
+        reasoning: "友善的問候方式，自然開啟對話",
+        confidence_score: 95,
+        estimated_response_rate: 90,
+        tone: "casual",
+      },
+      {
+        id: `sug_${Date.now()}_2`,
+        type: "greeting",
+        content: "最近在忙什麼呢？",
+        reasoning: "展現關心，了解對方近況",
+        confidence_score: 90,
+        estimated_response_rate: 88,
+        tone: "caring",
+      },
+      {
+        id: `sug_${Date.now()}_3`,
+        type: "question",
+        content: "想跟你分享今天發生的有趣事情",
+        reasoning: "主動分享，創造話題",
+        confidence_score: 85,
+        estimated_response_rate: 85,
+        tone: "playful",
+      },
+      {
+        id: `sug_${Date.now()}_4`,
+        type: "compliment",
+        content: "想你了～現在在做什麼？",
+        reasoning: "表達思念，增進親密感",
+        confidence_score: 80,
+        estimated_response_rate: 92,
+        tone: "romantic",
+      },
+      {
+        id: `sug_${Date.now()}_5`,
+        type: "question",
+        content: "有沒有什麼好玩的事想分享？",
+        reasoning: "鼓勵對方分享，展現興趣",
+        confidence_score: 88,
+        estimated_response_rate: 86,
+        tone: "casual",
+      },
+      {
+        id: `sug_${Date.now()}_6`,
+        type: "emoji",
+        content: "晚安～睡前想跟你聊聊 😊",
+        reasoning: "溫馨的問候，適合晚間開啟對話",
+        confidence_score: 82,
+        estimated_response_rate: 89,
+        tone: "caring",
+      },
+    ];
+
+    setSuggestions(initialSuggestions);
+    setShowSuggestions(true);
   };
 
   const generateSuggestions = (lastMessage: string) => {
@@ -220,6 +270,8 @@ export const ConversationPractice: React.FC<ConversationPracticeProps> = ({ comp
 
   const getSuggestionIcon = (type: string) => {
     switch (type) {
+      case "greeting":
+        return "hand-left-outline";
       case "question":
         return "help-circle-outline";
       case "compliment":

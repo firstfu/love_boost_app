@@ -11,7 +11,9 @@
       "WebSearch",
       "WebFetch(domain:expo.dev)",
       "Bash(find:*)",
-      "WebFetch(domain:dribbble.com)"
+      "WebFetch(domain:dribbble.com)",
+      "Bash(npm start)",
+      "Bash(npm run lint:*)"
     ],
     "deny": [],
     "ask": []
