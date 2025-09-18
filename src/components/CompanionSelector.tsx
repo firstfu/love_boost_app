@@ -11,12 +11,10 @@ import React, { useEffect, useState } from "react";
 import { Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { DEFAULT_COMPANIONS } from "../data/defaultCompanions";
 import { useCompanionStore } from "../stores/assistantStore";
-import { AICompanion, PersonalityTrait } from "../types/assistant";
+import { AICompanion } from "../types/assistant";
 import { DefaultAvatar } from "./DefaultAvatar";
 import { CreateCompanionModal } from "./CreateCompanionModal";
 
-// 篩選類型
-type FilterType = "all" | "gentle" | "cheerful" | "intellectual";
 
 interface CompanionSelectorProps {
   onSelectCompanion: (companion: AICompanion) => void;
@@ -27,7 +25,6 @@ interface CompanionSelectorProps {
 
 export const CompanionSelector: React.FC<CompanionSelectorProps> = ({ onSelectCompanion, onViewProfile, onCreateCompanion, onQuickAnalysis }) => {
   const [companions, setCompanions] = useState<AICompanion[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState<FilterType>("all");
   const [cardAnimations, setCardAnimations] = useState<Animated.Value[]>([]);
   const [fadeAnim] = useState(new Animated.Value(0));
   const [slideAnim] = useState(new Animated.Value(50));
@@ -38,12 +35,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({ onSelectCo
 
   useEffect(() => {
     // 初始化AI分身數據
-    let filteredCompanions = DEFAULT_COMPANIONS;
-
-    // 根據篩選器過濾
-    if (selectedFilter !== "all") {
-      filteredCompanions = DEFAULT_COMPANIONS.filter(c => c.personality_analysis.dominant_traits.includes(selectedFilter as PersonalityTrait));
-    }
+    const filteredCompanions = DEFAULT_COMPANIONS;
 
     setCompanions(filteredCompanions);
     setStoreCompanions(filteredCompanions);
@@ -65,7 +57,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({ onSelectCo
         useNativeDriver: true,
       }),
     ]).start();
-  }, [selectedFilter, fadeAnim, slideAnim, setStoreCompanions]);
+  }, [fadeAnim, slideAnim, setStoreCompanions]);
 
   // 處理卡片點擊
   const handleCardPress = (companion: AICompanion, index: number) => {
@@ -92,32 +84,6 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({ onSelectCo
     onViewProfile(companion);
   };
 
-  // 獲取篩選器標籤
-  const getFilterLabel = (filter: FilterType) => {
-    switch (filter) {
-      case "all":
-        return "全部女生";
-      case "gentle":
-        return "溫柔型";
-      case "cheerful":
-        return "開朗型";
-      case "intellectual":
-        return "知性型";
-    }
-  };
-
-  // 渲染篩選器
-  const renderFilters = () => (
-    <View style={styles.filterSection}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScrollView}>
-        {(["all", "gentle", "cheerful", "intellectual"] as FilterType[]).map(filter => (
-          <TouchableOpacity key={filter} style={[styles.filterButton, selectedFilter === filter && styles.filterButtonActive]} onPress={() => setSelectedFilter(filter)}>
-            <Text style={[styles.filterText, selectedFilter === filter && styles.filterTextActive]}>{getFilterLabel(filter)}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </View>
-  );
 
   return (
     <View style={styles.container}>
@@ -138,8 +104,6 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({ onSelectCo
         </View>
       </LinearGradient>
 
-      {/* 篩選器 */}
-      {renderFilters()}
 
       {/* AI分身卡片列表 */}
       <Animated.View
@@ -352,47 +316,6 @@ const styles = StyleSheet.create({
     color: "rgba(255,255,255,0.9)",
     textAlign: "center",
     fontWeight: "500",
-  },
-  filterSection: {
-    backgroundColor: "rgba(255,255,255,0.95)",
-    paddingVertical: 16,
-    marginTop: -5,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    shadowColor: "#FF6B9D",
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  filterScrollView: {
-    paddingHorizontal: 20,
-  },
-  filterButton: {
-    paddingHorizontal: 18,
-    paddingVertical: 10,
-    borderRadius: 20,
-    backgroundColor: "rgba(255, 107, 157, 0.1)",
-    marginRight: 12,
-    borderWidth: 1,
-    borderColor: "rgba(255, 107, 157, 0.2)",
-  },
-  filterButtonActive: {
-    backgroundColor: "#FF6B9D",
-    borderColor: "#FF6B9D",
-    shadowColor: "#FF6B9D",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  filterText: {
-    fontSize: 14,
-    color: "#FF6B9D",
-    fontWeight: "600",
-  },
-  filterTextActive: {
-    color: "#ffffff",
   },
   companionListContainer: {
     flex: 1,
