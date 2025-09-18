@@ -35,7 +35,7 @@ interface ConversationHistoryProps {
 }
 
 export const ConversationHistory: React.FC<ConversationHistoryProps> = ({
-  companion,
+  companion: _companion,
   onBack,
   onViewConversation
 }) => {
@@ -168,7 +168,7 @@ export const ConversationHistory: React.FC<ConversationHistoryProps> = ({
           <View style={styles.improvementsContainer}>
             <View style={styles.improvementHeader}>
               <View style={styles.improvementIcon}>
-                <Ionicons name="bulb" size={12} color="#3b82f6" />
+                <Ionicons name="bulb" size={13} color="#3b82f6" />
               </View>
               <Text style={styles.improvementsTitle}>建議改進</Text>
             </View>
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingTop: 44,
+    paddingTop: 56,
     paddingBottom: 16,
     backgroundColor: '#FF6B9D',
     borderBottomWidth: 1,
@@ -490,9 +490,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   improvementIcon: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
     backgroundColor: 'rgba(59, 130, 246, 0.1)',
     alignItems: 'center',
     justifyContent: 'center',
@@ -501,6 +501,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
     color: '#3b82f6',
+    lineHeight: 22,
   },
   improvementList: {
     gap: 8,
