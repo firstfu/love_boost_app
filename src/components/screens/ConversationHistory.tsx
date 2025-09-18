@@ -166,12 +166,20 @@ export const ConversationHistory: React.FC<ConversationHistoryProps> = ({
 
         {item.improvements.length > 0 && (
           <View style={styles.improvementsContainer}>
-            <Text style={styles.improvementsTitle}>💡 建議改進：</Text>
-            {item.improvements.map((improvement, index) => (
-              <Text key={index} style={styles.improvementText}>
-                • {improvement}
-              </Text>
-            ))}
+            <View style={styles.improvementHeader}>
+              <View style={styles.improvementIcon}>
+                <Ionicons name="bulb" size={12} color="#3b82f6" />
+              </View>
+              <Text style={styles.improvementsTitle}>建議改進</Text>
+            </View>
+            <View style={styles.improvementList}>
+              {item.improvements.map((improvement, index) => (
+                <View key={index} style={styles.improvementItem}>
+                  <View style={styles.improvementDot} />
+                  <Text style={styles.improvementText}>{improvement}</Text>
+                </View>
+              ))}
+            </View>
           </View>
         )}
       </View>
@@ -469,21 +477,52 @@ const styles = StyleSheet.create({
   },
   improvementsContainer: {
     backgroundColor: 'rgba(59, 130, 246, 0.05)',
-    borderRadius: 8,
-    padding: 12,
-    borderLeftWidth: 3,
-    borderLeftColor: '#3b82f6',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.1)',
+    marginTop: 4,
+  },
+  improvementHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    gap: 8,
+  },
+  improvementIcon: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   improvementsTitle: {
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 13,
+    fontWeight: '700',
     color: '#3b82f6',
-    marginBottom: 4,
+  },
+  improvementList: {
+    gap: 8,
+  },
+  improvementItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+  },
+  improvementDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#3b82f6',
+    marginTop: 6,
   },
   improvementText: {
     fontSize: 12,
     color: '#475569',
-    lineHeight: 16,
+    lineHeight: 18,
+    flex: 1,
+    fontWeight: '500',
   },
   emptyContainer: {
     alignItems: 'center',
