@@ -3,8 +3,8 @@
  * 提供用戶個人資料、設定等功能
  */
 
-import React, { useState } from 'react'
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Image, Alert, Switch } from 'react-native'
+import React from 'react'
+import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Image, Alert } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Ionicons } from '@expo/vector-icons'
 import { ThemedText } from '@/components/themed-text'
@@ -43,7 +43,6 @@ const MenuItem = ({ icon, title, subtitle, value, showArrow = true, onPress, col
 
 export default function ProfileScreen() {
   const { user, logout } = useUserStore()
-  const [notificationsEnabled, setNotificationsEnabled] = useState(user?.preferences.notifications || false)
 
   // 模擬用戶數據（實際應該從store或API獲取）
   const mockUser = user || {
@@ -186,23 +185,6 @@ export default function ProfileScreen() {
           />
         </ThemedView>
 
-        {/* 快速設定 */}
-        <ThemedView style={styles.section}>
-          <ThemedText style={styles.sectionTitle}>快速設定</ThemedText>
-
-          <View style={styles.quickSettingItem}>
-            <View style={styles.quickSettingLeft}>
-              <Ionicons name="notifications" size={20} color="#FF6B9D" />
-              <Text style={styles.quickSettingText}>推送通知</Text>
-            </View>
-            <Switch
-              value={notificationsEnabled}
-              onValueChange={setNotificationsEnabled}
-              trackColor={{ false: '#E5E5EA', true: '#FF6B9D80' }}
-              thumbColor={notificationsEnabled ? '#FF6B9D' : '#FFFFFF'}
-            />
-          </View>
-        </ThemedView>
 
         {/* 底部空間 */}
         <View style={styles.bottomSpace} />
@@ -356,23 +338,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#8E8E93',
     fontWeight: '500',
-  },
-  quickSettingItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
-  quickSettingLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  quickSettingText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1a202c',
   },
   bottomSpace: {
     height: 80,

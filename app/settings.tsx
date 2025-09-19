@@ -66,50 +66,8 @@ export default function SettingsScreen() {
   const { user, updatePreferences, setAppSettings, appSettings } = useUserStore()
 
   // 設定狀態
-  const [soundEnabled, setSoundEnabled] = useState(appSettings.soundEnabled)
-  const [vibrationEnabled, setVibrationEnabled] = useState(appSettings.vibrationEnabled)
   const [autoSave, setAutoSave] = useState(appSettings.autoSaveConversations)
-  const [dataAnalytics, setDataAnalytics] = useState(user?.preferences.privacy.allowDataAnalytics || false)
-  const [personalization, setPersonalization] = useState(user?.preferences.privacy.allowPersonalization || false)
 
-  const handleLanguageSelect = () => {
-    Alert.alert(
-      '語言設定',
-      '選擇應用語言',
-      [
-        { text: '繁體中文', onPress: () => {} },
-        { text: '簡體中文', onPress: () => {} },
-        { text: 'English', onPress: () => {} },
-        { text: '取消', style: 'cancel' }
-      ]
-    )
-  }
-
-  const handleThemeSelect = () => {
-    Alert.alert(
-      '主題設定',
-      '選擇應用主題',
-      [
-        { text: '跟隨系統', onPress: () => setAppSettings({ theme: 'auto' }) },
-        { text: '淺色模式', onPress: () => setAppSettings({ theme: 'light' }) },
-        { text: '深色模式', onPress: () => setAppSettings({ theme: 'dark' }) },
-        { text: '取消', style: 'cancel' }
-      ]
-    )
-  }
-
-  const handleFontSizeSelect = () => {
-    Alert.alert(
-      '字體大小',
-      '選擇字體大小',
-      [
-        { text: '小', onPress: () => setAppSettings({ fontSize: 'small' }) },
-        { text: '中', onPress: () => setAppSettings({ fontSize: 'medium' }) },
-        { text: '大', onPress: () => setAppSettings({ fontSize: 'large' }) },
-        { text: '取消', style: 'cancel' }
-      ]
-    )
-  }
 
   const handlePasswordChange = () => {
     Alert.alert('修改密碼', '此功能即將推出')
@@ -137,109 +95,8 @@ export default function SettingsScreen() {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-        {/* 通知設定 */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>通知設定</Text>
 
-          <SettingItem
-            icon="volume-high"
-            title="聲音"
-            subtitle="通知聲音和按鍵音效"
-            showSwitch={true}
-            switchValue={soundEnabled}
-            onSwitchChange={(value) => {
-              setSoundEnabled(value)
-              setAppSettings({ soundEnabled: value })
-            }}
-            color="#9333EA"
-          />
 
-          <SettingItem
-            icon="phone-portrait"
-            title="震動"
-            subtitle="通知震動回饋"
-            showSwitch={true}
-            switchValue={vibrationEnabled}
-            onSwitchChange={(value) => {
-              setVibrationEnabled(value)
-              setAppSettings({ vibrationEnabled: value })
-            }}
-            color="#059669"
-          />
-        </View>
-
-        {/* 外觀設定 */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>外觀設定</Text>
-
-          <SettingItem
-            icon="color-palette"
-            title="主題"
-            subtitle="淺色、深色或跟隨系統"
-            value={appSettings.theme === 'auto' ? '跟隨系統' : appSettings.theme === 'light' ? '淺色' : '深色'}
-            onPress={handleThemeSelect}
-            color="#F59E0B"
-          />
-
-          <SettingItem
-            icon="text"
-            title="字體大小"
-            subtitle="調整文字顯示大小"
-            value={appSettings.fontSize === 'small' ? '小' : appSettings.fontSize === 'medium' ? '中' : '大'}
-            onPress={handleFontSizeSelect}
-            color="#8B5CF6"
-          />
-
-          <SettingItem
-            icon="language"
-            title="語言"
-            subtitle="選擇應用語言"
-            value="繁體中文"
-            onPress={handleLanguageSelect}
-            color="#06B6D4"
-          />
-        </View>
-
-        {/* 隱私設定 */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>隱私設定</Text>
-
-          <SettingItem
-            icon="analytics"
-            title="數據分析"
-            subtitle="幫助改善應用體驗"
-            showSwitch={true}
-            switchValue={dataAnalytics}
-            onSwitchChange={(value) => {
-              setDataAnalytics(value)
-              updatePreferences({
-                privacy: {
-                  allowDataAnalytics: value,
-                  allowPersonalization: personalization
-                }
-              })
-            }}
-            color="#DC2626"
-          />
-
-          <SettingItem
-            icon="person-circle"
-            title="個性化推薦"
-            subtitle="根據使用習慣提供建議"
-            showSwitch={true}
-            switchValue={personalization}
-            onSwitchChange={(value) => {
-              setPersonalization(value)
-              updatePreferences({
-                privacy: {
-                  allowDataAnalytics: dataAnalytics,
-                  allowPersonalization: value
-                }
-              })
-            }}
-            color="#7C3AED"
-          />
-        </View>
 
         {/* 帳號設定 */}
         <View style={styles.section}>
@@ -314,7 +171,7 @@ const styles = StyleSheet.create({
   },
   section: {
     backgroundColor: '#fff',
-    marginTop: 16,
+    marginTop: 24,
     marginHorizontal: 16,
     borderRadius: 16,
     paddingVertical: 8,
