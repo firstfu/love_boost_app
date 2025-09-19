@@ -14,7 +14,8 @@ import {
   TextInput,
   Image,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  Modal
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { AICompanion, QuickAnalysisResult, ChatMessage, FileData } from '../../types/assistant'
@@ -36,6 +37,8 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
   const [uploadedFiles, setUploadedFiles] = useState<FileData[]>([])
   const [isTyping, setIsTyping] = useState(false)
   const [showQuickAnalysis, setShowQuickAnalysis] = useState(false)
+  const [showPasteModal, setShowPasteModal] = useState(false)
+  const [pasteText, setPasteText] = useState('')
   const scrollViewRef = React.useRef<ScrollView>(null)
 
   // 初始化歡迎訊息
@@ -216,27 +219,29 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
    * 貼上對話內容
    */
   const handlePasteConversation = () => {
-    Alert.prompt(
-      '貼上對話內容',
-      '請將對話內容複製後貼在下方，或直接輸入對話內容：\n\n例如：\n我：嗨，今天過得怎麼樣？\n她：不錯啊，今天工作順利\n我：...',
-      [
-        {
-          text: '取消',
-          style: 'cancel'
-        },
-        {
-          text: '確定',
-          onPress: (text?: string) => {
-            if (text && text.trim()) {
-              // 如果輸入框已有內容，在後面追加
-              const newText = inputText ? `${inputText}\n\n${text.trim()}` : text.trim()
-              setInputText(newText)
-            }
-          }
-        }
-      ],
-      'plain-text'
-    )
+    setPasteText('')
+    setShowPasteModal(true)
+  }
+
+  /**
+   * 確認貼上對話內容
+   */
+  const handleConfirmPaste = () => {
+    if (pasteText && pasteText.trim()) {
+      // 如果輸入框已有內容，在後面追加
+      const newText = inputText ? `${inputText}\n\n${pasteText.trim()}` : pasteText.trim()
+      setInputText(newText)
+    }
+    setPasteText('')
+    setShowPasteModal(false)
+  }
+
+  /**
+   * 取消貼上對話內容
+   */
+  const handleCancelPaste = () => {
+    setPasteText('')
+    setShowPasteModal(false)
   }
 
   /**
@@ -658,6 +663,64 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
           </View>
         </View>
       </View>
+
+      {/* 貼上對話內容 Modal */}
+      <Modal
+        visible={showPasteModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={handleCancelPaste}
+      >
+        <View style={styles.modalOverlay}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.modalContainer}
+          >
+            <View style={styles.pasteModal}>
+              <View style={styles.pasteModalHeader}>
+                <Text style={styles.pasteModalTitle}>📝 貼上對話內容</Text>
+                <TouchableOpacity
+                  onPress={handleCancelPaste}
+                  style={styles.closeButton}
+                >
+                  <Ionicons name="close" size={22} color="white" />
+                </TouchableOpacity>
+              </View>
+
+              <Text style={styles.pasteModalDescription}>
+                請將對話內容複製後貼在下方，或直接輸入對話內容：
+              </Text>
+
+              <TextInput
+                style={styles.pasteTextarea}
+                value={pasteText}
+                onChangeText={setPasteText}
+                placeholder="例如：&#10;我：嗨，今天過得怎麼樣？&#10;她：不錯啊，今天工作順利&#10;我：..."
+                placeholderTextColor="#9ca3af"
+                multiline
+                textAlignVertical="top"
+                autoFocus
+              />
+
+              <View style={styles.pasteModalButtons}>
+                <TouchableOpacity
+                  style={[styles.pasteModalButton, styles.cancelButton]}
+                  onPress={handleCancelPaste}
+                >
+                  <Text style={styles.cancelButtonText}>取消</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.pasteModalButton, styles.confirmButton]}
+                  onPress={handleConfirmPaste}
+                >
+                  <Text style={styles.confirmButtonText}>確定</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </KeyboardAvoidingView>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   )
 }
@@ -1003,5 +1066,123 @@ const styles = StyleSheet.create({
     color: '#64748b',
     textAlign: 'center',
     lineHeight: 14,
+  },
+  // 貼上對話 Modal 樣式
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  modalContainer: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pasteModal: {
+    width: '100%',
+    maxWidth: 420,
+    backgroundColor: 'white',
+    borderRadius: 24,
+    overflow: 'hidden',
+    shadowColor: '#FF6B9D',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 24,
+    elevation: 12,
+  },
+  pasteModalHeader: {
+    backgroundColor: '#FF6B9D',
+    paddingHorizontal: 24,
+    paddingVertical: 20,
+    paddingTop: 24,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  pasteModalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: 'white',
+    letterSpacing: 0.5,
+  },
+  closeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pasteModalDescription: {
+    fontSize: 15,
+    color: '#64748b',
+    marginHorizontal: 24,
+    marginTop: 20,
+    marginBottom: 16,
+    lineHeight: 22,
+    textAlign: 'left',
+  },
+  pasteTextarea: {
+    marginHorizontal: 24,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 107, 157, 0.2)',
+    borderRadius: 16,
+    padding: 20,
+    fontSize: 15,
+    minHeight: 220,
+    maxHeight: 320,
+    backgroundColor: '#fafbfc',
+    textAlignVertical: 'top',
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
+    lineHeight: 22,
+    color: '#1a202c',
+    shadowColor: 'rgba(255, 107, 157, 0.1)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  pasteModalButtons: {
+    flexDirection: 'row',
+    marginHorizontal: 24,
+    marginTop: 24,
+    marginBottom: 24,
+    gap: 16,
+  },
+  pasteModalButton: {
+    flex: 1,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  cancelButton: {
+    backgroundColor: 'white',
+    borderWidth: 2,
+    borderColor: '#e2e8f0',
+  },
+  confirmButton: {
+    backgroundColor: '#FF6B9D',
+    shadowColor: '#FF6B9D',
+    shadowOpacity: 0.3,
+  },
+  cancelButtonText: {
+    color: '#64748b',
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: 0.3,
+  },
+  confirmButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
 })
