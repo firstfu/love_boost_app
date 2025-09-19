@@ -51,13 +51,6 @@ const FeatureItem = ({ icon, title, description, color = '#FF6B9D' }: FeatureIte
 )
 
 export default function AboutScreen() {
-  const handlePrivacyPolicy = () => {
-    router.push('/privacy')
-  }
-
-  const handleTermsOfService = () => {
-    router.push('/terms')
-  }
 
   const handleWebsite = () => {
     Linking.openURL('https://loveboost.app')
@@ -147,26 +140,6 @@ export default function AboutScreen() {
           />
         </View>
 
-        {/* 法律條款 */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>法律條款</Text>
-
-          <InfoItem
-            icon="shield"
-            title="隱私權政策"
-            value="查看我們如何保護您的隱私"
-            onPress={handlePrivacyPolicy}
-            color="#10B981"
-          />
-
-          <InfoItem
-            icon="document"
-            title="使用條款"
-            value="了解使用條款和服務協議"
-            onPress={handleTermsOfService}
-            color="#EF4444"
-          />
-        </View>
 
         {/* 版權聲明 */}
         <View style={styles.section}>

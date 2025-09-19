@@ -108,6 +108,14 @@ export default function ProfileScreen() {
     )
   }
 
+  const handlePrivacyPolicy = () => {
+    router.push('/privacy')
+  }
+
+  const handleTermsOfService = () => {
+    router.push('/terms')
+  }
+
   return (
     <View style={styles.container}>
       {/* 漸層背景頭部 - 使用與其他頁面一致的粉色漸層 */}
@@ -180,12 +188,28 @@ export default function ProfileScreen() {
           />
 
           <MenuItem
+            icon="shield"
+            title="隱私權政策"
+            subtitle="查看我們如何保護您的隱私"
+            onPress={handlePrivacyPolicy}
+            color="#10B981"
+          />
+
+          <MenuItem
+            icon="document"
+            title="使用條款"
+            subtitle="了解使用條款和服務協議"
+            onPress={handleTermsOfService}
+            color="#EF4444"
+          />
+
+          <MenuItem
             icon="log-out"
             title="登出"
             subtitle="登出當前帳號"
             showArrow={false}
             onPress={handleLogout}
-            color="#EF4444"
+            color="#F59E0B"
           />
 
           <MenuItem
