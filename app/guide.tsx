@@ -58,12 +58,12 @@ export default function GuideScreen() {
 
   const faqData = [
     {
-      question: "如何創建新的AI分身？",
-      answer: "在首頁點擊「建立新助手」按鈕，然後上傳她的照片和對話記錄，AI會自動分析並創建專屬的分身助手。"
+      question: "如何創建新的AI助手？",
+      answer: "在首頁點擊「建立新助手」按鈕，然後上傳她的照片和對話記錄，AI會自動分析並創建專屬的助手。"
     },
     {
-      question: "AI分身的準確度如何？",
-      answer: "AI分身的準確度取決於提供的資料質量和數量。建議上傳多張照片和豐富的對話記錄，這樣AI能更好地學習她的個性和說話風格。"
+      question: "AI助手的準確度如何？",
+      answer: "AI助手的準確度取決於提供的資料質量和數量。建議上傳多張照片和豐富的對話記錄，這樣AI能更好地學習她的個性和說話風格。"
     },
     {
       question: "對話練習有什麼用？",
@@ -82,12 +82,8 @@ export default function GuideScreen() {
       answer: "我們採用企業級加密技術保護您的資料，絕不會洩露或分享給第三方。您也可以隨時刪除或匯出您的資料。"
     },
     {
-      question: "免費版有什麼限制？",
-      answer: "免費版可以創建1個AI分身，每日有限制的API使用量。升級到付費版可以解鎖更多功能和無限制使用。"
-    },
-    {
-      question: "如何升級到付費版？",
-      answer: "在「我的」頁面點擊「升級方案」，選擇適合的方案並完成付款即可立即升級。"
+      question: "如何升級方案？",
+      answer: "在「我的」頁面點擊「升級方案」，選擇適合的訂閱方案並完成付款即可立即升級。"
     }
   ]
 
@@ -101,14 +97,14 @@ export default function GuideScreen() {
   const handleFeatureIntro = () => {
     Alert.alert(
       "功能介紹",
-      "🎭 AI分身創建：基於真實資料創建個性化AI助手\n\n💬 對話練習：模擬真實聊天情境，提升溝通技巧\n\n⚡ 快速分析：即時分析對話內容，提供聊天建議\n\n📊 個性洞察：深度了解她的個性和喜好"
+      "🎭 AI助手創建：基於真實資料創建個性化AI助手\n\n💬 對話模擬：模擬真實對話情境，提升溝通技巧\n\n⚡ 快速分析：即時分析對話內容，提供對話建議\n\n📊 個性洞察：深度了解她的個性和喜好"
     )
   }
 
   const handleTips = () => {
     Alert.alert(
       "使用技巧",
-      "💡 上傳高質量照片能提升分析準確度\n\n📝 提供豐富的對話記錄有助於AI學習\n\n🔄 定期更新資料保持AI分身的時效性\n\n⭐ 多使用對話練習功能提升聊天技巧\n\n🎯 關注AI建議並在實際對話中應用"
+      "💡 上傳高質量照片能提升分析準確度\n\n📝 提供豐富的對話記錄有助於AI學習\n\n🔄 定期更新資料保持AI助手的時效性\n\n⭐ 多使用對話模擬功能提升對話技巧\n\n🎯 關注AI建議並在實際對話中應用"
     )
   }
 
@@ -123,7 +119,7 @@ export default function GuideScreen() {
           <GuideItem
             icon="rocket"
             title="新手指南"
-            description="3分鐘快速上手，開始您的第一次AI對話"
+            description="3分鐘快速上手，開始您的第一次AI助手對話"
             onPress={handleQuickStart}
             color="#FF6B9D"
           />
@@ -139,7 +135,7 @@ export default function GuideScreen() {
           <GuideItem
             icon="bulb"
             title="使用技巧"
-            description="專家建議，讓您的聊天技巧突飛猛進"
+            description="專家建議，讓您的對話技巧突飛猛進"
             onPress={handleTips}
             color="#F59E0B"
           />
@@ -153,25 +149,25 @@ export default function GuideScreen() {
           <View style={styles.featureCard}>
             <View style={styles.featureHeader}>
               <Ionicons name="people" size={20} color="#FF6B9D" />
-              <Text style={styles.featureTitle}>AI分身創建</Text>
+              <Text style={styles.featureTitle}>AI助手創建</Text>
             </View>
             <Text style={styles.featureDescription}>
-              上傳她的照片和對話記錄，AI會深度分析她的外表特徵、說話風格、個性特點，創建專屬的AI分身助手。
+              上傳她的照片和對話記錄，AI會深度分析她的外表特徵、說話風格、個性特點，創建專屬的AI助手。
             </Text>
             <View style={styles.featureSteps}>
               <Text style={styles.stepText}>• 上傳1-5張清晰照片</Text>
               <Text style={styles.stepText}>• 提供豐富的對話記錄</Text>
-              <Text style={styles.stepText}>• AI自動分析並創建分身</Text>
+              <Text style={styles.stepText}>• AI自動分析並創建助手</Text>
             </View>
           </View>
 
           <View style={styles.featureCard}>
             <View style={styles.featureHeader}>
               <Ionicons name="chatbubbles" size={20} color="#8B5CF6" />
-              <Text style={styles.featureTitle}>對話練習</Text>
+              <Text style={styles.featureTitle}>對話模擬</Text>
             </View>
             <Text style={styles.featureDescription}>
-              與AI分身進行模擬對話，練習不同場景下的聊天技巧，獲得實時建議和指導。
+              與AI助手進行模擬對話，練習不同場景下的對話技巧，獲得實時建議和指導。
             </Text>
             <View style={styles.featureSteps}>
               <Text style={styles.stepText}>• 選擇對話場景</Text>
