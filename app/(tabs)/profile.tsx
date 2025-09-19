@@ -69,7 +69,7 @@ export default function ProfileScreen() {
       case 'enterprise':
         return { text: 'Enterprise', color: '#8A2BE2', bgColor: '#F0E6FF' }
       default:
-        return { text: '免費會員', color: '#8E8E93', bgColor: '#F5F5F5' }
+        return null
     }
   }
 
@@ -138,11 +138,13 @@ export default function ProfileScreen() {
             <View style={styles.profileInfo}>
               <Text style={styles.username}>{mockUser.username}</Text>
               <Text style={styles.email}>{mockUser.email}</Text>
-              <View style={[styles.membershipBadge, { backgroundColor: membershipBadge.bgColor }]}>
-                <Text style={[styles.membershipText, { color: membershipBadge.color }]}>
-                  {membershipBadge.text}
-                </Text>
-              </View>
+              {membershipBadge && (
+                <View style={[styles.membershipBadge, { backgroundColor: membershipBadge.bgColor }]}>
+                  <Text style={[styles.membershipText, { color: membershipBadge.color }]}>
+                    {membershipBadge.text}
+                  </Text>
+                </View>
+              )}
             </View>
           </View>
         </View>
