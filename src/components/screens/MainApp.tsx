@@ -7,7 +7,6 @@ import React, { useState } from 'react'
 import { View, StyleSheet } from 'react-native'
 import { useRouter } from 'expo-router'
 import { CompanionSelector } from '../CompanionSelector'
-import { CompanionProfile } from './CompanionProfile'
 import { AddCompanionData } from './AddCompanionData'
 import { EditCompanion } from './EditCompanion'
 import { ConversationHistory } from './ConversationHistory'
@@ -15,7 +14,7 @@ import { QuickAnalysis } from './QuickAnalysis'
 import { useCompanionStore } from '../../stores/assistantStore'
 import { AICompanion } from '../../types/assistant'
 
-type AppScreen = 'selector' | 'profile' | 'addData' | 'editCompanion' | 'conversationHistory' | 'quickAnalysis'
+type AppScreen = 'selector' | 'addData' | 'editCompanion' | 'conversationHistory' | 'quickAnalysis'
 
 export const MainApp: React.FC = () => {
   const router = useRouter()
@@ -28,8 +27,11 @@ export const MainApp: React.FC = () => {
    * 處理選擇AI分身查看詳情
    */
   const handleViewCompanionProfile = (companion: AICompanion) => {
-    setSelectedCompanionState(companion)
-    setCurrentScreen('profile')
+    // 導航到獨立的助手詳情頁面
+    router.push({
+      pathname: '/assistant-detail',
+      params: { id: companion.id }
+    })
   }
 
   /**
@@ -94,37 +96,6 @@ export const MainApp: React.FC = () => {
         )
 
 
-      case 'profile':
-        return selectedCompanion ? (
-          <CompanionProfile
-            companion={selectedCompanion}
-            onBack={handleBackToSelector}
-            onStartChat={handleSelectCompanion}
-            onAddData={(companion) => {
-              setSelectedCompanionState(companion)
-              setCurrentScreen('addData')
-            }}
-            onEditProfile={(companion) => {
-              setSelectedCompanionState(companion)
-              setCurrentScreen('editCompanion')
-            }}
-            onViewHistory={(companion) => {
-              setSelectedCompanionState(companion)
-              setCurrentScreen('conversationHistory')
-            }}
-            onQuickAnalysis={(companion) => {
-              setSelectedCompanionState(companion)
-              setCurrentScreen('quickAnalysis')
-            }}
-          />
-        ) : (
-          <CompanionSelector
-            onSelectCompanion={handleSelectCompanion}
-            onViewProfile={handleViewCompanionProfile}
-            onCreateCompanion={handleCreateCompanion}
-            onQuickAnalysis={handleQuickAnalysis}
-          />
-        )
 
 
       case 'addData':
@@ -137,8 +108,8 @@ export const MainApp: React.FC = () => {
                 // 新建助手的資料新增完成後返回選擇器
                 setCurrentScreen('selector')
               } else {
-                // 現有助手的資料新增完成後返回詳情頁面
-                setCurrentScreen('profile')
+                // 現有助手的資料新增完成後返回選擇器
+                setCurrentScreen('selector')
               }
             }}
             isUpdate={!selectedCompanion.id.startsWith('custom_')}
@@ -153,8 +124,8 @@ export const MainApp: React.FC = () => {
                 // 新建助手的資料新增完成後返回選擇器
                 setCurrentScreen('selector')
               } else {
-                // 現有助手的資料新增完成後返回詳情頁面
-                setCurrentScreen('profile')
+                // 現有助手的資料新增完成後返回選擇器
+                setCurrentScreen('selector')
               }
             }}
           />
@@ -171,7 +142,7 @@ export const MainApp: React.FC = () => {
         return selectedCompanion ? (
           <EditCompanion
             companion={selectedCompanion}
-            onBack={() => setCurrentScreen('profile')}
+            onBack={() => setCurrentScreen('selector')}
             onSave={(updatedCompanion) => {
               // 更新助手資料
               updateCompanion(updatedCompanion.id, updatedCompanion)
@@ -191,7 +162,7 @@ export const MainApp: React.FC = () => {
         return selectedCompanion ? (
           <ConversationHistory
             companion={selectedCompanion}
-            onBack={() => setCurrentScreen('profile')}
+            onBack={() => setCurrentScreen('selector')}
             onViewConversation={(conversationId) => {
               console.log('查看對話詳情:', conversationId)
             }}
@@ -211,7 +182,7 @@ export const MainApp: React.FC = () => {
         return selectedCompanion ? (
           <QuickAnalysis
             companion={selectedCompanion}
-            onBack={() => setCurrentScreen('profile')}
+            onBack={() => setCurrentScreen('selector')}
           />
         ) : (
           <CompanionSelector

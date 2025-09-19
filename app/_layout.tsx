@@ -194,6 +194,27 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen
+          name="assistant-detail"
+          options={{
+            headerShown: false,
+            presentation: "card",
+          }}
+        />
+        <Stack.Screen
+          name="quick-analysis"
+          options={{
+            headerShown: false,
+            presentation: "card",
+          }}
+        />
+        <Stack.Screen
+          name="add-data"
+          options={{
+            headerShown: false,
+            presentation: "card",
+          }}
+        />
+        <Stack.Screen
           name="conversation-practice"
           options={{
             headerShown: true,
