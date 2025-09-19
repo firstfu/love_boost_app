@@ -371,6 +371,41 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
   }
 
   /**
+   * 新開對話
+   */
+  const handleNewConversation = () => {
+    Alert.alert(
+      '新開對話',
+      '確定要開始新的對話嗎？目前的對話內容將會清除。',
+      [
+        {
+          text: '取消',
+          style: 'cancel'
+        },
+        {
+          text: '確定',
+          style: 'destructive',
+          onPress: () => {
+            // 清除所有訊息，只保留歡迎訊息
+            const welcomeMessage: ChatMessage = {
+              id: Date.now().toString(),
+              type: 'ai',
+              content: `Hi！我是${companion.name}的AI助手 ✨\n\n你可以：\n• 上傳聊天截圖讓我分析\n• 直接輸入對話內容\n• 詢問任何關於與她互動的問題\n\n有什麼想了解的嗎？`,
+              timestamp: new Date().toISOString()
+            }
+            setMessages([welcomeMessage])
+            setInputText('')
+            setSelectedImages([])
+            setUploadedFiles([])
+            setShowQuickAnalysis(false)
+            setIsTyping(false)
+          }
+        }
+      ]
+    )
+  }
+
+  /**
    * 渲染聊天訊息
    */
   const renderMessage = (message: ChatMessage) => {
@@ -513,7 +548,9 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.title}>與 {companion.name} 的 AI 助手對話</Text>
-        <View style={styles.headerRight} />
+        <TouchableOpacity onPress={handleNewConversation} style={styles.newChatButton}>
+          <Ionicons name="add-circle-outline" size={24} color="#fff" />
+        </TouchableOpacity>
       </View>
 
       {/* 聊天區域 */}
@@ -651,8 +688,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginHorizontal: 16,
   },
-  headerRight: {
-    width: 40,
+  newChatButton: {
+    padding: 8,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 20,
   },
   chatWrapper: {
     flex: 1,
