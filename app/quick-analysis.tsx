@@ -16,6 +16,9 @@ export default function QuickAnalysisScreen() {
   // 從路由參數獲取助手ID
   const assistantId = params.id as string
 
+  console.log('QuickAnalysisScreen 已加載，接收到的參數:', params)
+  console.log('助手ID:', assistantId)
+
   // 根據ID查找助手
   const companion = companions.find(c => c.id === assistantId)
 

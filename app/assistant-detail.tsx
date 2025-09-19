@@ -44,15 +44,27 @@ export default function AssistantDetailScreen() {
   }
 
   const handleAddData = () => {
-    router.push({
-      pathname: '/add-data',
-      params: { id: companion.id }
-    })
+    console.log('管理資料按鈕被點擊，準備跳轉到 edit-companion 頁面，助手ID:', companion.id)
+    try {
+      router.push({
+        pathname: '/edit-companion',
+        params: { id: companion.id }
+      })
+    } catch (error) {
+      console.error('跳轉失敗:', error)
+    }
   }
 
   const handleEditProfile = () => {
-    // TODO: 實現編輯檔案功能 - 可能需要創建新的路由
-    console.log('編輯檔案功能待實現')
+    console.log('編輯檔案按鈕被點擊，準備跳轉到 edit-companion 頁面，助手ID:', companion.id)
+    try {
+      router.push({
+        pathname: '/edit-companion',
+        params: { id: companion.id }
+      })
+    } catch (error) {
+      console.error('編輯檔案跳轉失敗:', error)
+    }
   }
 
   const handleViewHistory = () => {
@@ -61,10 +73,15 @@ export default function AssistantDetailScreen() {
   }
 
   const handleQuickAnalysis = () => {
-    router.push({
-      pathname: '/quick-analysis',
-      params: { id: companion.id }
-    })
+    console.log('快速分析按鈕被點擊，準備跳轉到 quick-analysis 頁面，助手ID:', companion.id)
+    try {
+      router.push({
+        pathname: '/quick-analysis',
+        params: { id: companion.id }
+      })
+    } catch (error) {
+      console.error('快速分析跳轉失敗:', error)
+    }
   }
 
   return (

@@ -208,7 +208,7 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen
-          name="add-data"
+          name="edit-companion"
           options={{
             headerShown: false,
             presentation: "card",

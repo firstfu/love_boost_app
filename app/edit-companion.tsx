@@ -1,20 +1,23 @@
 /**
- * 管理資料頁面 - 獨立路由
- * 提供助手的資料管理功能
+ * 編輯助手頁面 - 獨立路由
+ * 提供助手的編輯/管理資料功能
  */
 
 import React from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { AddCompanionData } from '@/src/components/screens/AddCompanionData'
+import { EditCompanion } from '@/src/components/screens/EditCompanion'
 import { useCompanionStore } from '@/src/stores/assistantStore'
 
-export default function AddDataScreen() {
+export default function EditCompanionScreen() {
   const router = useRouter()
   const params = useLocalSearchParams()
-  const { companions, addUserData } = useCompanionStore()
+  const { companions, updateCompanion } = useCompanionStore()
 
   // 從路由參數獲取助手ID
   const assistantId = params.id as string
+
+  console.log('EditCompanionScreen 已加載，接收到的參數:', params)
+  console.log('助手ID:', assistantId)
 
   // 根據ID查找助手
   const companion = companions.find(c => c.id === assistantId)
@@ -29,20 +32,18 @@ export default function AddDataScreen() {
     router.back()
   }
 
-  const handleSave = (data: any) => {
-    console.log('儲存新增資料:', data)
-    if (companion) {
-      addUserData(companion.id, data)
-    }
+  const handleSave = (updatedCompanion: any) => {
+    console.log('儲存更新的助手資料:', updatedCompanion)
+    // 更新助手資料
+    updateCompanion(updatedCompanion.id, updatedCompanion)
     // 儲存完成後返回上一頁
     router.back()
   }
 
   return (
-    <AddCompanionData
+    <EditCompanion
       companion={companion}
       onBack={handleBack}
-      isUpdate={true}
       onSave={handleSave}
     />
   )
