@@ -63,79 +63,10 @@ export default function AboutScreen() {
     Linking.openURL('https://loveboost.app')
   }
 
-  const handleGitHub = () => {
-    Linking.openURL('https://github.com/loveboost/app')
-  }
-
-  const handleChangeLog = () => {
-    Alert.alert(
-      '更新日誌',
-      'v1.0.0 (2024-09-16)\n• 首次發布\n• AI分身創建功能\n• 對話練習功能\n• 快速分析功能\n• 個人中心功能\n\n更多更新記錄請查看我們的官網。'
-    )
-  }
-
-  const handleLicenses = () => {
-    Alert.alert(
-      '開源許可證',
-      '本應用使用了以下開源許可證：\n\n• React Native (MIT)\n• Expo (MIT)\n• React Navigation (MIT)\n• Zustand (MIT)\n• 其他相關許可證\n\n完整許可證資訊請查看應用內的許可證文件。'
-    )
-  }
 
   return (
     <View style={styles.container}>
-      {/* 漸層背景頭部 */}
-      <LinearGradient
-        colors={['#FF7BA7', '#FF87B2', '#FF96C0']}
-        locations={[0, 0.4, 1]}
-        style={styles.backgroundGradient}
-      >
-        <View style={styles.header}>
-          <View style={styles.logoContainer}>
-            <View style={styles.logo}>
-              <Ionicons name="heart" size={32} color="#fff" />
-            </View>
-            <Text style={styles.title}>Love Boost</Text>
-            <Text style={styles.subtitle}>AI 戀愛助手</Text>
-            <Text style={styles.version}>版本 1.0.0</Text>
-          </View>
-        </View>
-      </LinearGradient>
-
-      <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-        {/* 應用資訊 */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>應用資訊</Text>
-
-          <InfoItem
-            icon="information-circle"
-            title="版本"
-            value="1.0.0 (Build 1)"
-            color="#0EA5E9"
-          />
-
-          <InfoItem
-            icon="calendar"
-            title="發布日期"
-            value="2024年9月16日"
-            color="#10B981"
-          />
-
-          <InfoItem
-            icon="document-text"
-            title="更新日誌"
-            value="查看版本更新記錄"
-            onPress={handleChangeLog}
-            color="#8B5CF6"
-          />
-
-          <InfoItem
-            icon="code-slash"
-            title="開源許可證"
-            value="查看第三方許可證"
-            onPress={handleLicenses}
-            color="#F59E0B"
-          />
-        </View>
+      <ScrollView style={styles.mainScrollContainer} showsVerticalScrollIndicator={false}>
 
         {/* 核心功能 */}
         <View style={styles.section}>
@@ -208,14 +139,6 @@ export default function AboutScreen() {
           />
 
           <InfoItem
-            icon="logo-github"
-            title="GitHub"
-            value="查看開源代碼"
-            onPress={handleGitHub}
-            color="#374151"
-          />
-
-          <InfoItem
             icon="mail"
             title="聯絡信箱"
             value="contact@loveboost.com"
@@ -267,60 +190,15 @@ export default function AboutScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#F8F9FA',
   },
-  backgroundGradient: {
-    paddingBottom: 20,
-  },
-  header: {
-    paddingTop: 60,
-    paddingHorizontal: 24,
-    paddingBottom: 30,
-    alignItems: 'center',
-  },
-  logoContainer: {
-    alignItems: 'center',
-  },
-  logo: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '900',
-    color: '#ffffff',
-    marginBottom: 4,
-    textAlign: 'center',
-    fontFamily: Fonts.rounded,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.9)',
-    textAlign: 'center',
-    fontWeight: '500',
-    marginBottom: 8,
-  },
-  version: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.7)',
-    textAlign: 'center',
-    fontWeight: '400',
-  },
-  scrollContainer: {
+  mainScrollContainer: {
     flex: 1,
-    marginTop: -10,
-    backgroundColor: 'rgba(255,255,255,0.95)',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    backgroundColor: '#F8F9FA',
   },
   section: {
     backgroundColor: '#fff',
-    marginTop: 12,
+    marginTop: 24,
     marginHorizontal: 16,
     borderRadius: 16,
     paddingVertical: 8,

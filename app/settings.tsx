@@ -66,7 +66,6 @@ export default function SettingsScreen() {
   const { user, updatePreferences, setAppSettings, appSettings } = useUserStore()
 
   // 設定狀態
-  const [notifications, setNotifications] = useState(user?.preferences.notifications || false)
   const [soundEnabled, setSoundEnabled] = useState(appSettings.soundEnabled)
   const [vibrationEnabled, setVibrationEnabled] = useState(appSettings.vibrationEnabled)
   const [autoSave, setAutoSave] = useState(appSettings.autoSaveConversations)
@@ -141,19 +140,6 @@ export default function SettingsScreen() {
         {/* 通知設定 */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>通知設定</Text>
-
-          <SettingItem
-            icon="notifications"
-            title="推送通知"
-            subtitle="接收重要訊息和更新"
-            showSwitch={true}
-            switchValue={notifications}
-            onSwitchChange={(value) => {
-              setNotifications(value)
-              updatePreferences({ notifications: value })
-            }}
-            color="#FF6B9D"
-          />
 
           <SettingItem
             icon="volume-high"
