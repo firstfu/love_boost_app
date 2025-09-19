@@ -64,6 +64,14 @@
    - 按 `w` 開啟 Web 版本
    - 掃描 QR Code 在實體設備運行
 
+## 📱 應用截圖
+
+<div align="center">
+<img src="./docs/imgs/img1.png" width="300" alt="應用主界面">
+<img src="./docs/imgs/img2.png" width="300" alt="AI助手管理">
+<img src="./docs/imgs/img3.png" width="300" alt="對話練習功能">
+</div>
+
 ## 📱 開發指令
 
 ```bash
