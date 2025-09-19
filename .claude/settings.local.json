@@ -14,7 +14,9 @@
       "WebFetch(domain:dribbble.com)",
       "Bash(npm start)",
       "Bash(npm run lint:*)",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "mcp__Context7__resolve-library-id",
+      "mcp__Context7__get-library-docs"
     ],
     "deny": [],
     "ask": []
