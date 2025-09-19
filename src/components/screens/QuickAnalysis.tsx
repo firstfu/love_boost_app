@@ -213,29 +213,30 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
   }
 
   /**
-   * 拍攝照片
+   * 貼上對話內容
    */
-  const handleTakePhoto = async () => {
-    try {
-      const result = await AnalysisService.takePhoto()
-
-      if (!result.canceled && result.assets?.[0]) {
-        const asset = result.assets[0]
-        let imageData: string
-
-        if (asset.base64) {
-          imageData = `data:image/jpeg;base64,${asset.base64}`
-        } else {
-          const base64 = await AnalysisService.convertImageToBase64(asset.uri)
-          imageData = `data:image/jpeg;base64,${base64}`
+  const handlePasteConversation = () => {
+    Alert.prompt(
+      '貼上對話內容',
+      '請將對話內容複製後貼在下方，或直接輸入對話內容：\n\n例如：\n我：嗨，今天過得怎麼樣？\n她：不錯啊，今天工作順利\n我：...',
+      [
+        {
+          text: '取消',
+          style: 'cancel'
+        },
+        {
+          text: '確定',
+          onPress: (text?: string) => {
+            if (text && text.trim()) {
+              // 如果輸入框已有內容，在後面追加
+              const newText = inputText ? `${inputText}\n\n${text.trim()}` : text.trim()
+              setInputText(newText)
+            }
+          }
         }
-
-        setSelectedImages([...selectedImages, imageData])
-      }
-    } catch (error) {
-      Alert.alert('錯誤', '拍攝照片失敗，請重試')
-      console.error('拍攝照片錯誤:', error)
-    }
+      ],
+      'plain-text'
+    )
   }
 
   /**
@@ -620,9 +621,9 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
               <Text style={styles.attachButtonText}>圖片</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.attachButton} onPress={handleTakePhoto}>
-              <Ionicons name="camera" size={20} color="#FF6B9D" />
-              <Text style={styles.attachButtonText}>拍照</Text>
+            <TouchableOpacity style={styles.attachButton} onPress={handlePasteConversation}>
+              <Ionicons name="clipboard" size={20} color="#FF6B9D" />
+              <Text style={styles.attachButtonText}>貼上</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.attachButton} onPress={handlePickTextFiles}>
