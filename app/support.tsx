@@ -157,19 +157,7 @@ export default function SupportScreen() {
 
   return (
     <View style={styles.container}>
-      {/* 漸層背景頭部 */}
-      <LinearGradient
-        colors={['#FF7BA7', '#FF87B2', '#FF96C0']}
-        locations={[0, 0.4, 1]}
-        style={styles.backgroundGradient}
-      >
-        <View style={styles.header}>
-          <Text style={styles.title}>聯絡支援</Text>
-          <Text style={styles.subtitle}>我們隨時為您提供協助</Text>
-        </View>
-      </LinearGradient>
-
-      <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.mainScrollContainer} showsVerticalScrollIndicator={false}>
         {/* 聯絡方式 */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>聯絡方式</Text>
@@ -307,41 +295,15 @@ export default function SupportScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#F8F9FA',
   },
-  backgroundGradient: {
-    paddingBottom: 20,
-  },
-  header: {
-    paddingTop: 60,
-    paddingHorizontal: 24,
-    paddingBottom: 30,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '900',
-    color: '#ffffff',
-    marginBottom: 8,
-    textAlign: 'center',
-    fontFamily: Fonts.rounded,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.9)',
-    textAlign: 'center',
-    fontWeight: '500',
-  },
-  scrollContainer: {
+  mainScrollContainer: {
     flex: 1,
-    marginTop: -10,
-    backgroundColor: 'rgba(255,255,255,0.95)',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    backgroundColor: '#F8F9FA',
   },
   section: {
     backgroundColor: '#fff',
-    marginTop: 12,
+    marginTop: 24,
     marginHorizontal: 16,
     borderRadius: 16,
     paddingVertical: 8,

@@ -121,6 +121,11 @@ export default function RootLayout() {
             title: "應用設定",
             headerShown: true,
             headerBackTitle: "我的",
+            headerBackButtonDisplayMode: "minimal",
+            headerStyle: {
+              backgroundColor: "#FF87B2",
+            },
+            headerTintColor: "#fff",
           }}
         />
         <Stack.Screen
@@ -129,6 +134,11 @@ export default function RootLayout() {
             title: "使用指南",
             headerShown: true,
             headerBackTitle: "我的",
+            headerBackButtonDisplayMode: "minimal",
+            headerStyle: {
+              backgroundColor: "#FF87B2",
+            },
+            headerTintColor: "#fff",
           }}
         />
         <Stack.Screen
@@ -137,6 +147,11 @@ export default function RootLayout() {
             title: "聯絡支援",
             headerShown: true,
             headerBackTitle: "我的",
+            headerBackButtonDisplayMode: "minimal",
+            headerStyle: {
+              backgroundColor: "#FF87B2",
+            },
+            headerTintColor: "#fff",
           }}
         />
         <Stack.Screen
@@ -145,6 +160,11 @@ export default function RootLayout() {
             title: "關於我們",
             headerShown: true,
             headerBackTitle: "我的",
+            headerBackButtonDisplayMode: "minimal",
+            headerStyle: {
+              backgroundColor: "#FF87B2",
+            },
+            headerTintColor: "#fff",
           }}
         />
         <Stack.Screen
@@ -166,6 +186,11 @@ export default function RootLayout() {
             title: "隱私權政策",
             headerShown: true,
             headerBackTitle: "關於我們",
+            headerBackButtonDisplayMode: "minimal",
+            headerStyle: {
+              backgroundColor: "#FF87B2",
+            },
+            headerTintColor: "#fff",
           }}
         />
         <Stack.Screen
@@ -174,6 +199,11 @@ export default function RootLayout() {
             title: "使用條款",
             headerShown: true,
             headerBackTitle: "關於我們",
+            headerBackButtonDisplayMode: "minimal",
+            headerStyle: {
+              backgroundColor: "#FF87B2",
+            },
+            headerTintColor: "#fff",
           }}
         />
         <Stack.Screen
