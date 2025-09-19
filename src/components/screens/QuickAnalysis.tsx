@@ -228,9 +228,14 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
    */
   const handleConfirmPaste = () => {
     if (pasteText && pasteText.trim()) {
-      // 如果輸入框已有內容，在後面追加
-      const newText = inputText ? `${inputText}\n\n${pasteText.trim()}` : pasteText.trim()
-      setInputText(newText)
+      // 將對話內容作為文字檔案附件處理
+      const fileData: FileData = {
+        name: `貼上的對話內容.txt`,
+        type: 'text/plain',
+        size: pasteText.length,
+        content: pasteText.trim()
+      }
+      setUploadedFiles([...uploadedFiles, fileData])
     }
     setPasteText('')
     setShowPasteModal(false)
