@@ -39,6 +39,8 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
   const [showQuickAnalysis, setShowQuickAnalysis] = useState(false)
   const [showPasteModal, setShowPasteModal] = useState(false)
   const [pasteText, setPasteText] = useState('')
+  const [showPreviewModal, setShowPreviewModal] = useState(false)
+  const [previewContent, setPreviewContent] = useState<{type: 'image' | 'file', content: string, title?: string} | null>(null)
   const scrollViewRef = React.useRef<ScrollView>(null)
 
   // 初始化歡迎訊息
@@ -247,6 +249,38 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
   const handleCancelPaste = () => {
     setPasteText('')
     setShowPasteModal(false)
+  }
+
+  /**
+   * 預覽圖片
+   */
+  const handlePreviewImage = (imageUri: string) => {
+    setPreviewContent({
+      type: 'image',
+      content: imageUri,
+      title: '圖片預覽'
+    })
+    setShowPreviewModal(true)
+  }
+
+  /**
+   * 預覽文件
+   */
+  const handlePreviewFile = (file: FileData) => {
+    setPreviewContent({
+      type: 'file',
+      content: file.content,
+      title: file.name
+    })
+    setShowPreviewModal(true)
+  }
+
+  /**
+   * 關閉預覽
+   */
+  const handleClosePreview = () => {
+    setShowPreviewModal(false)
+    setPreviewContent(null)
   }
 
   /**
@@ -521,7 +555,9 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {selectedImages.map((image, index) => (
                   <View key={index} style={styles.inputImageWrapper}>
-                    <Image source={{ uri: image }} style={styles.inputImage} />
+                    <TouchableOpacity onPress={() => handlePreviewImage(image)}>
+                      <Image source={{ uri: image }} style={styles.inputImage} />
+                    </TouchableOpacity>
                     <TouchableOpacity
                       style={styles.removeAttachmentButton}
                       onPress={() => handleRemoveImage(index)}
@@ -538,16 +574,24 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
           {uploadedFiles.length > 0 && (
             <View style={styles.inputFilesContainer}>
               {uploadedFiles.map((file, index) => (
-                <View key={index} style={styles.inputFileTag}>
+                <TouchableOpacity
+                  key={index}
+                  style={styles.inputFileTag}
+                  onPress={() => handlePreviewFile(file)}
+                  activeOpacity={0.7}
+                >
                   <Ionicons name="document-text" size={14} color="#FF6B9D" />
                   <Text style={styles.inputFileTagText} numberOfLines={1}>{file.name}</Text>
                   <TouchableOpacity
                     style={styles.removeFileTagButton}
-                    onPress={() => handleRemoveFile(index)}
+                    onPress={(e) => {
+                      e.stopPropagation()
+                      handleRemoveFile(index)
+                    }}
                   >
                     <Ionicons name="close" size={12} color="#666" />
                   </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
               ))}
             </View>
           )}
@@ -741,6 +785,58 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
               </View>
             </View>
           </KeyboardAvoidingView>
+        </View>
+      </Modal>
+
+      {/* 預覽 Modal */}
+      <Modal
+        visible={showPreviewModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={handleClosePreview}
+      >
+        <View style={styles.previewModalOverlay}>
+          <View style={styles.previewModalContainer}>
+            <View style={styles.previewModalHeader}>
+              <Text style={styles.previewModalTitle}>
+                {previewContent?.title || '預覽'}
+              </Text>
+              <TouchableOpacity
+                onPress={handleClosePreview}
+                style={styles.previewCloseButton}
+              >
+                <Ionicons name="close" size={24} color="white" />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.previewContent}>
+              {previewContent?.type === 'image' ? (
+                <ScrollView
+                  style={styles.previewImageContainer}
+                  contentContainerStyle={styles.previewImageContent}
+                  maximumZoomScale={3}
+                  minimumZoomScale={1}
+                  showsVerticalScrollIndicator={false}
+                  showsHorizontalScrollIndicator={false}
+                >
+                  <Image
+                    source={{ uri: previewContent.content }}
+                    style={styles.previewImage}
+                    resizeMode="contain"
+                  />
+                </ScrollView>
+              ) : (
+                <ScrollView
+                  style={styles.previewTextContainer}
+                  showsVerticalScrollIndicator={true}
+                >
+                  <Text style={styles.previewText}>
+                    {previewContent?.content}
+                  </Text>
+                </ScrollView>
+              )}
+            </View>
+          </View>
         </View>
       </Modal>
     </KeyboardAvoidingView>
@@ -1224,5 +1320,74 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     letterSpacing: 0.3,
+  },
+  // 預覽 Modal 樣式
+  previewModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  previewModalContainer: {
+    width: '95%',
+    height: '90%',
+    backgroundColor: 'white',
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 16,
+  },
+  previewModalHeader: {
+    backgroundColor: '#FF6B9D',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  previewModalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'white',
+    flex: 1,
+  },
+  previewCloseButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  previewContent: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+  },
+  previewImageContainer: {
+    flex: 1,
+  },
+  previewImageContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  previewImage: {
+    width: '100%',
+    height: '100%',
+    minHeight: 300,
+  },
+  previewTextContainer: {
+    flex: 1,
+    padding: 20,
+  },
+  previewText: {
+    fontSize: 14,
+    lineHeight: 22,
+    color: '#1a202c',
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
   },
 })
