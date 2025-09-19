@@ -14,6 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Additional Development Tools
 - No specific test command configured - tests need to be set up if required
 - Uses standard Expo CLI commands for development and building
+- EAS CLI available for builds and deployments (project ID: 6d31dd57-6284-4158-b03a-6ee47f8790d0)
 
 ## Project Architecture
 
@@ -61,6 +62,8 @@ The app uses a comprehensive theme system with:
 - React Compiler experimental support enabled
 - Typed routes enabled for Expo Router
 - EAS Updates configured for over-the-air updates
+- Custom URL scheme: `loveboostapp://`
+- Bundle identifiers: iOS (`com.loveboost.firstfu`), Android permissions for camera and storage access
 
 ### State Management
 
@@ -69,17 +72,24 @@ The app uses **Zustand** for state management with stores located in `src/stores
 
 ### Key Features
 
-Based on the screen components in `src/components/screens/`, this appears to be a love/relationship coaching app with:
+This is a love/relationship coaching app with AI-powered features:
 - AI companion creation and management
 - Conversation practice with AI assistants
 - Conversation history tracking
 - Companion profile customization
 - Quick analysis functionality for relationship content
-- Multi-media support for images and text analysis
+- Multi-media support for images and text analysis via Expo Image Picker and Document Picker
+- Apple Sign-In authentication integration
+- Privacy-focused design with end-to-end encryption
 
 ### API Integration
 
 - **OpenAI API**: Primary AI service provider (not Azure.Microsoft.com)
+  - GPT-4o for complex analysis and conversation simulation
+  - GPT-4o-mini for daily conversations and suggestions
+  - Whisper for speech recognition
+  - TTS for text-to-speech
+  - Vision API for image analysis
 - **Cost monitoring**: Strict API usage cost control for profitability
 - **Revenue model**: MVP version starts with paid features to avoid API cost losses
 ## 專案管理指引
