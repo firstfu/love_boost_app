@@ -485,21 +485,26 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
 
         {/* 輸入區域 */}
         <View style={styles.inputContainer}>
-          <View style={styles.inputRow}>
-            {/* 附件按鈕 */}
+          {/* 附件按鈕行 */}
+          <View style={styles.attachmentRow}>
             <TouchableOpacity style={styles.attachButton} onPress={handlePickImages}>
               <Ionicons name="image" size={20} color="#FF6B9D" />
+              <Text style={styles.attachButtonText}>圖片</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.attachButton} onPress={handleTakePhoto}>
               <Ionicons name="camera" size={20} color="#FF6B9D" />
+              <Text style={styles.attachButtonText}>拍照</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.attachButton} onPress={handlePickTextFiles}>
               <Ionicons name="document-text" size={20} color="#FF6B9D" />
+              <Text style={styles.attachButtonText}>文件</Text>
             </TouchableOpacity>
+          </View>
 
-            {/* 文字輸入框 */}
+          {/* 輸入框行 */}
+          <View style={styles.inputRow}>
             <TextInput
               style={styles.textInput}
               value={inputText}
@@ -509,7 +514,6 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
               maxLength={500}
             />
 
-            {/* 發送按鈕 */}
             <TouchableOpacity
               style={[styles.sendButton, (inputText.trim() || selectedImages.length > 0 || uploadedFiles.length > 0) && styles.sendButtonActive]}
               onPress={handleSendMessage}
@@ -756,20 +760,36 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#e2e8f0',
   },
+  attachmentRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+    marginBottom: 12,
+  },
   inputRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     gap: 8,
   },
   attachButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#f1f5f9',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: '#f8f9ff',
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: 'rgba(255, 107, 157, 0.2)',
+    minWidth: 60,
+  },
+  attachButtonText: {
+    fontSize: 11,
+    color: '#FF6B9D',
+    fontWeight: '600',
+    marginTop: 4,
   },
   textInput: {
     flex: 1,
