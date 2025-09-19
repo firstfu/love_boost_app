@@ -505,42 +505,59 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
   const renderInputAttachments = () => {
     if (selectedImages.length === 0 && uploadedFiles.length === 0) return null
 
+    const totalAttachments = selectedImages.length + uploadedFiles.length
+    const shouldShowScrollHint = totalAttachments > 3
+
     return (
-      <View style={styles.inputAttachmentsContainer}>
-        {/* 圖片預覽 */}
-        {selectedImages.length > 0 && (
-          <View style={styles.inputImagesContainer}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {selectedImages.map((image, index) => (
-                <View key={index} style={styles.inputImageWrapper}>
-                  <Image source={{ uri: image }} style={styles.inputImage} />
+      <View style={styles.attachmentsWrapper}>
+        <ScrollView
+          style={styles.inputAttachmentsContainer}
+          showsVerticalScrollIndicator={false}
+          nestedScrollEnabled={true}
+        >
+          {/* 圖片預覽 */}
+          {selectedImages.length > 0 && (
+            <View style={styles.inputImagesContainer}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {selectedImages.map((image, index) => (
+                  <View key={index} style={styles.inputImageWrapper}>
+                    <Image source={{ uri: image }} style={styles.inputImage} />
+                    <TouchableOpacity
+                      style={styles.removeAttachmentButton}
+                      onPress={() => handleRemoveImage(index)}
+                    >
+                      <Ionicons name="close-circle" size={18} color="#FF3B30" />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+
+          {/* 檔案預覽 */}
+          {uploadedFiles.length > 0 && (
+            <View style={styles.inputFilesContainer}>
+              {uploadedFiles.map((file, index) => (
+                <View key={index} style={styles.inputFileTag}>
+                  <Ionicons name="document-text" size={14} color="#FF6B9D" />
+                  <Text style={styles.inputFileTagText} numberOfLines={1}>{file.name}</Text>
                   <TouchableOpacity
-                    style={styles.removeAttachmentButton}
-                    onPress={() => handleRemoveImage(index)}
+                    style={styles.removeFileTagButton}
+                    onPress={() => handleRemoveFile(index)}
                   >
-                    <Ionicons name="close-circle" size={18} color="#FF3B30" />
+                    <Ionicons name="close" size={12} color="#666" />
                   </TouchableOpacity>
                 </View>
               ))}
-            </ScrollView>
-          </View>
-        )}
+            </View>
+          )}
+        </ScrollView>
 
-        {/* 檔案預覽 */}
-        {uploadedFiles.length > 0 && (
-          <View style={styles.inputFilesContainer}>
-            {uploadedFiles.map((file, index) => (
-              <View key={index} style={styles.inputFileTag}>
-                <Ionicons name="document-text" size={14} color="#FF6B9D" />
-                <Text style={styles.inputFileTagText} numberOfLines={1}>{file.name}</Text>
-                <TouchableOpacity
-                  style={styles.removeFileTagButton}
-                  onPress={() => handleRemoveFile(index)}
-                >
-                  <Ionicons name="close" size={12} color="#666" />
-                </TouchableOpacity>
-              </View>
-            ))}
+        {/* 滾動提示 */}
+        {shouldShowScrollHint && (
+          <View style={styles.scrollHint}>
+            <Text style={styles.scrollHintText}>滑動查看更多附件</Text>
+            <Ionicons name="chevron-down" size={12} color="#9ca3af" />
           </View>
         )}
       </View>
@@ -905,13 +922,16 @@ const styles = StyleSheet.create({
     color: '#94a3b8',
     fontStyle: 'italic',
   },
-  inputAttachmentsContainer: {
+  attachmentsWrapper: {
     backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: '#e2e8f0',
+  },
+  inputAttachmentsContainer: {
     paddingHorizontal: 16,
     paddingTop: 8,
     paddingBottom: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
+    maxHeight: 200,
   },
   inputImagesContainer: {
     marginBottom: 12,
@@ -954,6 +974,19 @@ const styles = StyleSheet.create({
   },
   removeFileTagButton: {
     padding: 2,
+  },
+  scrollHint: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    backgroundColor: 'rgba(255, 107, 157, 0.05)',
+    gap: 4,
+  },
+  scrollHintText: {
+    fontSize: 11,
+    color: '#9ca3af',
+    fontWeight: '500',
   },
   inputWrapper: {
     backgroundColor: 'white',
