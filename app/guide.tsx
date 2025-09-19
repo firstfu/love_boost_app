@@ -112,9 +112,6 @@ export default function GuideScreen() {
     )
   }
 
-  const handleVideoTutorial = () => {
-    Alert.alert("視頻教程", "視頻教程功能即將推出，敬請期待！")
-  }
 
   return (
     <View style={styles.container}>
@@ -147,13 +144,6 @@ export default function GuideScreen() {
             color="#F59E0B"
           />
 
-          <GuideItem
-            icon="play-circle"
-            title="視頻教程"
-            description="觀看詳細視頻教學，輕鬆掌握所有功能"
-            onPress={handleVideoTutorial}
-            color="#EF4444"
-          />
         </View>
 
         {/* 功能詳解 */}
