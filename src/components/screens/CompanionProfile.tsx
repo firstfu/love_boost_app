@@ -3,15 +3,13 @@
  * 展示助手的詳細信息、個性分析、學習狀態和互動統計
  */
 
-import React, { useState } from 'react'
+import React from 'react'
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -39,16 +37,7 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
   onViewHistory,
   onQuickAnalysis
 }) => {
-  const [isHeaderVisible, setIsHeaderVisible] = useState(true)
-
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const currentScrollY = event.nativeEvent.contentOffset.y
-    const shouldShowHeader = currentScrollY < 100 // 滾動超過 100 時隱藏 header
-
-    if (shouldShowHeader !== isHeaderVisible) {
-      setIsHeaderVisible(shouldShowHeader)
-    }
-  }
+  // 移除動態控制 header 顯示的邏輯，避免滾動時內容高度變化導致的抖動
   const renderPersonalityTraits = () => {
     const traitLabels: Record<string, string> = {
       gentle: '溫柔',
@@ -93,31 +82,28 @@ export const CompanionProfile: React.FC<CompanionProfileProps> = ({
       {/* 滾動區域 */}
       <ScrollView
         style={styles.scrollContainer}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* 漸層背景個人資料區 */}
-        {isHeaderVisible && (
-          <LinearGradient
-            colors={['#FF7BA7', '#FF87B2', '#FF96C0']}
-            locations={[0, 0.4, 1]}
-            style={styles.profileHeader}
-          >
-            <View style={styles.profileSection}>
-              <DefaultAvatar
-                gender={companion.gender}
-                size={100}
-                realAvatar={companion.realAvatar}
-              />
-              <Text style={styles.name}>{companion.name}</Text>
-              <Text style={styles.ageGender}>
-                {companion.age}歲 • {companion.gender === 'female' ? '女性' : '男性'}
-              </Text>
-              <Text style={styles.bio}>{companion.bio}</Text>
-            </View>
-          </LinearGradient>
-        )}
+        <LinearGradient
+          colors={['#FF7BA7', '#FF87B2', '#FF96C0']}
+          locations={[0, 0.4, 1]}
+          style={styles.profileHeader}
+        >
+          <View style={styles.profileSection}>
+            <DefaultAvatar
+              gender={companion.gender}
+              size={100}
+              realAvatar={companion.realAvatar}
+            />
+            <Text style={styles.name}>{companion.name}</Text>
+            <Text style={styles.ageGender}>
+              {companion.age}歲 • {companion.gender === 'female' ? '女性' : '男性'}
+            </Text>
+            <Text style={styles.bio}>{companion.bio}</Text>
+          </View>
+        </LinearGradient>
 
         {/* 主要功能按鈕 */}
         <CompanionActions
@@ -219,6 +205,9 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flex: 1,
     marginTop: 108, // 為固定 header 留空間
+  },
+  scrollContent: {
+    paddingBottom: 50, // 確保內容可以完全滾動到底部
   },
   profileHeader: {
     paddingTop: 20,
