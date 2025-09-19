@@ -35,6 +35,7 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
   const [selectedImages, setSelectedImages] = useState<string[]>([])
   const [uploadedFiles, setUploadedFiles] = useState<FileData[]>([])
   const [isTyping, setIsTyping] = useState(false)
+  const [showQuickAnalysis, setShowQuickAnalysis] = useState(false)
   const scrollViewRef = React.useRef<ScrollView>(null)
 
   // 初始化歡迎訊息
@@ -311,6 +312,65 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
   }
 
   /**
+   * 快速分析模板
+   */
+  const quickAnalysisTemplates = [
+    {
+      id: 1,
+      title: '對話情緒分析',
+      description: '分析對話中的情緒和態度',
+      content: '請幫我分析這段對話中雙方的情緒狀態和態度變化，包括興趣程度、友好度等。',
+      icon: 'heart' as const
+    },
+    {
+      id: 2,
+      title: '回覆建議',
+      description: '給出合適的回覆選項',
+      content: '根據這段對話的內容和語境，請給我3-5個適合的回覆建議，並說明每個建議的優缺點。',
+      icon: 'chatbubbles' as const
+    },
+    {
+      id: 3,
+      title: '關係評估',
+      description: '評估關係進展和親密度',
+      content: '請評估這段對話反映出的關係狀態，包括親密程度、互動品質和關係發展方向。',
+      icon: 'people' as const
+    },
+    {
+      id: 4,
+      title: '溝通技巧',
+      description: '分析溝通方式和改進建議',
+      content: '請分析我在這段對話中的溝通技巧，指出做得好的地方和可以改進的地方。',
+      icon: 'bulb' as const
+    },
+    {
+      id: 5,
+      title: '下一步建議',
+      description: '建議後續互動方向',
+      content: '根據這段對話的內容，請建議接下來該如何推進關係或安排下次互動。',
+      icon: 'arrow-forward' as const
+    },
+    {
+      id: 6,
+      title: '個性分析',
+      description: '分析對方的性格特點',
+      content: '根據對話內容，請分析對方可能的性格特點、興趣愛好和溝通偏好。',
+      icon: 'person' as const
+    }
+  ]
+
+  /**
+   * 處理快速分析模板選擇
+   */
+  const handleQuickAnalysisTemplate = (template: typeof quickAnalysisTemplates[0]) => {
+    setInputText(template.content)
+    setShowQuickAnalysis(false)
+    setTimeout(() => {
+      handleSendMessage()
+    }, 100)
+  }
+
+  /**
    * 渲染聊天訊息
    */
   const renderMessage = (message: ChatMessage) => {
@@ -480,6 +540,37 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
 
       {/* 輸入區域容器 */}
       <View style={styles.inputWrapper}>
+        {/* 快速分析面板 */}
+        {showQuickAnalysis && (
+          <View style={styles.quickAnalysisPanel}>
+            <View style={styles.quickAnalysisHeader}>
+              <Text style={styles.quickAnalysisTitle}>⚡ 快速分析模板</Text>
+              <TouchableOpacity onPress={() => setShowQuickAnalysis(false)}>
+                <Ionicons name="close" size={20} color="#666" />
+              </TouchableOpacity>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.quickAnalysisScroll}
+            >
+              {quickAnalysisTemplates.map((template) => (
+                <TouchableOpacity
+                  key={template.id}
+                  style={styles.quickAnalysisCard}
+                  onPress={() => handleQuickAnalysisTemplate(template)}
+                >
+                  <View style={styles.quickAnalysisIcon}>
+                    <Ionicons name={template.icon} size={24} color="#FF6B9D" />
+                  </View>
+                  <Text style={styles.quickAnalysisCardTitle}>{template.title}</Text>
+                  <Text style={styles.quickAnalysisCardDesc}>{template.description}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        )}
+
         {/* 附件預覽 */}
         {renderInputAttachments()}
 
@@ -500,6 +591,11 @@ export const QuickAnalysis: React.FC<QuickAnalysisProps> = ({
             <TouchableOpacity style={styles.attachButton} onPress={handlePickTextFiles}>
               <Ionicons name="document-text" size={20} color="#FF6B9D" />
               <Text style={styles.attachButtonText}>文件</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.attachButton} onPress={() => setShowQuickAnalysis(!showQuickAnalysis)}>
+              <Ionicons name="flash" size={20} color="#FF6B9D" />
+              <Text style={styles.attachButtonText}>快速</Text>
             </TouchableOpacity>
           </View>
 
@@ -813,5 +909,59 @@ const styles = StyleSheet.create({
   },
   sendButtonActive: {
     backgroundColor: '#FF6B9D',
+  },
+  // 快速分析面板樣式
+  quickAnalysisPanel: {
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: '#f1f5f9',
+    paddingVertical: 16,
+  },
+  quickAnalysisHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    marginBottom: 12,
+  },
+  quickAnalysisTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1a202c',
+  },
+  quickAnalysisScroll: {
+    paddingHorizontal: 16,
+  },
+  quickAnalysisCard: {
+    width: 120,
+    backgroundColor: '#f8f9ff',
+    borderRadius: 12,
+    padding: 12,
+    marginRight: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 107, 157, 0.15)',
+    alignItems: 'center',
+  },
+  quickAnalysisIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 107, 157, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  quickAnalysisCardTitle: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#1a202c',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  quickAnalysisCardDesc: {
+    fontSize: 10,
+    color: '#64748b',
+    textAlign: 'center',
+    lineHeight: 14,
   },
 })
