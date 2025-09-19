@@ -146,7 +146,15 @@ export default function RootLayout() {
           options={{
             title: '升級方案',
             headerShown: true,
-            headerBackTitle: '我的'
+            headerBackTitle: '我的',
+            headerStyle: {
+              backgroundColor: '#FF87B2',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: '800',
+              color: '#fff',
+            },
           }}
         />
         <Stack.Screen

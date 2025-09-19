@@ -227,7 +227,6 @@ export default function UpgradeScreen() {
 
   return (
     <View style={styles.container}>
-
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* 當前方案狀態 */}
         <View style={styles.currentStatusContainer}>
