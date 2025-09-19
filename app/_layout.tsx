@@ -116,19 +116,6 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: "modal", title: "Modal" }} />
         <Stack.Screen
-          name="settings"
-          options={{
-            title: "應用設定",
-            headerShown: true,
-            headerBackTitle: "我的",
-            headerBackButtonDisplayMode: "minimal",
-            headerStyle: {
-              backgroundColor: "#FF87B2",
-            },
-            headerTintColor: "#fff",
-          }}
-        />
-        <Stack.Screen
           name="guide"
           options={{
             title: "使用指南",

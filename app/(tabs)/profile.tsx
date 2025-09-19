@@ -97,6 +97,17 @@ export default function ProfileScreen() {
     router.push('/upgrade')
   }
 
+  const handleAccountDelete = () => {
+    Alert.alert(
+      '刪除帳號',
+      '此操作無法復原，您確定要刪除帳號嗎？',
+      [
+        { text: '取消', style: 'cancel' },
+        { text: '確認刪除', style: 'destructive', onPress: () => Alert.alert('功能開發中', '帳號刪除功能即將推出') }
+      ]
+    )
+  }
+
   return (
     <View style={styles.container}>
       {/* 漸層背景頭部 - 使用與其他頁面一致的粉色漸層 */}
@@ -140,13 +151,6 @@ export default function ProfileScreen() {
             color="#FFD700"
           />
 
-          <MenuItem
-            icon="settings"
-            title="應用設定"
-            subtitle="通知、隱私、語言等設定"
-            onPress={() => router.push('/settings')}
-            color="#64748B"
-          />
 
           <MenuItem
             icon="book"
@@ -182,6 +186,15 @@ export default function ProfileScreen() {
             showArrow={false}
             onPress={handleLogout}
             color="#EF4444"
+          />
+
+          <MenuItem
+            icon="trash"
+            title="刪除帳號"
+            subtitle="永久刪除帳號和所有資料"
+            showArrow={false}
+            onPress={handleAccountDelete}
+            color="#DC2626"
           />
         </ThemedView>
 
