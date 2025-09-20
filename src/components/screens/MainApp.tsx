@@ -3,7 +3,7 @@
  * 管理AI分身選擇、詳情查看、對話練習的導航流程
  */
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, StyleSheet } from 'react-native'
 import { useRouter } from 'expo-router'
 import { CompanionSelector } from '../CompanionSelector'
@@ -11,7 +11,10 @@ import { AddCompanionData } from './AddCompanionData'
 import { EditCompanion } from './EditCompanion'
 import { ConversationHistory } from './ConversationHistory'
 import { QuickAnalysis } from './QuickAnalysis'
+import { LoginModal } from '../LoginModal'
 import { useCompanionStore } from '../../stores/assistantStore'
+import { useUserStore } from '../../stores/userStore'
+import { validateCurrentAuth } from '../../services/authService'
 import { AICompanion } from '../../types/assistant'
 
 type AppScreen = 'selector' | 'addData' | 'editCompanion' | 'conversationHistory' | 'quickAnalysis'
@@ -20,8 +23,46 @@ export const MainApp: React.FC = () => {
   const router = useRouter()
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('selector')
   const [selectedCompanion, setSelectedCompanionState] = useState<AICompanion | null>(null)
+  const [isLoginModalVisible, setIsLoginModalVisible] = useState(false)
+  const [isAuthChecked, setIsAuthChecked] = useState(false)
 
   const { setSelectedCompanion, addUserData, createCompanion, updateCompanion } = useCompanionStore()
+  const { isLoggedIn, setLoading } = useUserStore()
+
+  // 檢查登入狀態
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      setLoading(true)
+
+      try {
+        // 驗證現有的認證狀態
+        const isValid = await validateCurrentAuth()
+
+        if (!isValid && !isLoggedIn) {
+          // 如果未登入，顯示登入彈窗
+          setIsLoginModalVisible(true)
+        }
+      } catch (error) {
+        console.error('Auth validation error:', error)
+        // 發生錯誤時也顯示登入彈窗
+        if (!isLoggedIn) {
+          setIsLoginModalVisible(true)
+        }
+      } finally {
+        setLoading(false)
+        setIsAuthChecked(true)
+      }
+    }
+
+    checkAuthStatus()
+  }, [isLoggedIn, setLoading])
+
+  /**
+   * 處理登入成功
+   */
+  const handleLoginSuccess = () => {
+    setIsLoginModalVisible(false)
+  }
 
   /**
    * 處理選擇AI分身查看詳情
@@ -65,13 +106,6 @@ export const MainApp: React.FC = () => {
     setCurrentScreen('addData') // 創建完成後直接進入資料新增頁面
   }
 
-  /**
-   * 返回助手選擇頁面
-   */
-  const handleBackToSelector = () => {
-    setCurrentScreen('selector')
-    setSelectedCompanionState(null)
-  }
 
   /**
    * 處理快速分析
@@ -205,9 +239,28 @@ export const MainApp: React.FC = () => {
     }
   }
 
+  // 如果還在檢查認證狀態，或未登入時不渲染主要內容
+  if (!isAuthChecked || (!isLoggedIn && isLoginModalVisible)) {
+    return (
+      <View style={styles.container}>
+        {/* 登入彈窗 */}
+        <LoginModal
+          isVisible={isLoginModalVisible}
+          onLoginSuccess={handleLoginSuccess}
+        />
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
       {renderCurrentScreen()}
+
+      {/* 登入彈窗 - 在特殊情況下可能會再次顯示 */}
+      <LoginModal
+        isVisible={isLoginModalVisible}
+        onLoginSuccess={handleLoginSuccess}
+      />
     </View>
   )
 }

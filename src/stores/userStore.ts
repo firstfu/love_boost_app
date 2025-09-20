@@ -17,6 +17,10 @@ export interface User {
   membershipPlan: MembershipPlan
   membershipExpiry?: Date
   joinDate: Date
+  // Apple 認證相關資料
+  appleUserId?: string
+  appleIdentityToken?: string
+  appleAuthorizationCode?: string
   preferences: {
     language: 'zh-TW' | 'zh-CN' | 'en'
     notifications: boolean
@@ -72,6 +76,13 @@ interface UserStore {
   updatePreferences: (preferences: Partial<User['preferences']>) => void
   upgradeMembership: (plan: MembershipPlan, expiry?: Date) => void
 
+  // Apple 認證相關操作
+  updateAppleAuth: (appleData: {
+    appleUserId?: string
+    appleIdentityToken?: string
+    appleAuthorizationCode?: string
+  }) => void
+
   // 使用統計更新
   incrementConversation: () => void
   addAPIUsage: (cost: number) => void
@@ -89,7 +100,7 @@ const defaultAppSettings: AppSettings = {
   autoSaveConversations: true,
 }
 
-export const useUserStore = create<UserStore>((set, get) => ({
+export const useUserStore = create<UserStore>((set) => ({
   // 初始狀態
   user: null,
   usageStats: null,
@@ -141,6 +152,15 @@ export const useUserStore = create<UserStore>((set, get) => ({
         ...state.user,
         membershipPlan: plan,
         membershipExpiry: expiry
+      } : null
+    })),
+
+  // Apple 認證資料更新
+  updateAppleAuth: (appleData) =>
+    set(state => ({
+      user: state.user ? {
+        ...state.user,
+        ...appleData
       } : null
     })),
 
