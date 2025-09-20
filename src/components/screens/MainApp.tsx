@@ -239,10 +239,13 @@ export const MainApp: React.FC = () => {
     }
   }
 
-  // 如果還在檢查認證狀態，或未登入時不渲染主要內容
+  // 如果還在檢查認證狀態，或未登入時也要顯示背景內容
   if (!isAuthChecked || (!isLoggedIn && isLoginModalVisible)) {
     return (
       <View style={styles.container}>
+        {/* 顯示主要內容作為背景 */}
+        {renderCurrentScreen()}
+
         {/* 登入彈窗 */}
         <LoginModal
           isVisible={isLoginModalVisible}
