@@ -12,9 +12,8 @@ import { Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "
 import { DEFAULT_COMPANIONS } from "../data/defaultCompanions";
 import { useCompanionStore } from "../stores/assistantStore";
 import { AICompanion } from "../types/assistant";
-import { DefaultAvatar } from "./DefaultAvatar";
 import { CreateCompanionModal } from "./CreateCompanionModal";
-
+import { DefaultAvatar } from "./DefaultAvatar";
 
 interface CompanionSelectorProps {
   onSelectCompanion: (companion: AICompanion) => void;
@@ -84,7 +83,6 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({ onSelectCo
     onViewProfile(companion);
   };
 
-
   return (
     <View style={styles.container}>
       {/* 漸層背景 */}
@@ -103,7 +101,6 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({ onSelectCo
           </View>
         </View>
       </LinearGradient>
-
 
       {/* AI分身卡片列表 */}
       <Animated.View
@@ -278,7 +275,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({ onSelectCo
       <CreateCompanionModal
         isVisible={isCreateModalVisible}
         onClose={() => setIsCreateModalVisible(false)}
-        onSave={(companion) => {
+        onSave={companion => {
           setIsCreateModalVisible(false);
           onCreateCompanion(companion);
         }}
