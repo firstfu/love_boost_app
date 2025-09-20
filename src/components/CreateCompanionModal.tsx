@@ -13,13 +13,10 @@ import {
   StyleSheet,
   Alert,
   Modal,
-  Dimensions,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
-import { AICompanion, PersonalityTrait, SpeakingStyle } from '../types/assistant'
-
-const { height: screenHeight } = Dimensions.get('window')
+import { AICompanion } from '../types/assistant'
 
 interface CreateCompanionModalProps {
   isVisible: boolean
@@ -35,8 +32,6 @@ export const CreateCompanionModal: React.FC<CreateCompanionModalProps> = ({
   const [name, setName] = useState('')
   const [age, setAge] = useState('')
   const [bio, setBio] = useState('')
-  const [selectedTraits, setSelectedTraits] = useState<PersonalityTrait[]>([])
-  const [speakingStyle, setSpeakingStyle] = useState<SpeakingStyle>('casual')
 
   // 重置表單
   useEffect(() => {
@@ -44,45 +39,9 @@ export const CreateCompanionModal: React.FC<CreateCompanionModalProps> = ({
       setName('')
       setAge('')
       setBio('')
-      setSelectedTraits([])
-      setSpeakingStyle('casual')
     }
   }, [isVisible])
 
-  // 個性特質選項
-  const personalityOptions = [
-    { value: 'gentle', label: '溫柔', icon: '🌸', color: '#FF69B4' },
-    { value: 'cheerful', label: '開朗', icon: '☀️', color: '#FFD700' },
-    { value: 'intellectual', label: '知性', icon: '📚', color: '#4169E1' },
-    { value: 'humorous', label: '幽默', icon: '😄', color: '#32CD32' },
-    { value: 'calm', label: '沉穩', icon: '🌙', color: '#4682B4' },
-    { value: 'passionate', label: '熱情', icon: '🔥', color: '#FF4500' },
-    { value: 'mysterious', label: '神秘', icon: '✨', color: '#8A2BE2' },
-    { value: 'caring', label: '體貼', icon: '💕', color: '#FF1493' },
-    { value: 'playful', label: '俏皮', icon: '🎭', color: '#FF6347' },
-    { value: 'romantic', label: '浪漫', icon: '💖', color: '#DC143C' },
-  ] as const
-
-  // 說話風格選項
-  const speakingStyleOptions = [
-    { value: 'casual', label: '💭 隨性聊天', description: '輕鬆自然的對話風格' },
-    { value: 'formal', label: '🎯 正式交流', description: '比較正式有禮貌的溝通' },
-    { value: 'cute', label: '🎀 可愛風格', description: '天真可愛的表達方式' },
-    { value: 'mature', label: '💼 成熟穩重', description: '成熟理性的說話方式' },
-    { value: 'direct', label: '⚡ 直接坦率', description: '直接了當不拐彎抹角' },
-    { value: 'subtle', label: '🌸 委婉含蓄', description: '含蓄溫和的表達風格' },
-  ] as const
-
-  // 處理個性特質選擇
-  const toggleTrait = (trait: PersonalityTrait) => {
-    if (selectedTraits.includes(trait)) {
-      setSelectedTraits(selectedTraits.filter(t => t !== trait))
-    } else if (selectedTraits.length < 4) { // 最多選擇4個特質
-      setSelectedTraits([...selectedTraits, trait])
-    } else {
-      Alert.alert('提示', '最多只能選擇4個個性特質')
-    }
-  }
 
   // 驗證輸入
   const validateInput = () => {
@@ -98,16 +57,12 @@ export const CreateCompanionModal: React.FC<CreateCompanionModalProps> = ({
       Alert.alert('錯誤', '請填寫個人簡介')
       return false
     }
-    if (selectedTraits.length === 0) {
-      Alert.alert('錯誤', '請至少選擇一個個性特質')
-      return false
-    }
     return true
   }
 
   // 生成隨機ID
   const generateId = () => {
-    return 'custom_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+    return 'custom_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9)
   }
 
   // 處理保存
@@ -118,19 +73,33 @@ export const CreateCompanionModal: React.FC<CreateCompanionModalProps> = ({
     const newCompanion: AICompanion = {
       id: generateId(),
       name: name.trim(),
+      avatar: '', // 將使用默認頭像
+      realAvatar: undefined,
       age: Number(age),
       gender: 'female', // 固定為女性
       bio: bio.trim(),
-      realAvatar: null,
       personality_analysis: {
-        dominant_traits: selectedTraits,
-        speaking_style: speakingStyle,
-        interests: [], // 初始為空，後續可以新增
+        dominant_traits: [], // 將由AI從上傳資料中分析
+        speaking_style: 'casual', // 默認值，將由AI更新
+        emotional_patterns: [],
+        humor_style: '',
+        interests: [],
+        topics_she_likes: [],
+        topics_to_avoid: [],
       },
       learning_status: {
+        data_completeness: 0, // 初始為0
+        analysis_confidence: 0, // 初始為0
         conversation_samples: 0,
         photo_samples: 0,
         last_training: new Date().toISOString(),
+      },
+      interaction_stats: {
+        chat_assistance_sessions: 0,
+        total_messages_analyzed: 0,
+        relationship_insight_score: 0,
+        assistance_effectiveness: 0,
+        trend: 'stable',
       },
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -209,67 +178,18 @@ export const CreateCompanionModal: React.FC<CreateCompanionModalProps> = ({
             </View>
           </View>
 
-          {/* 個性特質 */}
+          {/* AI分析提示 */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>個性特質</Text>
-            <Text style={styles.sectionSubtitle}>選擇最多4個特質 ({selectedTraits.length}/4)</Text>
-
-            <View style={styles.traitsGrid}>
-              {personalityOptions.map((option) => {
-                const isSelected = selectedTraits.includes(option.value as PersonalityTrait)
-                return (
-                  <TouchableOpacity
-                    key={option.value}
-                    style={[
-                      styles.traitOption,
-                      isSelected && { backgroundColor: option.color + '20', borderColor: option.color }
-                    ]}
-                    onPress={() => toggleTrait(option.value as PersonalityTrait)}
-                  >
-                    <Text style={styles.traitIcon}>{option.icon}</Text>
-                    <Text style={[
-                      styles.traitLabel,
-                      isSelected && { color: option.color, fontWeight: '600' }
-                    ]}>
-                      {option.label}
-                    </Text>
-                  </TouchableOpacity>
-                )
-              })}
-            </View>
-          </View>
-
-          {/* 說話風格 */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>說話風格</Text>
-
-            <View style={styles.styleOptions}>
-              {speakingStyleOptions.map((option) => {
-                const isSelected = speakingStyle === option.value
-                return (
-                  <TouchableOpacity
-                    key={option.value}
-                    style={[
-                      styles.styleOption,
-                      isSelected && styles.styleOptionSelected
-                    ]}
-                    onPress={() => setSpeakingStyle(option.value as SpeakingStyle)}
-                  >
-                    <Text style={[
-                      styles.styleLabel,
-                      isSelected && styles.styleLabelSelected
-                    ]}>
-                      {option.label}
-                    </Text>
-                    <Text style={[
-                      styles.styleDescription,
-                      isSelected && styles.styleDescriptionSelected
-                    ]}>
-                      {option.description}
-                    </Text>
-                  </TouchableOpacity>
-                )
-              })}
+            <View style={styles.aiAnalysisCard}>
+              <View style={styles.aiAnalysisIcon}>
+                <Ionicons name="sparkles" size={24} color="#9333EA" />
+              </View>
+              <View style={styles.aiAnalysisContent}>
+                <Text style={styles.aiAnalysisTitle}>AI智能分析</Text>
+                <Text style={styles.aiAnalysisDescription}>
+                  建立助手後，您可以上傳她的聊天記錄、照片等資料，AI會自動分析她的個性特質、說話風格和興趣愛好，打造最真實的AI分身。
+                </Text>
+              </View>
             </View>
           </View>
 
@@ -360,58 +280,34 @@ const styles = StyleSheet.create({
     minHeight: 80,
     textAlignVertical: 'top',
   },
-  traitsGrid: {
+  aiAnalysisCard: {
+    backgroundColor: 'rgba(147, 51, 234, 0.05)',
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(147, 51, 234, 0.1)',
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
+    alignItems: 'flex-start',
+    gap: 16,
   },
-  traitOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+  aiAnalysisIcon: {
+    backgroundColor: 'rgba(147, 51, 234, 0.1)',
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    backgroundColor: '#f9fafb',
-    gap: 8,
+    padding: 12,
   },
-  traitIcon: {
+  aiAnalysisContent: {
+    flex: 1,
+  },
+  aiAnalysisTitle: {
     fontSize: 16,
+    fontWeight: '700',
+    color: '#1a202c',
+    marginBottom: 8,
   },
-  traitLabel: {
-    fontSize: 14,
-    color: '#374151',
-  },
-  styleOptions: {
-    gap: 12,
-  },
-  styleOption: {
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    backgroundColor: '#f9fafb',
-  },
-  styleOptionSelected: {
-    borderColor: '#FF6B9D',
-    backgroundColor: 'rgba(255, 107, 157, 0.1)',
-  },
-  styleLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 4,
-  },
-  styleLabelSelected: {
-    color: '#FF6B9D',
-  },
-  styleDescription: {
+  aiAnalysisDescription: {
     fontSize: 14,
     color: '#64748b',
-  },
-  styleDescriptionSelected: {
-    color: '#FF6B9D',
+    lineHeight: 20,
   },
   buttonContainer: {
     flexDirection: 'row',
