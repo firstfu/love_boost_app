@@ -116,3 +116,4 @@ This is a love/relationship coaching app with AI-powered features:
 - **AI服務**: 使用 OpenAI API，不使用 Azure.Microsoft.com 服務
 - **成本控制**: 嚴格監控API使用成本，確保盈利能力
 - **收費策略**: MVP版本即開始收費，避免API成本虧損
+- 後端 api 專案路徑: /Users/firstfu/Desktop/love_boost/love_boost_api
