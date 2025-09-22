@@ -86,9 +86,14 @@ export const LoginModal: React.FC<LoginModalProps> = ({
       const result = await signInWithApple()
 
       if (result.success && result.user) {
-        // 處理成功登入
-        await handleSuccessfulLogin(result.user)
-        onLoginSuccess()
+        // 處理成功登入（包含後端驗證）
+        const loginSuccess = await handleSuccessfulLogin(result.user)
+
+        if (loginSuccess) {
+          onLoginSuccess()
+        } else {
+          Alert.alert('登入失敗', '後端驗證失敗，請重試')
+        }
       } else {
         // 顯示錯誤訊息
         if (result.error && result.error !== '用戶取消登入') {

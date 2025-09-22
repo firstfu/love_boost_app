@@ -4,11 +4,13 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useEffect } from "react";
 import { Alert, Text, TouchableOpacity, View } from "react-native";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { initializeAuth } from "@/src/services/authService";
+import { testApiConnection } from "@/src/services/testApiConnection";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -109,6 +111,24 @@ const ConversationPracticeHeader = ({ navigation, route }: any) => {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+
+  // 初始化認證服務
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        // 測試 API 連接
+        console.log('測試 API 連接...');
+        await testApiConnection();
+
+        // 初始化認證
+        await initializeAuth();
+      } catch (error) {
+        console.error("認證服務初始化失敗:", error);
+      }
+    };
+
+    initAuth();
+  }, []);
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
