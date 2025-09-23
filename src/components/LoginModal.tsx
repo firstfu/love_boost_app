@@ -21,13 +21,11 @@ import { signInWithApple, handleSuccessfulLogin, isAppleAuthAvailable } from '..
 interface LoginModalProps {
   isVisible: boolean
   onLoginSuccess: () => void
-  onClose?: () => void
 }
 
 export const LoginModal: React.FC<LoginModalProps> = ({
   isVisible,
   onLoginSuccess,
-  onClose
 }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [fadeAnim] = useState(new Animated.Value(0))
@@ -114,7 +112,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({
       visible={isVisible}
       transparent={true}
       animationType="none"
-      onRequestClose={onClose}
     >
       <View style={styles.overlay}>
         <Animated.View
@@ -137,16 +134,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         >
           <View style={styles.modalContent}>
 
-            {/* 關閉按鈕 */}
-            {onClose && (
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={onClose}
-                disabled={isLoading}
-              >
-                <Ionicons name="close" size={24} color="#666" />
-              </TouchableOpacity>
-            )}
 
             {/* Logo區域 */}
             <View style={styles.logoContainer}>
@@ -246,23 +233,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 40,
     elevation: 20,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 20,
-    right: 20,
-    zIndex: 100,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
   },
   logoContainer: {
     alignItems: 'center',
