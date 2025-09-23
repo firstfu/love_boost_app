@@ -16,7 +16,6 @@ import {
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import * as AppleAuthentication from 'expo-apple-authentication'
-import { LinearGradient } from 'expo-linear-gradient'
 import { signInWithApple, handleSuccessfulLogin, isAppleAuthAvailable } from '../services/authService'
 
 interface LoginModalProps {
@@ -137,12 +136,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           ]}
         >
           <View style={styles.modalContent}>
-            {/* 頂部裝飾漸層 */}
-            <LinearGradient
-              colors={['#FF7BA7', '#FF87B2', '#FF96C0']}
-              locations={[0, 0.4, 1]}
-              style={styles.headerGradient}
-            />
 
             {/* 關閉按鈕 */}
             {onClose && (
@@ -165,7 +158,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
             {/* 標題和描述 */}
             <View style={styles.textContainer}>
-              <Text style={styles.title}>歡迎使用愛情助手</Text>
               <Text style={styles.subtitle}>
                 登入開始您的戀愛之旅{'\n'}讓AI助手幫您更了解她
               </Text>
@@ -235,119 +227,121 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    padding: 24,
   },
   backdrop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(17, 24, 39, 0.7)',
   },
   modalContainer: {
     width: '100%',
-    maxWidth: 380,
+    maxWidth: 400,
   },
   modalContent: {
     backgroundColor: '#ffffff',
-    borderRadius: 24,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 24,
-    elevation: 12,
-  },
-  headerGradient: {
-    height: 8,
+    borderRadius: 20,
+    margin: 8,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 0.25,
+    shadowRadius: 40,
+    elevation: 20,
   },
   closeButton: {
     position: 'absolute',
-    top: 16,
-    right: 16,
-    zIndex: 10,
-    padding: 8,
-    backgroundColor: '#f8f9fa',
-    borderRadius: 20,
+    top: 20,
+    right: 20,
+    zIndex: 100,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   logoContainer: {
     alignItems: 'center',
-    paddingTop: 40,
-    paddingBottom: 20,
+    paddingTop: 48,
+    paddingBottom: 24,
   },
   logoIcon: {
-    backgroundColor: 'rgba(255, 107, 157, 0.1)',
-    borderRadius: 32,
-    padding: 16,
-    marginBottom: 12,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'rgba(255, 107, 157, 0.08)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 107, 157, 0.1)',
   },
   logoText: {
-    fontSize: 24,
-    fontWeight: '800',
+    fontSize: 28,
+    fontWeight: '700',
     color: '#FF6B9D',
+    letterSpacing: 0.5,
   },
   textContainer: {
     alignItems: 'center',
-    paddingHorizontal: 32,
-    paddingBottom: 32,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#1a202c',
-    textAlign: 'center',
-    marginBottom: 12,
+    paddingHorizontal: 24,
+    paddingBottom: 40,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#64748b',
+    fontSize: 17,
+    color: '#4B5563',
     textAlign: 'center',
-    lineHeight: 24,
+    lineHeight: 26,
+    fontWeight: '400',
   },
   buttonContainer: {
-    paddingHorizontal: 32,
-    paddingBottom: 24,
+    paddingHorizontal: 24,
+    paddingBottom: 32,
   },
   appleButton: {
     width: '100%',
-    height: 52,
+    height: 54,
+    borderRadius: 16,
   },
   appleButtonDisabled: {
-    opacity: 0.6,
+    opacity: 0.5,
   },
   unavailableContainer: {
-    height: 52,
-    backgroundColor: '#f3f4f6',
-    borderRadius: 12,
+    height: 54,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderWidth: 1.5,
+    borderColor: '#E5E7EB',
   },
   unavailableText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: '#6B7280',
     fontWeight: '500',
   },
   loadingContainer: {
-    marginTop: 16,
+    marginTop: 20,
     alignItems: 'center',
   },
   loadingText: {
-    fontSize: 14,
-    color: '#6b7280',
+    fontSize: 15,
+    color: '#6B7280',
     fontWeight: '500',
   },
   privacyContainer: {
-    paddingHorizontal: 32,
-    paddingBottom: 20,
+    paddingHorizontal: 24,
+    paddingBottom: 24,
   },
   privacyText: {
-    fontSize: 12,
-    color: '#9ca3af',
+    fontSize: 13,
+    color: '#9CA3AF',
     textAlign: 'center',
-    lineHeight: 18,
+    lineHeight: 20,
   },
   privacyLink: {
     color: '#FF6B9D',
@@ -355,21 +349,23 @@ const styles = StyleSheet.create({
   },
   featuresContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: 32,
-    paddingBottom: 32,
+    justifyContent: 'space-evenly',
+    paddingHorizontal: 24,
+    paddingVertical: 28,
     borderTopWidth: 1,
-    borderTopColor: '#f1f5f9',
-    marginTop: 8,
-    paddingTop: 20,
+    borderTopColor: '#F3F4F6',
+    backgroundColor: '#FAFBFC',
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
   },
   feature: {
     alignItems: 'center',
-    gap: 8,
+    flex: 1,
   },
   featureText: {
-    fontSize: 12,
-    color: '#64748b',
-    fontWeight: '500',
+    fontSize: 13,
+    color: '#6B7280',
+    fontWeight: '600',
+    marginTop: 8,
   },
 })
