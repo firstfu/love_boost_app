@@ -146,7 +146,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             {/* 標題和描述 */}
             <View style={styles.textContainer}>
               <Text style={styles.subtitle}>
-                登入開始您的戀愛之旅{'\n'}讓AI助手幫您更了解她
+                開始您的愛情智慧之旅
               </Text>
             </View>
 
@@ -180,10 +180,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             {/* 隱私條款 */}
             <View style={styles.privacyContainer}>
               <Text style={styles.privacyText}>
-                登入即表示您同意我們的
-                <Text style={styles.privacyLink}> 使用條款 </Text>
-                和
-                <Text style={styles.privacyLink}> 隱私政策</Text>
+                登入即同意
+                <Text style={styles.privacyLink}>服務條款</Text>
+                及
+                <Text style={styles.privacyLink}>隱私政策</Text>
               </Text>
             </View>
 
@@ -236,8 +236,8 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
-    paddingTop: 48,
-    paddingBottom: 24,
+    paddingTop: 40,
+    paddingBottom: 16,
   },
   logoIcon: {
     width: 80,
@@ -259,14 +259,14 @@ const styles = StyleSheet.create({
   textContainer: {
     alignItems: 'center',
     paddingHorizontal: 24,
-    paddingBottom: 40,
+    paddingBottom: 32,
   },
   subtitle: {
-    fontSize: 17,
-    color: '#4B5563',
+    fontSize: 18,
+    color: '#374151',
     textAlign: 'center',
-    lineHeight: 26,
-    fontWeight: '400',
+    lineHeight: 24,
+    fontWeight: '500',
   },
   buttonContainer: {
     paddingHorizontal: 24,
@@ -305,13 +305,13 @@ const styles = StyleSheet.create({
   },
   privacyContainer: {
     paddingHorizontal: 24,
-    paddingBottom: 24,
+    paddingBottom: 20,
   },
   privacyText: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#9CA3AF',
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 18,
   },
   privacyLink: {
     color: '#FF6B9D',
@@ -321,10 +321,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     paddingHorizontal: 24,
-    paddingVertical: 28,
+    paddingVertical: 24,
     borderTopWidth: 1,
     borderTopColor: '#F3F4F6',
-    backgroundColor: '#FAFBFC',
+    backgroundColor: '#F9FAFB',
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
   },
