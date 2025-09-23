@@ -156,13 +156,14 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             {/* 登入按鈕區域 */}
             <View style={styles.buttonContainer}>
               {appleAuthAvailable ? (
-                <AppleAuthentication.AppleAuthenticationButton
-                  buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-                  buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-                  cornerRadius={12}
-                  style={[styles.appleButton, isLoading && styles.appleButtonDisabled]}
+                <TouchableOpacity
+                  style={[styles.customAppleButton, isLoading && styles.appleButtonDisabled]}
                   onPress={handleAppleSignIn}
-                />
+                  disabled={isLoading}
+                >
+                  <Ionicons name="logo-apple" size={20} color="white" style={styles.appleIcon} />
+                  <Text style={styles.appleButtonText}>使用 Apple 登入</Text>
+                </TouchableOpacity>
               ) : (
                 <View style={styles.unavailableContainer}>
                   <Text style={styles.unavailableText}>
@@ -288,6 +289,24 @@ const styles = StyleSheet.create({
   },
   appleButtonDisabled: {
     opacity: 0.5,
+  },
+  customAppleButton: {
+    width: '100%',
+    height: 54,
+    backgroundColor: '#000000',
+    borderRadius: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  appleIcon: {
+    marginRight: 8,
+  },
+  appleButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
   unavailableContainer: {
     height: 54,
