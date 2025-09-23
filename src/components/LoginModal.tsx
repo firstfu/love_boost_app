@@ -13,6 +13,7 @@ import {
   Animated,
   Alert,
   Platform,
+  Image,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import * as AppleAuthentication from 'expo-apple-authentication'
@@ -138,7 +139,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             {/* Logo區域 */}
             <View style={styles.logoContainer}>
               <View style={styles.logoIcon}>
-                <Ionicons name="heart" size={48} color="#FF6B9D" />
+                <Image
+                  source={require('../../assets/images/icon.png')}
+                  style={styles.logoImage}
+                  resizeMode="contain"
+                />
               </View>
               <Text style={styles.logoText}>愛情助手</Text>
             </View>
@@ -249,6 +254,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderWidth: 2,
     borderColor: 'rgba(255, 107, 157, 0.1)',
+  },
+  logoImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
   },
   logoText: {
     fontSize: 28,
