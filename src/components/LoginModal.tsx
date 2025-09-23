@@ -138,13 +138,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
             {/* Logo區域 */}
             <View style={styles.logoContainer}>
-              <View style={styles.logoIcon}>
-                <Image
-                  source={require('../../assets/images/icon.png')}
-                  style={styles.logoImage}
-                  resizeMode="contain"
-                />
-              </View>
+              <Image
+                source={require('../../assets/images/icon.png')}
+                style={styles.logoImage}
+                resizeMode="contain"
+              />
               <Text style={styles.logoText}>愛情助手</Text>
             </View>
 
