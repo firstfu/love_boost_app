@@ -256,9 +256,9 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 107, 157, 0.1)',
   },
   logoImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
   },
   logoText: {
     fontSize: 28,
