@@ -15,6 +15,7 @@ import {
   Platform,
   Image,
 } from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient'
 import { Ionicons } from '@expo/vector-icons'
 import * as AppleAuthentication from 'expo-apple-authentication'
 import { signInWithApple, handleSuccessfulLogin, isAppleAuthAvailable } from '../services/authService'
@@ -134,15 +135,15 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           ]}
         >
           <View style={styles.modalContent}>
-
-
             {/* Logo區域 */}
             <View style={styles.logoContainer}>
-              <Image
-                source={require('../../assets/images/icon.png')}
-                style={styles.logoImage}
-                resizeMode="contain"
-              />
+              <View style={styles.logoWrapper}>
+                <Image
+                  source={require('../../assets/images/icon.png')}
+                  style={styles.logoImage}
+                  resizeMode="contain"
+                />
+              </View>
               <Text style={styles.logoText}>愛情助手</Text>
             </View>
 
@@ -160,6 +161,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                   style={[styles.customAppleButton, isLoading && styles.appleButtonDisabled]}
                   onPress={handleAppleSignIn}
                   disabled={isLoading}
+                  activeOpacity={0.8}
                 >
                   <Ionicons name="logo-apple" size={20} color="white" style={styles.appleIcon} />
                   <Text style={styles.appleButtonText}>使用 Apple 登入</Text>
@@ -194,15 +196,15 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             {/* 功能預覽 */}
             <View style={styles.featuresContainer}>
               <View style={styles.feature}>
-                <Ionicons name="sparkles" size={16} color="#9333EA" />
+                <Ionicons name="sparkles" size={20} color="#9333EA" />
                 <Text style={styles.featureText}>AI個性分析</Text>
               </View>
               <View style={styles.feature}>
-                <Ionicons name="chatbubbles" size={16} color="#059669" />
+                <Ionicons name="chatbubbles" size={20} color="#059669" />
                 <Text style={styles.featureText}>聊天建議</Text>
               </View>
               <View style={styles.feature}>
-                <Ionicons name="heart" size={16} color="#DC2626" />
+                <Ionicons name="heart" size={20} color="#DC2626" />
                 <Text style={styles.featureText}>關係洞察</Text>
               </View>
             </View>
@@ -218,53 +220,43 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: 20,
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(17, 24, 39, 0.7)',
+    backgroundColor: 'rgba(17, 24, 39, 0.75)',
   },
   modalContainer: {
     width: '100%',
     maxWidth: 400,
   },
   modalContent: {
-    backgroundColor: '#ffffff',
-    borderRadius: 20,
-    margin: 8,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.25,
-    shadowRadius: 40,
-    elevation: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 24,
+    elevation: 16,
   },
   logoContainer: {
     alignItems: 'center',
     paddingTop: 40,
     paddingBottom: 16,
   },
-  logoIcon: {
+  logoWrapper: {
+    marginBottom: 16,
+  },
+  logoImage: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(255, 107, 157, 0.08)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-    borderWidth: 2,
-    borderColor: 'rgba(255, 107, 157, 0.1)',
-  },
-  logoImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    marginBottom: 20,
   },
   logoText: {
     fontSize: 28,
     fontWeight: '700',
     color: '#FF6B9D',
-    letterSpacing: 0.5,
+    letterSpacing: -0.5,
   },
   textContainer: {
     alignItems: 'center',
@@ -272,7 +264,7 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 17,
     color: '#374151',
     textAlign: 'center',
     lineHeight: 24,
@@ -280,12 +272,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     paddingHorizontal: 24,
-    paddingBottom: 32,
-  },
-  appleButton: {
-    width: '100%',
-    height: 54,
-    borderRadius: 16,
+    paddingBottom: 24,
   },
   appleButtonDisabled: {
     opacity: 0.5,
@@ -294,11 +281,15 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 54,
     backgroundColor: '#000000',
-    borderRadius: 16,
+    borderRadius: 14,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
   },
   appleIcon: {
     marginRight: 8,
@@ -311,7 +302,7 @@ const styles = StyleSheet.create({
   unavailableContainer: {
     height: 54,
     backgroundColor: '#F9FAFB',
-    borderRadius: 16,
+    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1.5,
@@ -323,12 +314,12 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   loadingContainer: {
-    marginTop: 20,
+    marginTop: 16,
     alignItems: 'center',
   },
   loadingText: {
     fontSize: 15,
-    color: '#6B7280',
+    color: '#9CA3AF',
     fontWeight: '500',
   },
   privacyContainer: {
@@ -348,20 +339,20 @@ const styles = StyleSheet.create({
   featuresContainer: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     paddingVertical: 24,
     borderTopWidth: 1,
     borderTopColor: '#F3F4F6',
-    backgroundColor: '#F9FAFB',
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    backgroundColor: '#FAFAFA',
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
   feature: {
     alignItems: 'center',
     flex: 1,
   },
   featureText: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#6B7280',
     fontWeight: '600',
     marginTop: 8,
